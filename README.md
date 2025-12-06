@@ -1,4 +1,4 @@
 
 ## Live Website
 
-👉 [Organic](https://<nee-username>.github.io/<repo-name>/)
+👉 [Organic](https://sahan-2006.github.io/Oraganic_Mart/)
