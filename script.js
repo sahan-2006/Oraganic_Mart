@@ -1404,21 +1404,44 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadUserData() {
         const savedData = localStorage.getItem('organicMartUserData');
         if (savedData) {
-            userData = JSON.parse(savedData);
-            console.log('User data loaded:', userData);
+            try {
+                userData = JSON.parse(savedData);
+                console.log('User data loaded:', userData);
+            } catch (e) {
+                console.error('Error loading user data:', e);
+                userData = {
+                    isLoggedIn: false,
+                    name: '',
+                    email: '',
+                    phone: '',
+                    addresses: [],
+                    orders: [],
+                    wishlist: [],
+                    cart: []
+                };
+            }
         }
         
         // If no addresses exist, add sample addresses for demo
-        if (userData.addresses.length === 0) {
+        if (userData.addresses && userData.addresses.length === 0) {
             userData.addresses = Object.values(sampleAddresses);
             saveUserData();
+        }
+        
+        // Ensure cart exists
+        if (!userData.cart) {
+            userData.cart = [];
         }
     }
 
     // Save user data to localStorage
     function saveUserData() {
-        localStorage.setItem('organicMartUserData', JSON.stringify(userData));
-        console.log('User data saved');
+        try {
+            localStorage.setItem('organicMartUserData', JSON.stringify(userData));
+            console.log('User data saved');
+        } catch (e) {
+            console.error('Error saving user data:', e);
+        }
     }
 
     // Check login status and show appropriate page
@@ -1614,8 +1637,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
             case 'discount':
                 productCards.sort((a, b) => {
-                    const discountA = parseInt(a.querySelector('.discount').textContent.replace('% off', ''));
-                    const discountB = parseInt(b.querySelector('.discount').textContent.replace('% off', ''));
+                    const discountA = parseInt(a.querySelector('.discount').textContent.replace('% off', '')) || 0;
+                    const discountB = parseInt(b.querySelector('.discount').textContent.replace('% off', '')) || 0;
                     return discountB - discountA;
                 });
                 break;
@@ -2121,12 +2144,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ===== CART FUNCTIONALITY =====
+    // ===== CART FUNCTIONALITY - FIXED =====
     function setupCartEventListeners() {
-        // Delegate events for cart items - using event delegation
+        console.log('Setting up cart event listeners...');
+        
+        // Delegate events for cart items
         document.addEventListener('click', function(e) {
-            console.log('Cart event triggered on:', e.target.className);
-            
             // Quantity decrease
             if (e.target.classList.contains('quantity-decrease')) {
                 const cartItem = e.target.closest('.cart-item');
@@ -2151,10 +2174,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // Remove item - FIXED: Check if the clicked element has the class
-            if (e.target.classList.contains('remove-item')) {
+            // Remove item - Check if clicked element or its parent has the class
+            if (e.target.classList.contains('remove-item') || 
+                e.target.closest('.remove-item')) {
                 console.log('Remove item button clicked');
-                const cartItem = e.target.closest('.cart-item');
+                const removeBtn = e.target.classList.contains('remove-item') ? 
+                    e.target : e.target.closest('.remove-item');
+                const cartItem = removeBtn.closest('.cart-item');
                 if (cartItem) {
                     const productId = parseInt(cartItem.getAttribute('data-product-id'));
                     console.log('Removing product from cart:', productId);
@@ -2183,16 +2209,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Checkout button
-        const checkoutBtn = document.getElementById('checkout-btn');
-        if (checkoutBtn) {
-            checkoutBtn.addEventListener('click', function(e) {
+        // Checkout button - reattach on render
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'checkout-btn' || e.target.closest('#checkout-btn')) {
                 e.preventDefault();
                 if (userData.cart.length > 0) {
                     showPage('checkout');
                 }
-            });
-        }
+            }
+            
+            // Empty cart shop button
+            if (e.target.id === 'empty-cart-shop' || e.target.closest('#empty-cart-shop')) {
+                e.preventDefault();
+                showPage('products');
+            }
+        });
     }
 
     // ===== CHECKOUT FUNCTIONALITY =====
@@ -2378,7 +2409,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Handle UPI app selection - FIXED VERSION with real images
+        // Handle UPI app selection
         document.addEventListener('click', function(e) {
             // Check if click is on UPI app container or its children
             const upiApp = e.target.closest('.upi-app');
@@ -2420,7 +2451,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // UPI payment submit - FIXED: Prevent multiple submissions
+            // UPI payment submit
             if (e.target.id === 'upi-pay-btn') {
                 e.preventDefault();
                 
@@ -2647,7 +2678,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     closePaymentModal();
                 };
             }
-        }, 3000); // Increased to 3 seconds for more realistic simulation
+        }, 3000);
     }
 
     function closePaymentModal() {
@@ -2899,28 +2930,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===== COUPON FUNCTIONALITY =====
     function setupCouponEvents() {
-        const applyCouponBtn = document.getElementById('apply-coupon');
-        const couponCodeInput = document.getElementById('coupon-code');
-        const removeCouponBtn = document.getElementById('remove-coupon');
-        
-        if (applyCouponBtn) {
-            applyCouponBtn.addEventListener('click', function() {
+        // Use event delegation for dynamically created coupon buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.id === 'apply-coupon' || e.target.closest('#apply-coupon')) {
                 applyCoupon();
-            });
-        }
+            }
+            
+            if (e.target.id === 'remove-coupon' || e.target.closest('#remove-coupon')) {
+                removeCoupon();
+            }
+        });
         
+        const couponCodeInput = document.getElementById('coupon-code');
         if (couponCodeInput) {
             couponCodeInput.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     applyCoupon();
                 }
-            });
-        }
-        
-        if (removeCouponBtn) {
-            removeCouponBtn.addEventListener('click', function() {
-                removeCoupon();
             });
         }
     }
@@ -3217,7 +3244,7 @@ document.addEventListener('DOMContentLoaded', function() {
         showToastMessage('Logged out successfully!');
     }
 
-    // ===== CART FUNCTIONALITY =====
+    // ===== CART FUNCTIONALITY - FIXED RENDER =====
     function addToCart(productId, selectedQuantity) {
         if (!productDatabase[productId]) {
             console.error(`Product ID ${productId} not found`);
@@ -3251,7 +3278,7 @@ document.addEventListener('DOMContentLoaded', function() {
         showToastMessage(`${product.name} (${product.weight[selectedQuantity]}) added to cart!`);
         
         // If on cart page, refresh the cart
-        if (pages.cart.classList.contains('active')) {
+        if (pages.cart && pages.cart.classList.contains('active')) {
             renderCart();
         }
     }
@@ -3303,12 +3330,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderCart() {
+        console.log('Rendering cart...');
         const cartItemsContainer = document.querySelector('.cart-items');
         const cartSummary = document.querySelector('.cart-summary');
         
-        if (!cartItemsContainer || !cartSummary) return;
+        if (!cartItemsContainer || !cartSummary) {
+            console.error('Cart container elements not found');
+            return;
+        }
         
-        if (userData.cart.length === 0) {
+        // Clear existing content
+        cartItemsContainer.innerHTML = '';
+        cartSummary.innerHTML = '';
+        
+        if (!userData.cart || userData.cart.length === 0) {
+            console.log('Cart is empty');
             cartItemsContainer.innerHTML = `
                 <div class="empty-cart">
                     <i class="fas fa-shopping-cart"></i>
@@ -3332,13 +3368,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <span>Tax</span>
                     <span id="cart-tax">₹0</span>
                 </div>
-                <div class="coupon-section" style="display: none;">
-                    <div class="coupon-input">
-                        <input type="text" id="coupon-code" placeholder="Enter coupon code">
-                        <button id="apply-coupon">Apply</button>
-                    </div>
-                    <div id="coupon-message" class="coupon-message"></div>
-                </div>
                 <div class="summary-row total">
                     <span>Total</span>
                     <span id="cart-total">₹0</span>
@@ -3349,12 +3378,15 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        console.log(`Rendering ${userData.cart.length} cart items`);
+        
         // Render cart items
-        cartItemsContainer.innerHTML = userData.cart.map(item => {
+        userData.cart.forEach(item => {
             const product = productDatabase[item.id] || {};
             const weight = product.weight ? product.weight[item.quantityOption] || '' : '';
+            const itemTotal = item.price * item.quantity;
             
-            return `
+            const cartItemHTML = `
                 <div class="cart-item" data-product-id="${item.id}">
                     <img src="${item.image}" alt="${item.name}" class="cart-item-image">
                     <div class="cart-item-details">
@@ -3364,7 +3396,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <h3 class="cart-item-title">${item.name}</h3>
                                 <div class="cart-item-weight">${weight}</div>
                             </div>
-                            <div class="cart-item-price">₹${item.price * item.quantity}</div>
+                            <div class="cart-item-price">₹${itemTotal}</div>
                         </div>
                         <div class="cart-item-actions">
                             <div class="quantity-controls">
@@ -3378,7 +3410,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
             `;
-        }).join('');
+            cartItemsContainer.innerHTML += cartItemHTML;
+        });
         
         // Calculate totals
         const totals = calculateCartTotals();
@@ -3426,21 +3459,20 @@ document.addEventListener('DOMContentLoaded', function() {
             cartItemsCount.textContent = `${totalItems} ${totalItems === 1 ? 'item' : 'items'}`;
         }
         
-        // Re-attach event listeners
-        const newCheckoutBtn = document.getElementById('checkout-btn');
-        if (newCheckoutBtn) {
-            newCheckoutBtn.addEventListener('click', function() {
-                if (userData.cart.length > 0) {
-                    showPage('checkout');
-                }
-            });
-        }
-        
-        // Re-attach coupon events
-        setupCouponEvents();
+        console.log('Cart rendered successfully');
     }
 
     function calculateCartTotals() {
+        if (!userData.cart || userData.cart.length === 0) {
+            return {
+                subtotal: 0,
+                delivery: 0,
+                tax: 0,
+                couponDiscount: 0,
+                total: 0
+            };
+        }
+        
         const subtotal = userData.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         const delivery = subtotal > 499 ? 0 : 50;
         const tax = subtotal * 0.05; // 5% tax
@@ -3459,7 +3491,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        const total = subtotal + delivery + tax - couponDiscount;
+        const total = Math.max(0, subtotal + delivery + tax - couponDiscount);
         
         return {
             subtotal,
@@ -3472,7 +3504,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ===== COUPON HANDLING =====
     function applyCoupon() {
-        const couponCode = document.getElementById('coupon-code').value.trim().toUpperCase();
+        const couponCodeInput = document.getElementById('coupon-code');
+        if (!couponCodeInput) return;
+        
+        const couponCode = couponCodeInput.value.trim().toUpperCase();
         const messageEl = document.getElementById('coupon-message');
         
         if (!couponCode) {
@@ -3497,10 +3532,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 showCouponMessage(`Coupon "${couponCode}" applied successfully! ${coupon.description}`, 'success');
                 
                 // Update cart totals
-                if (pages.cart.classList.contains('active')) {
+                if (pages.cart && pages.cart.classList.contains('active')) {
                     renderCart();
                 }
-                if (pages.checkout.classList.contains('active')) {
+                if (pages.checkout && pages.checkout.classList.contains('active')) {
                     updateCheckoutSummary();
                 }
             } else {
@@ -3516,10 +3551,10 @@ document.addEventListener('DOMContentLoaded', function() {
         showCouponMessage('Coupon removed', 'info');
         
         // Update cart totals
-        if (pages.cart.classList.contains('active')) {
+        if (pages.cart && pages.cart.classList.contains('active')) {
             renderCart();
         }
-        if (pages.checkout.classList.contains('active')) {
+        if (pages.checkout && pages.checkout.classList.contains('active')) {
             updateCheckoutSummary();
         }
     }
@@ -3602,13 +3637,20 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!userData.isLoggedIn) return;
         
         // Update profile info
-        document.getElementById('profile-name').textContent = userData.name;
-        document.getElementById('profile-email').textContent = userData.email;
+        const profileName = document.getElementById('profile-name');
+        const profileEmail = document.getElementById('profile-email');
+        
+        if (profileName) profileName.textContent = userData.name;
+        if (profileEmail) profileEmail.textContent = userData.email;
         
         // Populate profile form
-        document.getElementById('profile-fullname').value = userData.name;
-        document.getElementById('profile-phone').value = userData.phone;
-        document.getElementById('profile-email').value = userData.email;
+        const fullnameInput = document.getElementById('profile-fullname');
+        const phoneInput = document.getElementById('profile-phone');
+        const emailInput = document.getElementById('profile-email');
+        
+        if (fullnameInput) fullnameInput.value = userData.name;
+        if (phoneInput) phoneInput.value = userData.phone;
+        if (emailInput) emailInput.value = userData.email;
         
         // Load addresses
         renderAddresses();
@@ -3653,7 +3695,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('add-address-modal');
         if (modal) {
             modal.style.display = 'none';
-            document.getElementById('add-address-form').reset();
+            const form = document.getElementById('add-address-form');
+            if (form) form.reset();
         }
     }
 
@@ -3741,7 +3784,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const addressesContainer = document.getElementById('addresses-container');
         if (!addressesContainer) return;
         
-        if (userData.addresses.length === 0) {
+        if (!userData.addresses || userData.addresses.length === 0) {
             addressesContainer.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-map-marker-alt"></i>
@@ -3776,7 +3819,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const ordersContainer = document.getElementById('orders-container');
         if (!ordersContainer) return;
         
-        if (userData.orders.length === 0) {
+        if (!userData.orders || userData.orders.length === 0) {
             ordersContainer.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-shopping-bag"></i>
@@ -3827,7 +3870,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const wishlistContainer = document.getElementById('wishlist-container');
         if (!wishlistContainer) return;
         
-        if (userData.wishlist.length === 0) {
+        if (!userData.wishlist || userData.wishlist.length === 0) {
             wishlistContainer.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-heart"></i>
@@ -4037,6 +4080,7 @@ document.addEventListener('DOMContentLoaded', function() {
             couponUsed: activeCoupon ? activeCoupon.code : null
         };
         
+        if (!userData.orders) userData.orders = [];
         userData.orders.push(order);
         
         // Clear cart and active coupon
