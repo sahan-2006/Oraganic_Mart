@@ -1085,10 +1085,13 @@ footer {
     text-decoration: underline;
 }
 
-.get-otp-btn, .login-btn {
+.get-otp-btn,
+.login-btn {
     background: var(--primary);
     color: var(--white);
-    border: none;
+    border: none;              /* remove default border */
+    outline: none;             /* remove focus outline */
+    box-shadow: none;          /* remove shadow border */
     border-radius: var(--radius);
     padding: 12px;
     font-size: 1rem;
@@ -1098,18 +1101,18 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
     height: 45px;
 }
 
-.get-otp-btn:hover, .login-btn:hover {
-    background: var(--primary-dark);
+/* Remove border on focus & active */
+.get-otp-btn:focus,
+.login-btn:focus,
+.get-otp-btn:active,
+.login-btn:active {
+    outline: none;
+    box-shadow: none;
 }
 
-.get-otp-btn:disabled, .login-btn:disabled {
-    background: var(--primary-light);
-    cursor: not-allowed;
-}
 
 .btn-loader {
     position: absolute;
@@ -2064,6 +2067,31 @@ footer {
 .coupon-input button:hover {
     background: var(--primary-dark);
 }
+.checkout-steps {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* FIXED CONNECTING LINE */
+.checkout-steps::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: calc(50% / 3);          /* first step center */
+    width: calc(100% - (100% / 3));
+    height: 2px;
+    background-color: #cfe8cf;
+    transform: translateY(-50%);
+    z-index: 0;
+}
+
+/* keep steps above line */
+.checkout-steps .step {
+    position: relative;
+    z-index: 1;
+}
 
 .coupon-message {
     font-size: 0.9rem;
@@ -2078,21 +2106,28 @@ footer {
 
 .checkout-steps {
     display: flex;
-    justify-content: center;
-    margin-bottom: 40px;
-    position: relative;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.checkout-steps::before {
-    content: '';
+/* ONE CONTINUOUS CONNECTING LINE */
+.checkout-steps .step:not(:last-child)::after {
+    content: "";
     position: absolute;
-    top: 20px;
-    left: 50px;
-    right: 50px;
+    top: 20px;                 /* icon center ki adjust */
+    right: -50%;
+    width: 100%;
     height: 2px;
-    background: #eee;
+    background-color: #cfe8cf;
+    z-index: 0;
+}
+
+/* Keep icons above line */
+.checkout-steps .step * {
+    position: relative;
     z-index: 1;
 }
+
 
 .step {
     display: flex;
@@ -2101,7 +2136,7 @@ footer {
     position: relative;
     z-index: 2;
     flex: 1;
-    max-width: 200px;
+    max-width: 400px;
 }
 
 .step-number {
@@ -2470,6 +2505,125 @@ footer {
     background: var(--primary);
     color: white;
 }
+/* ===== Premium Checkout Steps ===== */
+.checkout-steps {
+    position: relative;
+}
+
+.checkout-steps::before {
+    content: "";
+    position: absolute;
+    top: 22px;                /* circle center */
+    left: calc(50% / 3);     /* first circle center nundi */
+    width: calc(100% - (50% / 3) * 2);
+    height: 2px;
+    background: #cfe8d6;
+    z-index: 0;
+}
+
+.checkout-steps .step {
+    position: relative;
+    flex: 1;
+    text-align: center;
+}
+
+/* Step circle */
+.checkout-steps .step-number {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #e1efe6;
+    color: #2e7d32;
+    font-size: 16px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 0 2px #cfe8d6;
+}
+
+/* Step label */
+.checkout-steps .step-label {
+    margin-top: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2e7d32;
+}
+
+/* Active / Completed */
+.checkout-steps .step.active .step-number,
+.checkout-steps .step.completed .step-number {
+    background: linear-gradient(135deg, #2e7d32, #43a047);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(46,125,50,0.35);
+}
+
+/* ===== Icons (Font Awesome) ===== */
+.checkout-steps .step[data-step="1"] .step-number::before {
+    content: "\f0d1"; /* truck */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+.checkout-steps .step[data-step="2"] .step-number::before {
+    content: "\f09d"; /* credit-card */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+.checkout-steps .step[data-step="3"] .step-number::before {
+    content: "\f058"; /* check-circle */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+
+/* Hide numeric text when icon shows */
+.checkout-steps .step-number {
+    font-size: 0; /* number hidden */
+}
+.checkout-steps .step-number::before {
+    font-size: 18px;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .checkout-steps {
+        padding: 16px;
+    }
+    .checkout-steps .step-number {
+        width: 40px;
+        height: 40px;
+    }
+    .checkout-steps .step-label {
+        font-size: 12px;
+    }
+}
+/* ===== FIXED CONNECTING LINE ===== */
+.checkout-steps::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: transparent;
+    z-index: 0;
+}
+
+/* Individual connectors between steps */
+.checkout-steps .step::after {
+    content: "";
+    position: absolute;
+    top: 22px;              /* circle center */
+    right: -50%;
+    width: 100%;
+    height: 2px;
+    background: #cfe8d6;
+    z-index: -1;
+}
+
+/* Last step ki connector vaddu */
+.checkout-steps .step:last-child::after {
+    display: none;
+}
 
 /* Confirmation Step */
 .confirmation-content {
@@ -2499,6 +2653,126 @@ footer {
     margin-bottom: 30px;
     font-size: 1.1rem;
     line-height: 1.6;
+}
+/* ===== UPI PAYMENT INSTRUCTIONS ===== */
+
+.upi-instructions {
+    background: #f4fbff;
+    border-radius: 14px;
+    padding: 22px;
+    border-left: 5px solid #1e88e5;
+    margin-top: 20px;
+}
+
+/* Title */
+.upi-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e88e5;
+    margin-bottom: 24px;
+}
+
+/* Steps container */
+.upi-steps {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    position: relative;
+    margin-bottom: 24px;
+}
+
+/* Connecting line */
+.upi-steps::before {
+    content: "";
+    position: absolute;
+    top: 20px;
+    left: 6%;
+    width: 88%;
+    height: 2px;
+    background: #d6e9f9;
+}
+
+/* Single step */
+.upi-step {
+    display: flex;
+    gap: 12px;
+    width: 33%;
+    position: relative;
+    z-index: 1;
+}
+
+/* Step number */
+.upi-step-number {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #1e88e5;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Step content */
+.upi-step-content h6 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #222;
+}
+
+.upi-step-content p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.5;
+}
+
+/* Notes */
+.upi-payment-note {
+    background: #eaf7ea;
+    border-radius: 10px;
+    padding: 14px 16px;
+}
+
+.upi-note-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #2e7d32;
+    margin-bottom: 6px;
+}
+
+.upi-note-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .upi-steps {
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .upi-steps::before {
+        display: none;
+    }
+
+    .upi-step {
+        width: 100%;
+    }
+}
+/* REMOVE CONNECTING LINE */
+.upi-steps::before {
+    display: none !important;
+    content: none !important;
 }
 
 /* Delivery Tracking */
