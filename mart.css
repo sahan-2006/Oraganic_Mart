@@ -2090,7 +2090,8 @@ footer {
 /* keep steps above line */
 .checkout-steps .step {
     position: relative;
-    z-index: 1;
+    flex: 1;
+    text-align: center;
 }
 
 .coupon-message {
@@ -2114,19 +2115,87 @@ footer {
 .checkout-steps .step:not(:last-child)::after {
     content: "";
     position: absolute;
-    top: 20px;                 /* icon center ki adjust */
-    right: -50%;
+    top: 22px;              /* icon center */
+    left: 50%;
     width: 100%;
     height: 2px;
     background-color: #cfe8cf;
     z-index: 0;
 }
-
-/* Keep icons above line */
-.checkout-steps .step * {
+/* Each step */
+.checkout-steps .step {
+    flex: 1;
+    text-align: center;
     position: relative;
+    z-index: 2;
+}
+
+/* PERFECT CONNECTING LINE */
+.checkout-steps .step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 30px;              /* 🔥 line moved UP (was 40px) */
+    left: 50%;
+    width: calc(100% - 40px); /* 🔥 stop before next circle */
+    height: 2px;
+    background: #cfe8cf;
     z-index: 1;
 }
+/* ===== CONNECTORS FOR ALL STEPS EXCEPT AFTER CONFIRMATION ===== */
+
+/* Connector from step 1 to step 2 */
+.checkout-steps .step[data-step="1"]::after {
+    content: "";
+    position: absolute;
+    top: 28px; /* Changed from 22px to 24px */
+    right: -50%;
+    width: 100%;
+    height: 2px;
+    background: #cfe8d6;
+    z-index: 1;
+}
+
+/* Connector from step 2 to step 3 */
+.checkout-steps .step[data-step="2"]::after {
+    content: "";
+    position: absolute;
+    top: 28px; /* Changed from 22px to 24px */
+    right: -50%;
+    width: 100%;
+    height: 2px;
+    background: #cfe8d6;
+    z-index: 1;
+}
+
+/* NO connector from step 3 (confirmation) - line stops here */
+.checkout-steps .step[data-step="3"]::after {
+    display: none;
+}
+
+/* Completed connectors */
+.checkout-steps .step[data-step="1"].completed::after {
+    background: #4CAF50;
+}
+
+.checkout-steps .step[data-step="2"].completed::after {
+    background: #4CAF50;
+}
+
+/* Mobile hide */
+@media (max-width: 768px) {
+    .checkout-steps .step::after {
+        display: none;
+    }
+}
+/* Step number (circle size reference) */
+.checkout-steps .step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: relative;
+    z-index: 2;
+}
+
 
 
 .step {
@@ -2521,12 +2590,11 @@ footer {
     z-index: 0;
 }
 
-.checkout-steps .step {
-    position: relative;
-    flex: 1;
-    text-align: center;
+.checkout-steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-
 /* Step circle */
 .checkout-steps .step-number {
     width: 44px;
