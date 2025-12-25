@@ -1462,6 +1462,9 @@ document.addEventListener('DOMContentLoaded', function() {
         addToastStyles();
         addNotificationStyles();
         
+        // Add CSS fixes
+        addScrollFixStyles();
+        
         console.log('Initialization complete');
     }
 
@@ -2493,6 +2496,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
             case 'checkout':
                 initializeCheckout();
+                // FIX: Properly initialize checkout steps
+                initializeCheckoutSteps();
                 break;
             case 'login':
                 initializeLoginPage();
@@ -2503,7 +2508,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ===== SETUP ALL NAVIGATION BUTTONS =====
+    // ===== SETUP ALL NAVIGATION BUTTONS - FIXED =====
     function setupNavigationMenu() {
         // Main navigation menu items
         const navLinks = document.querySelectorAll('nav ul li a');
@@ -2518,35 +2523,71 @@ document.addEventListener('DOMContentLoaded', function() {
                         break;
                     case 'Shop':
                         showPage('products');
-                        // Scroll to products section
-                        const productsGrid = document.querySelector('.products-grid');
-                        if (productsGrid) {
-                            productsGrid.scrollIntoView({ behavior: 'smooth' });
-                        }
+                        // Scroll to products section with header offset
+                        setTimeout(() => {
+                            const productsGrid = document.querySelector('.products-grid');
+                            if (productsGrid) {
+                                const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                                const elementPosition = productsGrid.getBoundingClientRect().top;
+                                const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                                
+                                window.scrollTo({
+                                    top: offsetPosition,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        }, 100);
                         break;
                     case 'Categories':
                         showPage('products');
-                        // Scroll to categories section
-                        const categories = document.querySelector('.categories');
-                        if (categories) {
-                            categories.scrollIntoView({ behavior: 'smooth' });
-                        }
+                        // Scroll to categories section with header offset
+                        setTimeout(() => {
+                            const categories = document.querySelector('.categories');
+                            if (categories) {
+                                const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                                const elementPosition = categories.getBoundingClientRect().top;
+                                const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                                
+                                window.scrollTo({
+                                    top: offsetPosition,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        }, 100);
                         break;
                     case 'About':
                         showPage('products');
-                        // Scroll to about section
-                        const about = document.querySelector('.about');
-                        if (about) {
-                            about.scrollIntoView({ behavior: 'smooth' });
-                        }
+                        // Scroll to about section with header offset
+                        setTimeout(() => {
+                            const about = document.querySelector('.about');
+                            if (about) {
+                                const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                                const elementPosition = about.getBoundingClientRect().top;
+                                const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                                
+                                window.scrollTo({
+                                    top: offsetPosition,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        }, 100);
                         break;
                     case 'Contact':
                         showPage('products');
-                        // Scroll to footer/contact section
-                        const footer = document.querySelector('footer');
-                        if (footer) {
-                            footer.scrollIntoView({ behavior: 'smooth' });
-                        }
+                        // Scroll to footer/contact section with header offset
+                        setTimeout(() => {
+                            const footer = document.querySelector('footer');
+                            if (footer) {
+                                const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                                const elementPosition = footer.getBoundingClientRect().top;
+                                const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                                
+                                window.scrollTo({
+                                    top: offsetPosition,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        }, 100);
                         break;
                 }
             });
@@ -2560,11 +2601,18 @@ document.addEventListener('DOMContentLoaded', function() {
             heroShopNow.addEventListener('click', function(e) {
                 e.preventDefault();
                 showPage('products');
-                // Scroll to products section
+                // Scroll to products section with header offset
                 setTimeout(() => {
                     const productsGrid = document.querySelector('.products-grid');
                     if (productsGrid) {
-                        productsGrid.scrollIntoView({ behavior: 'smooth' });
+                        const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                        const elementPosition = productsGrid.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                        
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
                     }
                 }, 100);
             });
@@ -2576,11 +2624,18 @@ document.addEventListener('DOMContentLoaded', function() {
             heroLearnMore.addEventListener('click', function(e) {
                 e.preventDefault();
                 showPage('products');
-                // Scroll to about section
+                // Scroll to about section with header offset
                 setTimeout(() => {
                     const about = document.querySelector('.about');
                     if (about) {
-                        about.scrollIntoView({ behavior: 'smooth' });
+                        const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                        const elementPosition = about.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                        
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
                     }
                 }, 100);
             });
@@ -2598,25 +2653,70 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Get category name from overlay
                 const categoryName = this.querySelector('h3').textContent.trim();
                 
-                // Scroll to that category section
+                // Scroll to that category section with header offset
                 setTimeout(() => {
                     if (categoryName.includes('Fruits')) {
                         const firstH2 = document.querySelector('.container h2:first-child');
-                        if (firstH2) firstH2.scrollIntoView({ behavior: 'smooth' });
+                        if (firstH2) {
+                            const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                            const elementPosition = firstH2.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                            
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
+                        }
                     } else if (categoryName.includes('Vegetables')) {
                         const secondH2 = document.querySelector('.container h2:nth-child(2)');
-                        if (secondH2) secondH2.scrollIntoView({ behavior: 'smooth' });
+                        if (secondH2) {
+                            const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                            const elementPosition = secondH2.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                            
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
+                        }
                     } else if (categoryName.includes('Dairy')) {
                         const thirdH2 = document.querySelector('.container h2:nth-child(3)');
-                        if (thirdH2) thirdH2.scrollIntoView({ behavior: 'smooth' });
+                        if (thirdH2) {
+                            const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                            const elementPosition = thirdH2.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                            
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
+                        }
                     } else if (categoryName.includes('Grains')) {
                         const fourthH2 = document.querySelector('.container h2:nth-child(4)');
-                        if (fourthH2) fourthH2.scrollIntoView({ behavior: 'smooth' });
+                        if (fourthH2) {
+                            const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                            const elementPosition = fourthH2.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                            
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
+                        }
                     } else if (categoryName.includes('Spices')) {
                         const fifthH2 = document.querySelector('.container h2:nth-child(5)');
-                        if (fifthH2) fifthH2.scrollIntoView({ behavior: 'smooth' });
+                        if (fifthH2) {
+                            const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                            const elementPosition = fifthH2.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                            
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
+                        }
                     }
-                }, 5000);
+                }, 100);
             });
         });
     }
@@ -2642,11 +2742,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
                     showPage('products');
-                    // Scroll to about section
+                    // Scroll to about section with header offset
                     setTimeout(() => {
                         const about = document.querySelector('.about');
                         if (about) {
-                            about.scrollIntoView({ behavior: 'smooth' });
+                            const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                            const elementPosition = about.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                            
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
                         }
                     }, 100);
                 });
@@ -2702,7 +2809,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         setTimeout(() => {
                             const productsGrid = document.querySelector('.products-grid');
                             if (productsGrid) {
-                                productsGrid.scrollIntoView({ behavior: 'smooth' });
+                                const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                                const elementPosition = productsGrid.getBoundingClientRect().top;
+                                const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                                
+                                window.scrollTo({
+                                    top: offsetPosition,
+                                    behavior: 'smooth'
+                                });
                             }
                         }, 100);
                         break;
@@ -2711,7 +2825,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         setTimeout(() => {
                             const about = document.querySelector('.about');
                             if (about) {
-                                about.scrollIntoView({ behavior: 'smooth' });
+                                const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                                const elementPosition = about.getBoundingClientRect().top;
+                                const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                                
+                                window.scrollTo({
+                                    top: offsetPosition,
+                                    behavior: 'smooth'
+                                });
                             }
                         }, 100);
                         break;
@@ -2723,7 +2844,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         setTimeout(() => {
                             const footer = document.querySelector('footer');
                             if (footer) {
-                                footer.scrollIntoView({ behavior: 'smooth' });
+                                const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                                const elementPosition = footer.getBoundingClientRect().top;
+                                const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                                
+                                window.scrollTo({
+                                    top: offsetPosition,
+                                    behavior: 'smooth'
+                                });
                             }
                         }, 100);
                         break;
@@ -2997,6 +3125,47 @@ document.addEventListener('DOMContentLoaded', function() {
         const phoneTab = document.getElementById('phone-tab');
         if (phoneTabBtn) phoneTabBtn.classList.add('active');
         if (phoneTab) phoneTab.classList.add('active');
+        
+        // FIX: Add login button event listeners
+        const loginButton = document.getElementById('login-btn');
+        if (loginButton) {
+            loginButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                handleLogin(e);
+            });
+        }
+        
+        // FIX: Add get OTP button event listeners
+        const getOtpButton = document.getElementById('get-otp-btn');
+        if (getOtpButton) {
+            getOtpButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                const currentTab = document.querySelector('.tab-btn.active').getAttribute('data-tab');
+                let isValid = false;
+                
+                if (currentTab === 'phone') {
+                    const phoneInput = document.getElementById('phone');
+                    if (validatePhone(phoneInput.value)) {
+                        isValid = true;
+                        simulateOtpSend('phone');
+                    } else {
+                        showError('phone-error', 'Please enter a valid phone number');
+                    }
+                } else {
+                    const emailInput = document.getElementById('email');
+                    if (validateEmail(emailInput.value)) {
+                        isValid = true;
+                        simulateOtpSend('email');
+                    } else {
+                        showError('email-error', 'Please enter a valid email address');
+                    }
+                }
+                
+                if (isValid) {
+                    showOtpSection();
+                }
+            });
+        }
     }
 
     // Initialize signup page specifically
@@ -3075,9 +3244,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Get OTP button
+        // Get OTP button - FIXED
         if (getOtpBtn) {
-            getOtpBtn.addEventListener('click', function() {
+            getOtpBtn.addEventListener('click', function(e) {
+                e.preventDefault();
                 console.log('Get OTP clicked');
                 const currentTab = document.querySelector('.tab-btn.active').getAttribute('data-tab');
                 let isValid = false;
@@ -3144,19 +3314,19 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Login form submission
+        // Login form submission - FIXED
         if (loginForm) {
             loginForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                handleLogin();
+                handleLogin(e);
             });
         }
 
-        // Login button click
+        // Login button click - FIXED
         if (loginBtn) {
             loginBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                handleLogin();
+                handleLogin(e);
             });
         }
     }
@@ -3188,7 +3358,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (signupForm) {
             signupForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                handleSignup();
+                handleSignup(e);
             });
         }
     }
@@ -3533,26 +3703,201 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Setup checkout steps navigation
         setupCheckoutSteps();
+        
+        // Fix checkout steps display
+        fixCheckoutStepsDisplay();
     }
 
-    function setupCheckoutSteps() {
-        // Step navigation
+    // FIX: Initialize checkout steps properly
+    function initializeCheckoutSteps() {
+        console.log('Initializing checkout steps...');
+        
+        // Get current active step from DOM or default to delivery
+        let activeStep = 'delivery';
+        const visibleStep = document.querySelector('.checkout-step.active');
+        if (visibleStep) {
+            activeStep = visibleStep.id.replace('-step', '');
+        }
+        
+        // Update step indicators
+        updateStepIndicators(activeStep);
+        
+        // Set up event listeners for step navigation
+        setupStepNavigation();
+    }
+
+    // FIX: Update step indicators based on current step
+    function updateStepIndicators(activeStep) {
+        console.log('Updating step indicators for:', activeStep);
+        
+        const steps = document.querySelectorAll('.step');
+        if (!steps || steps.length === 0) return;
+        
+        // Map step names to indices
+        const stepIndexMap = {
+            'delivery': 0,
+            'payment': 1,
+            'confirmation': 2
+        };
+        
+        const activeIndex = stepIndexMap[activeStep] || 0;
+        
+        steps.forEach((step, index) => {
+            // Remove all active classes first
+            step.classList.remove('active');
+            step.classList.remove('completed');
+            
+            // Set active for current step
+            if (index === activeIndex) {
+                step.classList.add('active');
+            }
+            // Set completed for previous steps
+            else if (index < activeIndex) {
+                step.classList.add('completed');
+            }
+            
+            // Update step number styling
+            const stepNumber = step.querySelector('.step-number');
+            if (stepNumber) {
+                if (index === activeIndex) {
+                    stepNumber.style.backgroundColor = '#4CAF50';
+                    stepNumber.style.color = 'white';
+                    stepNumber.style.transform = 'scale(1.1)';
+                } else if (index < activeIndex) {
+                    stepNumber.style.backgroundColor = '#4CAF50';
+                    stepNumber.style.color = 'white';
+                    stepNumber.style.transform = 'scale(1)';
+                } else {
+                    stepNumber.style.backgroundColor = '#e0e0e0';
+                    stepNumber.style.color = '#666';
+                    stepNumber.style.transform = 'scale(1)';
+                }
+            }
+            
+            // Update step label styling
+            const stepLabel = step.querySelector('.step-label');
+            if (stepLabel) {
+                if (index === activeIndex) {
+                    stepLabel.style.color = '#4CAF50';
+                    stepLabel.style.fontWeight = 'bold';
+                } else if (index < activeIndex) {
+                    stepLabel.style.color = '#4CAF50';
+                    stepLabel.style.fontWeight = 'normal';
+                } else {
+                    stepLabel.style.color = '#666';
+                    stepLabel.style.fontWeight = 'normal';
+                }
+            }
+        });
+        
+        // Update progress line (but keep it hidden)
+        updateCheckoutProgressLine(activeIndex, steps.length);
+    }
+
+    // FIX: Update checkout progress line (but keep it hidden)
+    function updateCheckoutProgressLine(activeIndex, totalSteps) {
+        const checkoutSteps = document.querySelector('.checkout-steps');
+        if (!checkoutSteps) return;
+        
+        // Remove existing progress line if any
+        const existingLine = checkoutSteps.querySelector('.progress-line');
+        if (existingLine) existingLine.remove();
+        
+        // Create progress line container but keep it hidden
+        const progressLine = document.createElement('div');
+        progressLine.className = 'progress-line';
+        progressLine.style.cssText = `
+            position: absolute;
+            top: 25px;
+            left: 50px;
+            right: 50px;
+            height: 3px;
+            background: #e0e0e0;
+            z-index: 1;
+            display: none; /* HIDE THE PROGRESS LINE */
+        `;
+        
+        // Calculate progress percentage
+        const progressPercentage = activeIndex / (totalSteps - 1) * 100;
+        
+        // Create filled part
+        const filledLine = document.createElement('div');
+        filledLine.className = 'progress-filled';
+        filledLine.style.cssText = `
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: ${progressPercentage}%;
+            background: #4CAF50;
+            transition: width 0.5s ease;
+            display: none; /* HIDE THE PROGRESS LINE */
+        `;
+        
+        progressLine.appendChild(filledLine);
+        checkoutSteps.style.position = 'relative';
+        checkoutSteps.appendChild(progressLine);
+    }
+
+    // FIX: Setup step navigation
+    function setupStepNavigation() {
+        // Remove existing event listeners to prevent duplicates
         const nextButtons = document.querySelectorAll('.btn-next');
-        nextButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const nextStep = this.getAttribute('data-next');
-                navigateToStep(nextStep);
-            });
-        });
-
         const prevButtons = document.querySelectorAll('.btn-prev');
-        prevButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const prevStep = this.getAttribute('data-prev');
-                navigateToStep(prevStep);
+        
+        nextButtons.forEach(button => {
+            // Clone and replace to remove existing listeners
+            const newButton = button.cloneNode(true);
+            button.parentNode.replaceChild(newButton, button);
+            
+            newButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                const nextStep = this.getAttribute('data-next');
+                if (nextStep) {
+                    navigateToStep(nextStep);
+                }
             });
         });
 
+        prevButtons.forEach(button => {
+            // Clone and replace to remove existing listeners
+            const newButton = button.cloneNode(true);
+            button.parentNode.replaceChild(newButton, button);
+            
+            newButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                const prevStep = this.getAttribute('data-prev');
+                if (prevStep) {
+                    navigateToStep(prevStep);
+                }
+            });
+        });
+    }
+
+    function fixCheckoutStepsDisplay() {
+        const checkoutSteps = document.querySelector('.checkout-steps');
+        if (checkoutSteps) {
+            // Ensure checkout steps are visible
+            checkoutSteps.style.display = 'flex';
+            checkoutSteps.style.visibility = 'visible';
+            checkoutSteps.style.opacity = '1';
+            
+            // Ensure steps have proper styling
+            const steps = checkoutSteps.querySelectorAll('.step');
+            steps.forEach(step => {
+                step.style.display = 'flex';
+                step.style.alignItems = 'center';
+                step.style.gap = '8px';
+                step.style.position = 'relative';
+                step.style.zIndex = '2';
+            });
+        }
+    }
+    
+    function setupCheckoutSteps() {
+        // Step navigation is now handled by setupStepNavigation
+        console.log('Checkout steps setup complete');
+        
         // Track order button
         const trackOrderBtn = document.getElementById('track-order');
         if (trackOrderBtn) {
@@ -4265,6 +4610,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (loader) loader.style.display = 'none';
                 if (failed) failed.style.display = 'block';
                 
+                // Reset UPI payment flag on failure
+                if (paymentType === 'upi') {
+                    upiPaymentInProgress = false;
+                }
+                    
                 const errorMessages = {
                     'card': 'Payment was declined by your bank.',
                     'upi': 'UPI transaction failed. Please try again.',
@@ -4276,11 +4626,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     errorMessageElement.textContent = errorMessages[paymentType] || 'Payment failed. Please try again.';
                 }
                 
-                // Reset UPI payment flag on failure
-                if (paymentType === 'upi') {
-                    upiPaymentInProgress = false;
-                }
-                    
                 // Allow retry
                 const retryPaymentBtn = document.getElementById('retry-payment');
                 if (retryPaymentBtn) {
@@ -4331,7 +4676,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Generate delivery details based on order
         const deliveryDetails = generateDeliveryDetails(order);
         
-        // Create tracking modal with numbered steps
+        // Create tracking modal with numbered steps (NO PROGRESS LINE)
         const modalHtml = `
             <div class="modal" id="tracking-modal" style="display: flex;">
                 <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
@@ -4353,16 +4698,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             </div>
                             
-                            <!-- NUMBERED TRACKING STEPS -->
+                            <!-- NUMBERED TRACKING STEPS WITHOUT PROGRESS LINE -->
                             <div class="tracking-steps-container" style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px;">
                                 <h4 style="color: #2e7d32; margin-bottom: 25px; display: flex; align-items: center; gap: 10px;">
                                     <i class="fas fa-map-marker-alt"></i> Order Tracking Status
                                 </h4>
                                 
                                 <div class="numbered-tracking-steps" style="position: relative;">
-                                    <!-- Progress line -->
-                                    <div style="position: absolute; left: 40px; top: 40px; width: calc(100% - 80px); height: 3px; background: linear-gradient(90deg, #4CAF50 ${(deliveryDetails.currentStep/deliveryDetails.statuses.length)*100}%, #e0e0e0 ${(deliveryDetails.currentStep/deliveryDetails.statuses.length)*100}%);"></div>
-                                    
                                     ${deliveryDetails.statuses.map((step, index) => {
                                         const isCompleted = index <= deliveryDetails.currentStep;
                                         const isCurrent = index === deliveryDetails.currentStep;
@@ -5439,6 +5781,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // FIX: Properly navigate between checkout steps with step indicator updates
     function navigateToStep(step) {
         console.log('Navigating to step:', step);
         
@@ -5450,22 +5793,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Update steps
-        const steps = document.querySelectorAll('.step');
-        steps.forEach(s => s.classList.remove('active'));
-        
-        const currentStep = document.querySelector(`.step[data-step="${step}"]`);
-        if (currentStep) {
-            currentStep.classList.add('active');
-        }
-        
-        // Update content
+        // Hide all checkout steps
         const checkoutSteps = document.querySelectorAll('.checkout-step');
-        checkoutSteps.forEach(s => s.classList.remove('active'));
+        checkoutSteps.forEach(stepElement => {
+            stepElement.classList.remove('active');
+        });
         
-        const currentContent = document.getElementById(`${step}-step`);
-        if (currentContent) {
-            currentContent.classList.add('active');
+        // Show the selected step
+        const currentStepElement = document.getElementById(`${step}-step`);
+        if (currentStepElement) {
+            currentStepElement.classList.add('active');
+            
+            // Update step indicators
+            updateStepIndicators(step);
+            
+            // Scroll to top of the step
+            currentStepElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }
 
@@ -5845,6 +6188,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const modal = e.target.closest('.modal');
                 if (modal) {
                     modal.style.display = 'none';
+                    // FIX: Prevent multiple event handlers
+                    e.stopPropagation();
                 }
             }
             
@@ -5853,9 +6198,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 hideQuickView();
             }
             
-            // Close modal when clicking outside
+            // Close modal when clicking outside - FIXED to work with one click
             if (e.target.classList.contains('modal')) {
-                e.target.style.display = 'none';
+                // Check if it's a modal that should close on outside click
+                if (!e.target.classList.contains('no-close-outside')) {
+                    e.target.style.display = 'none';
+                }
             }
         });
         
@@ -6396,7 +6744,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function scrollToSection(sectionId) {
         const section = document.getElementById(sectionId);
         if (section) {
-            section.scrollIntoView({ behavior: 'smooth' });
+            const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+            const elementPosition = section.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+            
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
         }
     }
 
@@ -6517,6 +6872,112 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Add CSS fixes for scrolling and checkout steps
+    function addScrollFixStyles() {
+        if (!document.querySelector('#scroll-fix-styles')) {
+            const style = document.createElement('style');
+            style.id = 'scroll-fix-styles';
+            style.textContent = `
+                /* Ensure header offset for smooth scrolling */
+                html {
+                    scroll-padding-top: 100px;
+                }
+                
+                /* Fix for checkout steps display */
+                .checkout-steps {
+                    display: flex !important;
+                    visibility: visible !important;
+                    opacity: 1 !important;
+                    justify-content: space-between;
+                    margin-bottom: 30px;
+                    padding: 20px;
+                    background: #f8f9fa;
+                    border-radius: 10px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                    position: relative;
+                }
+                
+                .checkout-steps .step {
+                    display: flex !important;
+                    align-items: center;
+                    gap: 10px;
+                    flex: 1;
+                    position: relative;
+                    padding: 10px;
+                    transition: all 0.3s ease;
+                    z-index: 2;
+                }
+                
+                .checkout-steps .step .step-number {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    background: #e0e0e0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: #666;
+                    font-weight: bold;
+                    z-index: 2;
+                    transition: all 0.3s ease;
+                    border: 2px solid white;
+                }
+                
+                .checkout-steps .step.active .step-number {
+                    background: #4CAF50;
+                    color: white;
+                    transform: scale(1.1);
+                }
+                
+                .checkout-steps .step.completed .step-number {
+                    background: #4CAF50;
+                    color: white;
+                }
+                
+                .checkout-steps .step .step-label {
+                    font-weight: 500;
+                    color: #666;
+                    transition: all 0.3s ease;
+                }
+                
+                .checkout-steps .step.active .step-label {
+                    color: #4CAF50;
+                    font-weight: bold;
+                }
+                
+                .checkout-steps .step.completed .step-label {
+                    color: #4CAF50;
+                }
+                
+                /* Progress line - HIDDEN */
+                .progress-line {
+                    display: none !important;
+                }
+                
+                .progress-filled {
+                    display: none !important;
+                }
+                
+                /* Ensure checkout container is properly visible */
+                .checkout-container {
+                    opacity: 1 !important;
+                    visibility: visible !important;
+                    display: block !important;
+                }
+                
+                /* Fix for modal close buttons */
+                .modal-close, .modal-cancel {
+                    cursor: pointer;
+                }
+                
+                .modal-close:hover, .modal-cancel:hover {
+                    opacity: 0.8;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+
     function showToastMessage(message) {
         // Remove existing toast if any
         const existingToast = document.querySelector('.toast-notification');
@@ -6618,6 +7079,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 resetSuccessModal.classList.remove('active');
                 showLoginForm();
             }
+            
+            // Close any open modals
+            document.querySelectorAll('.modal[style*="display: flex"], .modal[style*="display: block"]').forEach(modal => {
+                modal.style.display = 'none';
+            });
         }
         
         // Enter key submits forms
@@ -6646,27 +7112,40 @@ document.addEventListener('DOMContentLoaded', function() {
     init();
 });
 
-// Add global modal close functionality
+// Add global modal close functionality - FIXED to work with single click
 document.addEventListener('DOMContentLoaded', function() {
-    // Close modals when clicking X
-    document.querySelectorAll('.modal-close').forEach(closeBtn => {
-        closeBtn.addEventListener('click', function() {
-            const modal = this.closest('.modal');
+    // Use event delegation for modal close buttons
+    document.addEventListener('click', function(e) {
+        // Close modals when clicking X
+        if (e.target.classList.contains('modal-close') || e.target.closest('.modal-close')) {
+            const closeBtn = e.target.classList.contains('modal-close') ? e.target : e.target.closest('.modal-close');
+            const modal = closeBtn.closest('.modal');
             if (modal) {
                 modal.style.display = 'none';
                 document.body.style.overflow = 'auto';
+                e.stopPropagation();
             }
-        });
-    });
-    
-    // Close modals when clicking outside
-    document.querySelectorAll('.modal').forEach(modal => {
-        modal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.style.display = 'none';
+        }
+        
+        // Close modals when clicking cancel buttons
+        if (e.target.classList.contains('modal-cancel') || e.target.closest('.modal-cancel')) {
+            const cancelBtn = e.target.classList.contains('modal-cancel') ? e.target : e.target.closest('.modal-cancel');
+            const modal = cancelBtn.closest('.modal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                e.stopPropagation();
+            }
+        }
+        
+        // Close modals when clicking outside (only if not clicking on modal content)
+        if (e.target.classList.contains('modal')) {
+            // Check if we're clicking directly on the modal backdrop (not on modal content)
+            if (e.target === e.currentTarget) {
+                e.target.style.display = 'none';
                 document.body.style.overflow = 'auto';
             }
-        });
+        }
     });
     
     // Close modals with escape key
