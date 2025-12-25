@@ -6,6 +6,8 @@
     <title>OrganicMart - Premium Organic Groceries</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="mart.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     
     
 </head>
@@ -3241,15 +3243,15 @@
     <div class="container checkout-container">
         <div class="checkout-steps">
             <div class="step active" data-step="1">
-                <span class="step-number">1</span>
+                <span class="step-number"></span>
                 <span class="step-label">Delivery</span>
             </div>
             <div class="step" data-step="2">
-                <span class="step-number">2</span>
+                <span class="step-number"></span>
                 <span class="step-label">Payment</span>
             </div>
             <div class="step" data-step="3">
-                <span class="step-number">3</span>
+                <span class="step-number"></span>
                 <span class="step-label">Confirmation</span>
             </div>
         </div>
@@ -3552,39 +3554,57 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Instructions -->
-                        <div class="instructions">
-                            <h5><i class="fas fa-info-circle"></i> How to Pay</h5>
-                            <div class="steps">
-                                <div class="step">
-                                    <div class="step-number">1</div>
-                                    <div class="step-content">
-                                        <h6>Open any UPI app</h6>
-                                        <p>Open Google Pay, PhonePe, Paytm, BHIM or any UPI app</p>
-                                    </div>
-                                </div>
-                                <div class="step">
-                                    <div class="step-number">2</div>
-                                    <div class="step-content">
-                                        <h6>Scan QR code</h6>
-                                        <p>Tap on 'Scan QR' and point camera at the code above</p>
-                                    </div>
-                                </div>
-                                <div class="step">
-                                    <div class="step-number">3</div>
-                                    <div class="step-content">
-                                        <h6>Confirm & Pay</h6>
-                                        <p>Verify amount and enter UPI PIN to complete payment</p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="payment-note">
-                                <p><i class="fas fa-shield-alt"></i> 100% Secure Payment • No extra charges</p>
-                                <p><i class="fas fa-sync-alt"></i> Payment status updates automatically</p>
-                            </div>
-                        </div>
+                        <!-- Payment Instructions -->
+<div class="upi-instructions">
+
+    <h5 class="upi-title">
+        <i class="fas fa-info-circle"></i>
+        How to Pay
+    </h5>
+
+    <!-- Steps -->
+    <div class="upi-steps">
+
+        <div class="upi-step">
+            <div class="upi-step-number">1</div>
+            <div class="upi-step-content">
+                <h6>Open any UPI app</h6>
+                <p>Open Google Pay, PhonePe, Paytm, BHIM or any UPI app</p>
+            </div>
+        </div>
+
+        <div class="upi-step">
+            <div class="upi-step-number">2</div>
+            <div class="upi-step-content">
+                <h6>Scan QR code</h6>
+                <p>Tap on “Scan QR” and point the camera at the QR code above</p>
+            </div>
+        </div>
+
+        <div class="upi-step">
+            <div class="upi-step-number">3</div>
+            <div class="upi-step-content">
+                <h6>Confirm & Pay</h6>
+                <p>Verify the amount and enter your UPI PIN to complete payment</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Notes -->
+    <div class="upi-payment-note">
+        <div class="upi-note-item">
+            <i class="fas fa-shield-alt"></i>
+            <span>100% Secure Payment • No extra charges</span>
+        </div>
+        <div class="upi-note-item">
+            <i class="fas fa-sync-alt"></i>
+            <span>Payment status updates automatically</span>
+        </div>
+    </div>
+
+</div>
+
                         
                         <!-- Action Buttons -->
                         <div class="action-buttons">
