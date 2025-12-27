@@ -26,7 +26,7 @@ const feedbackType = document.getElementById('feedbackType');
 const submitBtn = document.getElementById('submitFeedback');
 
 // ====== STATE MANAGEMENT ======
-let currentTab = 'username';
+let currentTab = 'username'; // Changed default to 'username'
 let resetStep = 1;
 let otpTimer = null;
 let otpTimeLeft = 120; // 2 minutes in seconds
@@ -1488,14 +1488,27 @@ document.addEventListener('DOMContentLoaded', function() {
         const tabContents = document.querySelectorAll('.tab-content');
         
         tabBtns.forEach(btn => {
+            // Remove any existing event listeners
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+        });
+        
+        // Re-select after cloning
+        document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const tabName = this.getAttribute('data-tab');
                 switchTab(tabName);
             });
         });
+        
+        // FIX: Set default tab to username
+        switchTab('username');
     }
 
     function switchTab(tabName) {
+        // Update currentTab variable
+        currentTab = tabName;
+        
         // Update active tab button
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.remove('active');
@@ -1511,8 +1524,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 content.classList.add('active');
             }
         });
-        
-        currentTab = tabName;
         
         // Clear previous errors
         clearErrors();
@@ -1606,42 +1617,75 @@ document.addEventListener('DOMContentLoaded', function() {
     // ====== EVENT LISTENERS ======
     function attachEventListeners() {
         // Page Navigation
-        showSignupLink.addEventListener('click', showSignupPage);
-        showLoginLink.addEventListener('click', showLoginPage);
+        if (showSignupLink) {
+            showSignupLink.addEventListener('click', showSignupPage);
+        }
+        
+        if (showLoginLink) {
+            showLoginLink.addEventListener('click', showLoginPage);
+        }
         
         // Form Submissions
-        loginForm.addEventListener('submit', handleLogin);
-        signupForm.addEventListener('submit', handleSignup);
+        if (loginForm) {
+            loginForm.addEventListener('submit', handleLogin);
+        }
+        
+        if (signupForm) {
+            signupForm.addEventListener('submit', handleSignup);
+        }
         
         // Forgot Password
-        forgotPasswordLinks.forEach(link => {
-            link.addEventListener('click', showResetPassword);
-        });
+        if (forgotPasswordLinks.length > 0) {
+            forgotPasswordLinks.forEach(link => {
+                link.addEventListener('click', showResetPassword);
+            });
+        }
         
         // Back to Login
-        backToLoginBtn.addEventListener('click', showLoginForm);
+        if (backToLoginBtn) {
+            backToLoginBtn.addEventListener('click', showLoginForm);
+        }
         
         // Reset Password Steps - Fixed: Use proper event listeners
-        document.getElementById('reset-form-step1').addEventListener('submit', function(e) {
-            e.preventDefault();
-            handleResetStep1(e);
-        });
-        document.getElementById('reset-form-step2').addEventListener('submit', function(e) {
-            e.preventDefault();
-            handleResetStep2(e);
-        });
-        document.getElementById('reset-form-step3').addEventListener('submit', function(e) {
-            e.preventDefault();
-            handleResetStep3(e);
-        });
+        const resetFormStep1 = document.getElementById('reset-form-step1');
+        const resetFormStep2 = document.getElementById('reset-form-step2');
+        const resetFormStep3 = document.getElementById('reset-form-step3');
+        
+        if (resetFormStep1) {
+            resetFormStep1.addEventListener('submit', function(e) {
+                e.preventDefault();
+                handleResetStep1(e);
+            });
+        }
+        
+        if (resetFormStep2) {
+            resetFormStep2.addEventListener('submit', function(e) {
+                e.preventDefault();
+                handleResetStep2(e);
+            });
+        }
+        
+        if (resetFormStep3) {
+            resetFormStep3.addEventListener('submit', function(e) {
+                e.preventDefault();
+                handleResetStep3(e);
+            });
+        }
         
         // Reset Navigation
-        document.getElementById('back-to-step1').addEventListener('click', function() {
-            showResetStep(1);
-        });
-        document.getElementById('back-to-step2').addEventListener('click', function() {
-            showResetStep(2);
-        });
+        const backToStep1Btn = document.getElementById('back-to-step1');
+        if (backToStep1Btn) {
+            backToStep1Btn.addEventListener('click', function() {
+                showResetStep(1);
+            });
+        }
+        
+        const backToStep2Btn = document.getElementById('back-to-step2');
+        if (backToStep2Btn) {
+            backToStep2Btn.addEventListener('click', function() {
+                showResetStep(2);
+            });
+        }
         
         // Resend OTP
         const resendOtpBtn = document.getElementById('resend-otp');
@@ -1661,7 +1705,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const closeModalBtn = document.querySelector('.close-reset-modal');
         if (closeModalBtn) {
             closeModalBtn.addEventListener('click', function() {
-                resetSuccessModal.classList.remove('active');
+                if (resetSuccessModal) {
+                    resetSuccessModal.classList.remove('active');
+                }
                 showLoginForm();
             });
         }
@@ -1670,16 +1716,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // ====== PAGE NAVIGATION ======
     function showSignupPage(e) {
         e.preventDefault();
-        loginPage.classList.remove('active');
-        signupPage.classList.add('active');
+        if (loginPage) loginPage.classList.remove('active');
+        if (signupPage) signupPage.classList.add('active');
         clearForm(signupForm);
         clearErrors();
     }
 
     function showLoginPage(e) {
         e.preventDefault();
-        signupPage.classList.remove('active');
-        loginPage.classList.add('active');
+        if (signupPage) signupPage.classList.remove('active');
+        if (loginPage) loginPage.classList.add('active');
         clearForm(loginForm);
         clearErrors();
         showLoginForm();
@@ -1691,6 +1737,9 @@ document.addEventListener('DOMContentLoaded', function() {
         clearResetForm();
         resetStep = 1;
         stopOTPTimer();
+        
+        // FIX: Reset to username tab when showing login form
+        switchTab('username');
     }
 
     function showResetPassword(e) {
@@ -1944,87 +1993,61 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 1500);
     }
 
-    // ====== LOGIN HANDLER ======
+    // ====== LOGIN HANDLER - FIXED ======
     function handleLogin(e) {
         e.preventDefault();
+        console.log('Login form submitted, currentTab:', currentTab);
         
-        let username, password, remember;
-        const errorPrefix = currentTab === 'username' ? 'username' : 'phone';
+        let username, password;
         
+        // Get credentials based on current tab
         if (currentTab === 'username') {
             username = document.getElementById('username').value.trim();
             password = document.getElementById('username-password').value;
-            remember = document.getElementById('remember-username').checked;
         } else {
             username = document.getElementById('phone').value.trim();
             password = document.getElementById('phone-password').value;
-            remember = document.getElementById('remember-phone').checked;
         }
         
-        const usernameError = document.getElementById(`${errorPrefix}-error`);
-        const passwordError = document.getElementById(`${errorPrefix}-password-error`);
-        
-        let isValid = true;
-        
-        // Clear previous errors
-        clearErrors();
-        
-        // Validate based on tab
-        if (currentTab === 'username') {
-            if (!username) {
-                showError(usernameError, 'Please enter username');
-                isValid = false;
-            }
-        } else {
-            if (!username) {
-                showError(usernameError, 'Please enter phone number');
-                isValid = false;
-            } else if (!validatePhone(username)) {
-                showError(usernameError, 'Please enter a valid phone number');
-                isValid = false;
-            }
+        // Basic validation
+        if (!username) {
+            const errorId = currentTab === 'username' ? 'username-error' : 'phone-error';
+            showError(errorId, `Please enter your ${currentTab}`);
+            return;
         }
         
-        // Validate password
         if (!password) {
-            showError(passwordError, 'Please enter password');
-            isValid = false;
-        } else if (password.length < 6) {
-            showError(passwordError, 'Password must be at least 6 characters');
-            isValid = false;
+            const errorId = currentTab === 'username' ? 'username-password-error' : 'phone-password-error';
+            showError(errorId, 'Please enter your password');
+            return;
         }
-        
-        if (!isValid) return;
         
         // Show loading
-        const submitBtn = e.target.querySelector(`.${currentTab}-login-btn`);
-        showLoading(submitBtn, true);
+        let submitBtn;
+        if (currentTab === 'username') {
+            submitBtn = e.target.querySelector('.username-login-btn');
+        } else {
+            submitBtn = e.target.querySelector('.phone-login-btn');
+        }
         
-        // Simulate login API call
-        setTimeout(() => {
-            showLoading(submitBtn, false);
+        if (submitBtn) {
+            const originalHTML = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<div class="loader small"></div>';
+            submitBtn.disabled = true;
             
-            // For demo purposes - accept any login
-            if (remember) {
-                rememberUser(username, currentTab);
-            } else {
-                clearRememberedUser();
-            }
-            
-            // Show success and redirect
-            if (successModal) {
-                successModal.classList.add('active');
-            }
-            
+            // Simulate login API call
             setTimeout(() => {
-                // Redirect to products page
+                submitBtn.innerHTML = originalHTML;
+                submitBtn.disabled = false;
+                
+                // For demo purposes
                 userData.isLoggedIn = true;
                 userData.name = username;
                 saveUserData();
                 showPage('products');
-            }, 2000);
-            
-        }, 1500);
+                showToastMessage('Login successful!');
+            }, 1500);
+        }
     }
 
     // ====== SIGNUP HANDLER ======
@@ -2179,7 +2202,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (Date.now() - userData.timestamp < oneWeek) {
                     switchTab(userData.type);
                     document.getElementById(userData.type === 'username' ? 'username' : 'phone').value = userData.username;
-                    document.getElementById(`remember-${userData.type}`).checked = true;
+                    const rememberCheckbox = document.getElementById(`remember-${userData.type}`);
+                    if (rememberCheckbox) rememberCheckbox.checked = true;
                 } else {
                     clearRememberedUser();
                 }
@@ -3113,6 +3137,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize login page specifically
     function initializeLoginPage() {
         console.log('Initializing login page...');
+        
+        // FIX: Set username tab as default
+        switchTab('username');
+        
         // Reset login form state
         const otpSection = document.getElementById('otp-section');
         const getOtpBtn = document.getElementById('get-otp-btn');
@@ -3131,55 +3159,6 @@ document.addEventListener('DOMContentLoaded', function() {
             error.textContent = '';
             error.style.display = 'none';
         });
-        
-        // Set phone tab as default
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-        const phoneTabBtn = document.querySelector('.tab-btn[data-tab="phone"]');
-        const phoneTab = document.getElementById('phone-tab');
-        if (phoneTabBtn) phoneTabBtn.classList.add('active');
-        if (phoneTab) phoneTab.classList.add('active');
-        
-        // FIX: Add login button event listeners
-        const loginButton = document.getElementById('login-btn');
-        if (loginButton) {
-            loginButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                handleLogin(e);
-            });
-        }
-        
-        // FIX: Add get OTP button event listeners
-        const getOtpButton = document.getElementById('get-otp-btn');
-        if (getOtpButton) {
-            getOtpButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                const currentTab = document.querySelector('.tab-btn.active').getAttribute('data-tab');
-                let isValid = false;
-                
-                if (currentTab === 'phone') {
-                    const phoneInput = document.getElementById('phone');
-                    if (validatePhone(phoneInput.value)) {
-                        isValid = true;
-                        simulateOtpSend('phone');
-                    } else {
-                        showError('phone-error', 'Please enter a valid phone number');
-                    }
-                } else {
-                    const emailInput = document.getElementById('email');
-                    if (validateEmail(emailInput.value)) {
-                        isValid = true;
-                        simulateOtpSend('email');
-                    } else {
-                        showError('email-error', 'Please enter a valid email address');
-                    }
-                }
-                
-                if (isValid) {
-                    showOtpSection();
-                }
-            });
-        }
     }
 
     // Initialize signup page specifically
@@ -3211,14 +3190,12 @@ document.addEventListener('DOMContentLoaded', function() {
         setupFeedbackEvents();
     }
 
-    // ===== LOGIN FUNCTIONALITY =====
+    // ===== LOGIN FUNCTIONALITY - FIXED =====
     function setupLoginEvents() {
         const showSignupLink = document.getElementById('show-signup');
         const loginForm = document.getElementById('login-form');
         const getOtpBtn = document.getElementById('get-otp-btn');
         const loginBtn = document.getElementById('login-btn');
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        const tabContents = document.querySelectorAll('.tab-content');
         const otpInputs = document.querySelectorAll('.otp-input');
         const resendOtpLink = document.getElementById('resend-otp');
         const socialLoginBtns = document.querySelectorAll('.social-btn');
@@ -3228,7 +3205,6 @@ document.addEventListener('DOMContentLoaded', function() {
             loginForm: !!loginForm,
             getOtpBtn: !!getOtpBtn,
             loginBtn: !!loginBtn,
-            tabBtns: tabBtns.length,
             otpInputs: otpInputs.length
         });
 
@@ -3241,43 +3217,31 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Tab switching
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const tab = this.getAttribute('data-tab');
-                console.log('Switching to tab:', tab);
-                
-                tabBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                tabContents.forEach(content => {
-                    content.classList.remove('active');
-                    if (content.id === `${tab}-tab`) {
-                        content.classList.add('active');
-                    }
-                });
-            });
-        });
-
-        // Get OTP button - FIXED
+        // Get OTP button - FIXED with proper validation
         if (getOtpBtn) {
             getOtpBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 console.log('Get OTP clicked');
-                const currentTab = document.querySelector('.tab-btn.active').getAttribute('data-tab');
+                
+                // Get current active tab
+                const activeTabBtn = document.querySelector('.tab-btn.active');
+                const currentTab = activeTabBtn ? activeTabBtn.getAttribute('data-tab') : 'username';
                 let isValid = false;
+                let identifier = '';
                 
                 if (currentTab === 'phone') {
                     const phoneInput = document.getElementById('phone');
-                    if (validatePhone(phoneInput.value)) {
+                    identifier = phoneInput.value.trim();
+                    if (validatePhone(identifier)) {
                         isValid = true;
                         simulateOtpSend('phone');
                     } else {
-                        showError('phone-error', 'Please enter a valid phone number');
+                        showError('phone-error', 'Please enter a valid phone number (10 digits)');
                     }
                 } else {
                     const emailInput = document.getElementById('email');
-                    if (validateEmail(emailInput.value)) {
+                    identifier = emailInput.value.trim();
+                    if (validateEmail(identifier)) {
                         isValid = true;
                         simulateOtpSend('email');
                     } else {
@@ -3294,6 +3258,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // OTP input handling
         otpInputs.forEach((input, index) => {
             input.addEventListener('input', function() {
+                // Only allow numbers
+                if (this.value && !/^\d$/.test(this.value)) {
+                    this.value = '';
+                    return;
+                }
+                
                 if (this.value.length === 1 && index < otpInputs.length - 1) {
                     otpInputs[index + 1].focus();
                 }
@@ -3301,8 +3271,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Check if all OTP fields are filled
                 const allFilled = Array.from(otpInputs).every(input => input.value.length === 1);
                 if (allFilled) {
-                    const loginBtn = document.getElementById('login-btn');
-                    if (loginBtn) loginBtn.style.display = 'block';
+                    if (loginBtn) {
+                        loginBtn.style.display = 'block';
+                        loginBtn.disabled = false;
+                    }
                 }
             });
             
@@ -3329,7 +3301,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Login form submission - FIXED
+        // FIXED: Login form submission - proper handling for both tabs
         if (loginForm) {
             loginForm.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -3337,13 +3309,78 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Login button click - FIXED
-        if (loginBtn) {
-            loginBtn.addEventListener('click', function(e) {
+        // FIXED: Direct login button click handler
+        document.addEventListener('click', function(e) {
+            // Handle username login button
+            if (e.target.id === 'login-btn' || e.target.closest('#login-btn')) {
                 e.preventDefault();
-                handleLogin(e);
-            });
-        }
+                console.log('Login button clicked');
+                
+                // Get the form data based on current tab
+                let username, password;
+                
+                if (currentTab === 'username') {
+                    username = document.getElementById('username').value.trim();
+                    password = document.getElementById('username-password').value;
+                } else {
+                    username = document.getElementById('phone').value.trim();
+                    password = document.getElementById('phone-password').value;
+                }
+                
+                // Validate inputs
+                if (!username) {
+                    const errorId = currentTab === 'username' ? 'username-error' : 'phone-error';
+                    showError(errorId, `Please enter your ${currentTab}`);
+                    return;
+                }
+                
+                if (!password) {
+                    const errorId = currentTab === 'username' ? 'username-password-error' : 'phone-password-error';
+                    showError(errorId, 'Please enter your password');
+                    return;
+                }
+                
+                // Show loading
+                const loginBtn = document.getElementById('login-btn');
+                if (loginBtn) {
+                    const originalHTML = loginBtn.innerHTML;
+                    loginBtn.innerHTML = '<div class="loader small"></div>';
+                    loginBtn.disabled = true;
+                    
+                    // Simulate login
+                    setTimeout(() => {
+                        loginBtn.innerHTML = originalHTML;
+                        loginBtn.disabled = false;
+                        
+                        // For demo - accept any login
+                        userData.isLoggedIn = true;
+                        userData.name = username;
+                        saveUserData();
+                        showPage('products');
+                        showToastMessage('Login successful!');
+                    }, 1500);
+                }
+            }
+            
+            // Handle username/phone specific login buttons
+            if (e.target.classList.contains('username-login-btn') || e.target.classList.contains('phone-login-btn')) {
+                e.preventDefault();
+                console.log('Tab-specific login button clicked');
+                
+                // Determine which tab we're on
+                const isUsernameTab = e.target.classList.contains('username-login-btn');
+                const tabType = isUsernameTab ? 'username' : 'phone';
+                
+                // Update currentTab
+                currentTab = tabType;
+                
+                // Trigger form submission
+                const loginForm = document.getElementById('login-form');
+                if (loginForm) {
+                    loginForm.dispatchEvent(new Event('submit'));
+                }
+            }
+        });
     }
 
     // ===== SIGNUP FUNCTIONALITY =====
@@ -5107,15 +5144,19 @@ document.addEventListener('DOMContentLoaded', function() {
         if (itemIndex === -1) return;
         
         const item = userData.cart[itemIndex];
-        item.quantity += change;
         
-        if (item.quantity <= 0) {
+        // Check if quantity would go below 1
+        if (item.quantity + change < 1) {
+            // Remove the item instead of going to 0
             removeFromCart(productId);
-        } else {
-            saveUserData();
-            renderCart();
-            updateCartCount();
+            return;
         }
+        
+        item.quantity += change;
+        saveUserData();
+        renderCart();
+        updateCartCount();
+        showToastMessage(`${item.name} quantity updated to ${item.quantity}`);
     }
 
     function removeFromCart(productId) {
@@ -5257,57 +5298,57 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             ` : ''}
             <div class="coupon-section" style="margin-top: 16px;">
-    <div class="coupon-input" style="display: flex; align-items: center; gap: 10px;">
+                <div class="coupon-input" style="display: flex; align-items: center; gap: 10px;">
 
-        <input 
-            type="text"
-            id="coupon-code"
-            placeholder="Enter coupon code"
-            value="${activeCoupon ? activeCoupon.code : ''}"
-            style="
-                height: 48px;
-                width: 150px;
-                padding: 0 14px;
-                font-size: 15px;
-                border-radius: 8px;
-                border: 1px solid #ccc;
-            "
-        >
+                    <input 
+                        type="text"
+                        id="coupon-code"
+                        placeholder="Enter coupon code"
+                        value="${activeCoupon ? activeCoupon.code : ''}"
+                        style="
+                            height: 48px;
+                            width: 150px;
+                            padding: 0 14px;
+                            font-size: 15px;
+                            border-radius: 8px;
+                            border: 1px solid #ccc;
+                        "
+                    >
 
-        <button 
-            id="apply-coupon"
-            style="
-                height: 48px;
-                padding: 0 22px;
-                font-size: 15px;
-                font-weight: 600;
-                border-radius: 8px;
-                cursor: pointer;
-            "
-        >
-            ${activeCoupon ? 'Change' : 'Apply'}
-        </button>
+                    <button 
+                        id="apply-coupon"
+                        style="
+                            height: 48px;
+                            padding: 0 22px;
+                            font-size: 15px;
+                            font-weight: 600;
+                            border-radius: 8px;
+                            cursor: pointer;
+                        "
+                    >
+                        ${activeCoupon ? 'Change' : 'Apply'}
+                    </button>
 
-        ${activeCoupon ? `
-        <button 
-            id="remove-coupon"
-            style="
-                height: 48px;
-                padding: 0 18px;
-                font-size: 15px;
-                font-weight: 600;
-                border-radius: 8px;
-                margin-left: 8px;
-                cursor: pointer;
-            "
-        >
-            Remove
-        </button>` : ''}
+                    ${activeCoupon ? `
+                    <button 
+                        id="remove-coupon"
+                        style="
+                            height: 48px;
+                            padding: 0 18px;
+                            font-size: 15px;
+                            font-weight: 600;
+                            border-radius: 8px;
+                            margin-left: 8px;
+                            cursor: pointer;
+                        "
+                    >
+                        Remove
+                    </button>` : ''}
 
-    </div>
+                </div>
 
-    <div id="coupon-message" class="coupon-message"></div>
-</div>
+                <div id="coupon-message" class="coupon-message"></div>
+            </div>
 
             <div class="summary-row total">
                 <span>Total</span>
