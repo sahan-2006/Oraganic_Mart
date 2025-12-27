@@ -2691,68 +2691,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Get category name from overlay
                 const categoryName = this.querySelector('h3').textContent.trim();
                 
-                // Scroll to that category section with header offset
+                // Map category names to actual category values
+                const categoryMap = {
+                    'Fresh Fruits': 'Fruits',
+                    'Fresh Vegetables': 'Vegetables',
+                    'Dairy & Eggs': 'Dairy',
+                    'Grains & Pulses': 'Grains',
+                    'Spices & Masalas': 'Spices'
+                };
+                
+                const actualCategory = categoryMap[categoryName] || categoryName;
+                
+                // Filter products by category
                 setTimeout(() => {
-                    if (categoryName.includes('Fruits')) {
-                        const firstH2 = document.querySelector('.container h2:first-child');
-                        if (firstH2) {
-                            const headerHeight = document.querySelector('header')?.offsetHeight || 80;
-                            const elementPosition = firstH2.getBoundingClientRect().top;
-                            const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
-                            
-                            window.scrollTo({
-                                top: offsetPosition,
-                                behavior: 'smooth'
-                            });
-                        }
-                    } else if (categoryName.includes('Vegetables')) {
-                        const secondH2 = document.querySelector('.container h2:nth-child(2)');
-                        if (secondH2) {
-                            const headerHeight = document.querySelector('header')?.offsetHeight || 80;
-                            const elementPosition = secondH2.getBoundingClientRect().top;
-                            const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
-                            
-                            window.scrollTo({
-                                top: offsetPosition,
-                                behavior: 'smooth'
-                            });
-                        }
-                    } else if (categoryName.includes('Dairy')) {
-                        const thirdH2 = document.querySelector('.container h2:nth-child(3)');
-                        if (thirdH2) {
-                            const headerHeight = document.querySelector('header')?.offsetHeight || 80;
-                            const elementPosition = thirdH2.getBoundingClientRect().top;
-                            const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
-                            
-                            window.scrollTo({
-                                top: offsetPosition,
-                                behavior: 'smooth'
-                            });
-                        }
-                    } else if (categoryName.includes('Grains')) {
-                        const fourthH2 = document.querySelector('.container h2:nth-child(4)');
-                        if (fourthH2) {
-                            const headerHeight = document.querySelector('header')?.offsetHeight || 80;
-                            const elementPosition = fourthH2.getBoundingClientRect().top;
-                            const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
-                            
-                            window.scrollTo({
-                                top: offsetPosition,
-                                behavior: 'smooth'
-                            });
-                        }
-                    } else if (categoryName.includes('Spices')) {
-                        const fifthH2 = document.querySelector('.container h2:nth-child(5)');
-                        if (fifthH2) {
-                            const headerHeight = document.querySelector('header')?.offsetHeight || 80;
-                            const elementPosition = fifthH2.getBoundingClientRect().top;
-                            const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
-                            
-                            window.scrollTo({
-                                top: offsetPosition,
-                                behavior: 'smooth'
-                            });
-                        }
+                    filterProductsByCategory(actualCategory);
+                    
+                    // Scroll to products section with header offset
+                    const productsGrid = document.querySelector('.products-grid');
+                    if (productsGrid) {
+                        const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                        const elementPosition = productsGrid.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                        
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
                     }
                 }, 100);
             });
@@ -2993,6 +2957,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Filter products by category
     function filterProductsByCategory(category) {
+        console.log(`Filtering products by category: ${category}`);
+        
         const productCards = document.querySelectorAll('.product-card');
         const categoryFilters = document.querySelectorAll('.category-filter');
         
@@ -3015,6 +2981,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 card.style.display = 'none';
             }
         });
+        
+        // Show category message
+        const categoryTitle = document.querySelector('.category-title');
+        if (categoryTitle) {
+            if (category === 'all') {
+                categoryTitle.textContent = 'All Products';
+            } else {
+                categoryTitle.textContent = `${category} Products`;
+            }
+        }
+        
+        // Update product count
+        const productCount = document.querySelector('.product-count');
+        if (productCount) {
+            const visibleCount = document.querySelectorAll('.product-card[style="display: block"]').length;
+            productCount.textContent = `${visibleCount} products`;
+        }
+        
+        showToastMessage(`Showing ${category === 'all' ? 'all' : category} products`);
     }
 
     // Sort products
@@ -3064,6 +3049,8 @@ document.addEventListener('DOMContentLoaded', function() {
         productCards.forEach(card => {
             productsContainer.appendChild(card);
         });
+        
+        showToastMessage(`Sorted by ${sortBy.replace('-', ' ')}`);
     }
 
     // Search products
