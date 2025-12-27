@@ -11,6 +11,20 @@ const backToLoginBtn = document.getElementById('back-to-login');
 const successModal = document.getElementById('success-modal');
 const resetSuccessModal = document.getElementById('reset-success-modal');
 
+// Feedback System DOM Elements
+const marqueeBtn = document.getElementById('feedbackBtnMarquee');
+const feedbackModal = document.getElementById('feedbackModal');
+const closeModalBtn = document.getElementById('closeModal');
+const feedbackForm = document.getElementById('feedbackForm');
+const feedbackSuccess = document.getElementById('feedbackSuccess');
+const closeSuccessBtn = document.getElementById('closeSuccess');
+const messageTextarea = document.getElementById('message');
+const charCount = document.getElementById('charCount');
+const ratingButtons = document.querySelectorAll('.rating-btn');
+const ratingInput = document.getElementById('rating');
+const feedbackType = document.getElementById('feedbackType');
+const submitBtn = document.getElementById('submitFeedback');
+
 // ====== STATE MANAGEMENT ======
 let currentTab = 'username';
 let resetStep = 1;
@@ -3194,6 +3208,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setupCouponEvents();
         setupCheckoutEvents();
         setupUPIPaymentEvents();
+        setupFeedbackEvents();
     }
 
     // ===== LOGIN FUNCTIONALITY =====
@@ -6738,6 +6753,214 @@ document.addEventListener('DOMContentLoaded', function() {
         
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
+    }
+
+    // ===== FEEDBACK SYSTEM FUNCTIONALITY =====
+    function setupFeedbackEvents() {
+        // Marquee button click handler
+        if (marqueeBtn) {
+            marqueeBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                openFeedbackModal();
+            });
+        }
+
+        // Close feedback modal
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', closeFeedbackModal);
+        }
+
+        // Close modal when clicking outside
+        if (feedbackModal) {
+            feedbackModal.addEventListener('click', function(e) {
+                if (e.target === feedbackModal) {
+                    closeFeedbackModal();
+                }
+            });
+        }
+
+        // Close modal with escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && feedbackModal && feedbackModal.style.display === 'block') {
+                closeFeedbackModal();
+            }
+        });
+
+        // Character counter for feedback message
+        if (messageTextarea && charCount) {
+            messageTextarea.addEventListener('input', function() {
+                const length = this.value.length;
+                charCount.textContent = `${length}/500 characters`;
+                
+                // Add warning style when approaching limit
+                if (length > 450) {
+                    charCount.style.color = '#ff9800';
+                } else if (length > 480) {
+                    charCount.style.color = '#f44336';
+                } else {
+                    charCount.style.color = '#666';
+                }
+                
+                // Limit to 500 characters
+                if (length > 500) {
+                    this.value = this.value.substring(0, 500);
+                    charCount.textContent = '500/500 characters (maximum reached)';
+                    charCount.style.color = '#f44336';
+                }
+            });
+        }
+
+        // Rating buttons functionality
+        if (ratingButtons.length > 0) {
+            ratingButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const rating = this.getAttribute('data-rating');
+                    
+                    // Remove active class from all buttons
+                    ratingButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Set hidden input value
+                    if (ratingInput) {
+                        ratingInput.value = rating;
+                    }
+                    
+                    // Add visual feedback
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+        }
+
+        // Form submission handler
+        if (feedbackForm) {
+            feedbackForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate required fields
+                const message = document.getElementById('message').value.trim();
+                if (!message) {
+                    alert('Please enter your feedback message.');
+                    document.getElementById('message').focus();
+                    return;
+                }
+                
+                // Get form data
+                const formData = {
+                    name: document.getElementById('name').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    feedbackType: feedbackType.value,
+                    message: message,
+                    rating: ratingInput ? ratingInput.value : '',
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Disable submit button and show loading state
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = `
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                        </svg>
+                        Submitting...
+                    `;
+                }
+                
+                // Simulate API call with timeout
+                setTimeout(() => {
+                    // In a real application, you would send this data to your server
+                    console.log('Feedback submitted:', formData);
+                    
+                    // Show success message
+                    if (feedbackSuccess) {
+                        document.getElementById('feedbackFormContainer').style.display = 'none';
+                        feedbackSuccess.style.display = 'block';
+                    }
+                    
+                    // Reset button
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = `
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                            </svg>
+                            Submit Feedback
+                        `;
+                    }
+                }, 1500);
+            });
+        }
+
+        // Close success message
+        if (closeSuccessBtn) {
+            closeSuccessBtn.addEventListener('click', function() {
+                if (feedbackSuccess) {
+                    feedbackSuccess.style.display = 'none';
+                }
+                document.getElementById('feedbackFormContainer').style.display = 'block';
+                closeFeedbackModal();
+                resetForm();
+            });
+        }
+    }
+
+    // Open feedback modal
+    function openFeedbackModal() {
+        if (feedbackModal) {
+            feedbackModal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            
+            // Reset form
+            resetFeedbackForm();
+            
+            // Focus on first input
+            setTimeout(() => {
+                const firstInput = feedbackForm.querySelector('input, textarea, select');
+                if (firstInput) firstInput.focus();
+            }, 100);
+        }
+    }
+
+    // Close feedback modal
+    function closeFeedbackModal() {
+        if (feedbackModal) {
+            feedbackModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    // Reset feedback form function
+    function resetFeedbackForm() {
+        if (feedbackForm) {
+            feedbackForm.reset();
+            if (ratingInput) {
+                ratingInput.value = '';
+            }
+            
+            // Reset rating buttons
+            ratingButtons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Reset character counter
+            if (charCount) {
+                charCount.textContent = '0/500 characters';
+                charCount.style.color = '#666';
+            }
+            
+            // Show form and hide success message
+            document.getElementById('feedbackFormContainer').style.display = 'block';
+            if (feedbackSuccess) {
+                feedbackSuccess.style.display = 'none';
+            }
+        }
     }
 
     // ===== UTILITY FUNCTIONS =====
