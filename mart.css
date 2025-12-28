@@ -142,7 +142,7 @@ nav a:hover, nav a.active {
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(46, 125, 50, 0.15);
     border: 1px solid #c8e6c9;
-    width: 330px; /* Changed from length: 250px */
+    width: 330px;
 }
 
 .search-input {
@@ -460,7 +460,7 @@ nav a:hover, nav a.active {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    max-width: 320px; /* optional */
+    max-width: 320px;
     gap: 10px;
 }
 
@@ -475,7 +475,6 @@ nav a:hover, nav a.active {
     border: 1px solid #ccc;
     cursor: pointer;
 }
-
 
 .quantity-select {
     width: 90%;
@@ -545,8 +544,6 @@ nav a:hover, nav a.active {
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
-
-    /* IMPORTANT FIX */
     outline: none;
     box-shadow: none;
 }
@@ -642,6 +639,8 @@ nav a:hover, nav a.active {
     display: flex;
     max-width: 500px;
     margin: 0 auto;
+    align-items: stretch;
+    gap: 0;
 }
 
 .newsletter-form input {
@@ -662,27 +661,7 @@ nav a:hover, nav a.active {
     transition: var(--transition);
     font-weight: 600;
 }
-.newsletter-form {
-    display: flex;
-    align-items: stretch;
-    gap: 0;                 /* no gap */
-}
 
-.newsletter-form input {
-    border: none;
-    outline: none;
-    margin: 0;
-    box-shadow: none;
-}
-
-.newsletter-form button {
-    border: none;
-    outline: none;
-    margin: 0;
-    box-shadow: none;
-}
-
-/* Important: prevent focus green line */
 .newsletter-form input:focus,
 .newsletter-form button:focus {
     outline: none;
@@ -938,14 +917,11 @@ footer {
     align-items: center;
     justify-content: center;
     gap: 8px;
-
-    /* FIXES */
     box-shadow: none;
     border-radius: calc(var(--radius) - 2px);
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Remove focus / click glow */
 .tab-btn:focus,
 .tab-btn:focus-visible,
 .tab-btn:active {
@@ -953,17 +929,10 @@ footer {
     box-shadow: none;
 }
 
-/* Active tab */
 .tab-btn.active {
     background: var(--primary);
     color: var(--white);
     box-shadow: none;
-}
-
-
-.tab-btn.active {
-    background: var(--primary);
-    color: var(--white);
 }
 
 .login-form {
@@ -1089,9 +1058,9 @@ footer {
 .login-btn {
     background: var(--primary);
     color: var(--white);
-    border: none;              /* remove default border */
-    outline: none;             /* remove focus outline */
-    box-shadow: none;          /* remove shadow border */
+    border: none;
+    outline: none;
+    box-shadow: none;
     border-radius: var(--radius);
     padding: 12px;
     font-size: 1rem;
@@ -1104,7 +1073,6 @@ footer {
     height: 45px;
 }
 
-/* Remove border on focus & active */
 .get-otp-btn:focus,
 .login-btn:focus,
 .get-otp-btn:active,
@@ -1112,7 +1080,6 @@ footer {
     outline: none;
     box-shadow: none;
 }
-
 
 .btn-loader {
     position: absolute;
@@ -1215,20 +1182,16 @@ footer {
     gap: 10px;
 }
 
-/* Checkbox base fix */
 .checkbox-group input[type="checkbox"] {
     width: 14px;
     height: 14px;
     margin: 0;
     cursor: pointer;
-
-    /* MAIN FIX */
     outline: none;
     box-shadow: none;
     accent-color: var(--primary);
 }
 
-/* Remove focus / active outline */
 .checkbox-group input[type="checkbox"]:focus,
 .checkbox-group input[type="checkbox"]:focus-visible,
 .checkbox-group input[type="checkbox"]:active {
@@ -1236,11 +1199,9 @@ footer {
     box-shadow: none;
 }
 
-/* Remove mobile tap highlight */
 .checkbox-group input[type="checkbox"] {
     -webkit-tap-highlight-color: transparent;
 }
-
 
 .checkbox-group label {
     margin-bottom: 0;
@@ -1255,19 +1216,17 @@ footer {
 .checkbox-group a:hover {
     text-decoration: underline;
 }
+
 .remember-me input[type="checkbox"] {
     width: 14px;
     height: 14px;
     margin: 0;
     cursor: pointer;
-
-    /* MAIN FIX */
     outline: none;
     box-shadow: none;
-    accent-color: var(--primary); /* keeps green tick */
+    accent-color: var(--primary);
 }
 
-/* Remove focus / click box */
 .remember-me input[type="checkbox"]:focus,
 .remember-me input[type="checkbox"]:focus-visible,
 .remember-me input[type="checkbox"]:active {
@@ -1275,7 +1234,6 @@ footer {
     box-shadow: none;
 }
 
-/* Mobile tap highlight fix */
 .remember-me input[type="checkbox"] {
     -webkit-tap-highlight-color: transparent;
 }
@@ -1583,6 +1541,7 @@ footer {
     margin-bottom: 25px;
     text-align: center;
 }
+
 .addresses-list {
     text-align: center;
     padding: 40px 20px;
@@ -1592,6 +1551,7 @@ footer {
     display: block;
     margin: 0 auto;
 }
+
 .addresses-list {
     text-align: center;
     padding: 40px 20px;
@@ -1603,7 +1563,7 @@ footer {
 }
 
 .empty-state i {
-    font-size: clamp(36px, 8vw, 48px); /* Responsive icon */
+    font-size: clamp(36px, 8vw, 48px);
     color: #ccc;
     margin-bottom: 15px;
 }
@@ -1613,7 +1573,6 @@ footer {
     padding: 12px 32px;
 }
 
-/* For larger screens */
 @media (min-width: 768px) {
     .addresses-list {
         min-height: 350px;
@@ -2067,6 +2026,7 @@ footer {
 .coupon-input button:hover {
     background: var(--primary-dark);
 }
+
 .checkout-steps {
     position: relative;
     display: flex;
@@ -2074,12 +2034,11 @@ footer {
     align-items: center;
 }
 
-/* FIXED CONNECTING LINE */
 .checkout-steps::before {
     content: "";
     position: absolute;
     top: 50%;
-    left: calc(50% / 3);          /* first step center */
+    left: calc(50% / 3);
     width: calc(100% - (100% / 3));
     height: 2px;
     background-color: #cfe8cf;
@@ -2087,7 +2046,6 @@ footer {
     z-index: 0;
 }
 
-/* keep steps above line */
 .checkout-steps .step {
     position: relative;
     flex: 1;
@@ -2111,18 +2069,17 @@ footer {
     align-items: center;
 }
 
-/* ONE CONTINUOUS CONNECTING LINE */
 .checkout-steps .step:not(:last-child)::after {
     content: "";
     position: absolute;
-    top: 22px;              /* icon center */
+    top: 22px;
     left: 50%;
     width: 100%;
     height: 2px;
     background-color: #cfe8cf;
     z-index: 0;
 }
-/* Each step */
+
 .checkout-steps .step {
     flex: 1;
     text-align: center;
@@ -2130,24 +2087,21 @@ footer {
     z-index: 2;
 }
 
-/* PERFECT CONNECTING LINE */
 .checkout-steps .step:not(:last-child)::after {
     content: "";
     position: absolute;
-    top: 30px;              /* 🔥 line moved UP (was 40px) */
+    top: 30px;
     left: 50%;
-    width: calc(100% - 40px); /* 🔥 stop before next circle */
+    width: calc(100% - 40px);
     height: 2px;
     background: #cfe8cf;
     z-index: 1;
 }
-/* ===== CONNECTORS FOR ALL STEPS EXCEPT AFTER CONFIRMATION ===== */
 
-/* Connector from step 1 to step 2 */
 .checkout-steps .step[data-step="1"]::after {
     content: "";
     position: absolute;
-    top: 28px; /* Changed from 22px to 24px */
+    top: 28px;
     right: -50%;
     width: 100%;
     height: 2px;
@@ -2155,11 +2109,10 @@ footer {
     z-index: 1;
 }
 
-/* Connector from step 2 to step 3 */
 .checkout-steps .step[data-step="2"]::after {
     content: "";
     position: absolute;
-    top: 28px; /* Changed from 22px to 24px */
+    top: 28px;
     right: -50%;
     width: 100%;
     height: 2px;
@@ -2167,12 +2120,10 @@ footer {
     z-index: 1;
 }
 
-/* NO connector from step 3 (confirmation) - line stops here */
 .checkout-steps .step[data-step="3"]::after {
     display: none;
 }
 
-/* Completed connectors */
 .checkout-steps .step[data-step="1"].completed::after {
     background: #4CAF50;
 }
@@ -2181,13 +2132,12 @@ footer {
     background: #4CAF50;
 }
 
-/* Mobile hide */
 @media (max-width: 768px) {
     .checkout-steps .step::after {
         display: none;
     }
 }
-/* Step number (circle size reference) */
+
 .checkout-steps .step-number {
     width: 40px;
     height: 40px;
@@ -2195,8 +2145,6 @@ footer {
     position: relative;
     z-index: 2;
 }
-
-
 
 .step {
     display: flex;
@@ -2515,6 +2463,7 @@ footer {
     padding-top: 15px;
     border-top: 1px solid #ddd;
 }
+
 .checkout-actions {
     display: flex;
     justify-content: space-between;
@@ -2529,8 +2478,8 @@ footer {
 }
 
 .checkout-actions .green-btn {
-    height: 48px;          /* SAME height */
-    padding: 0 22px;       /* SAME width feel */
+    height: 48px;
+    padding: 0 22px;
     font-size: 15px;
     font-weight: 600;
     border-radius: 10px;
@@ -2538,7 +2487,6 @@ footer {
     align-items: center;
     gap: 6px;
 }
-
 
 .btn-prev, .btn-next {
     min-width: 150px;
@@ -2574,7 +2522,7 @@ footer {
     background: var(--primary);
     color: white;
 }
-/* ===== Premium Checkout Steps ===== */
+
 .checkout-steps {
     position: relative;
 }
@@ -2582,8 +2530,8 @@ footer {
 .checkout-steps::before {
     content: "";
     position: absolute;
-    top: 22px;                /* circle center */
-    left: calc(50% / 3);     /* first circle center nundi */
+    top: 22px;
+    left: calc(50% / 3);
     width: calc(100% - (50% / 3) * 2);
     height: 2px;
     background: #cfe8d6;
@@ -2595,7 +2543,7 @@ footer {
     justify-content: space-between;
     align-items: center;
 }
-/* Step circle */
+
 .checkout-steps .step-number {
     width: 44px;
     height: 44px;
@@ -2610,7 +2558,6 @@ footer {
     box-shadow: inset 0 0 0 2px #cfe8d6;
 }
 
-/* Step label */
 .checkout-steps .step-label {
     margin-top: 6px;
     font-size: 14px;
@@ -2618,7 +2565,6 @@ footer {
     color: #2e7d32;
 }
 
-/* Active / Completed */
 .checkout-steps .step.active .step-number,
 .checkout-steps .step.completed .step-number {
     background: linear-gradient(135deg, #2e7d32, #43a047);
@@ -2626,32 +2572,32 @@ footer {
     box-shadow: 0 8px 18px rgba(46,125,50,0.35);
 }
 
-/* ===== Icons (Font Awesome) ===== */
 .checkout-steps .step[data-step="1"] .step-number::before {
-    content: "\f0d1"; /* truck */
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-}
-.checkout-steps .step[data-step="2"] .step-number::before {
-    content: "\f09d"; /* credit-card */
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-}
-.checkout-steps .step[data-step="3"] .step-number::before {
-    content: "\f058"; /* check-circle */
+    content: "\f0d1";
     font-family: "Font Awesome 6 Free";
     font-weight: 900;
 }
 
-/* Hide numeric text when icon shows */
-.checkout-steps .step-number {
-    font-size: 0; /* number hidden */
+.checkout-steps .step[data-step="2"] .step-number::before {
+    content: "\f09d";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
 }
+
+.checkout-steps .step[data-step="3"] .step-number::before {
+    content: "\f058";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+
+.checkout-steps .step-number {
+    font-size: 0;
+}
+
 .checkout-steps .step-number::before {
     font-size: 18px;
 }
 
-/* Mobile */
 @media (max-width: 600px) {
     .checkout-steps {
         padding: 16px;
@@ -2664,7 +2610,7 @@ footer {
         font-size: 12px;
     }
 }
-/* ===== FIXED CONNECTING LINE ===== */
+
 .checkout-steps::before {
     content: "";
     position: absolute;
@@ -2676,11 +2622,10 @@ footer {
     z-index: 0;
 }
 
-/* Individual connectors between steps */
 .checkout-steps .step::after {
     content: "";
     position: absolute;
-    top: 22px;              /* circle center */
+    top: 22px;
     right: -50%;
     width: 100%;
     height: 2px;
@@ -2688,7 +2633,6 @@ footer {
     z-index: -1;
 }
 
-/* Last step ki connector vaddu */
 .checkout-steps .step:last-child::after {
     display: none;
 }
@@ -2722,8 +2666,8 @@ footer {
     font-size: 1.1rem;
     line-height: 1.6;
 }
-/* ===== UPI PAYMENT INSTRUCTIONS ===== */
 
+/* UPI Payment Instructions */
 .upi-instructions {
     background: #f4fbff;
     border-radius: 14px;
@@ -2732,7 +2676,6 @@ footer {
     margin-top: 20px;
 }
 
-/* Title */
 .upi-title {
     display: flex;
     align-items: center;
@@ -2743,7 +2686,6 @@ footer {
     margin-bottom: 24px;
 }
 
-/* Steps container */
 .upi-steps {
     display: flex;
     justify-content: space-between;
@@ -2752,7 +2694,6 @@ footer {
     margin-bottom: 24px;
 }
 
-/* Connecting line */
 .upi-steps::before {
     content: "";
     position: absolute;
@@ -2763,7 +2704,6 @@ footer {
     background: #d6e9f9;
 }
 
-/* Single step */
 .upi-step {
     display: flex;
     gap: 12px;
@@ -2772,7 +2712,6 @@ footer {
     z-index: 1;
 }
 
-/* Step number */
 .upi-step-number {
     width: 34px;
     height: 34px;
@@ -2787,7 +2726,6 @@ footer {
     flex-shrink: 0;
 }
 
-/* Step content */
 .upi-step-content h6 {
     margin: 0;
     font-size: 15px;
@@ -2802,7 +2740,6 @@ footer {
     line-height: 1.5;
 }
 
-/* Notes */
 .upi-payment-note {
     background: #eaf7ea;
     border-radius: 10px;
@@ -2822,22 +2759,19 @@ footer {
     margin-bottom: 0;
 }
 
-/* Mobile */
 @media (max-width: 768px) {
     .upi-steps {
         flex-direction: column;
         gap: 18px;
     }
-
     .upi-steps::before {
         display: none;
     }
-
     .upi-step {
         width: 100%;
     }
 }
-/* REMOVE CONNECTING LINE */
+
 .upi-steps::before {
     display: none !important;
     content: none !important;
@@ -3815,7 +3749,6 @@ footer {
     }
 }
 
-/* Additional Responsive Delivery Options */
 @media (max-width: 700px) {
     .delivery-options {
         flex-direction: column !important;
@@ -3826,7 +3759,6 @@ footer {
     }
 }
 
-/* Scrollbar Styling */
 #add-address-modal .modal-form::-webkit-scrollbar {
     width: 8px;
 }
@@ -3845,7 +3777,6 @@ footer {
     background: linear-gradient(135deg, var(--primary-dark) 0%, #1b5e20 100%);
 }
 
-/* Animation Utilities */
 @keyframes fadeInUp {
     to {
         opacity: 1;
@@ -3853,7 +3784,6 @@ footer {
     }
 }
 
-/* Payment Form Input Styles */
 #card-form .form-group input,
 #upi-form .form-group input {
     padding: 14px 16px;
@@ -3883,7 +3813,6 @@ footer {
     font-family: 'Courier New', monospace;
 }
 
-/* Focus States for Accessibility */
 input:focus,
 button:focus,
 select:focus,
@@ -3892,7 +3821,6 @@ textarea:focus {
     outline-offset: 2px;
 }
 
-/* Button States */
 .btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -3903,7 +3831,6 @@ textarea:focus {
     box-shadow: none;
 }
 
-/* Error States */
 .input-error {
     border-color: var(--danger) !important;
 }
@@ -3912,7 +3839,6 @@ textarea:focus {
     box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.2) !important;
 }
 
-/* Success States */
 .input-success {
     border-color: var(--success) !important;
 }
@@ -3921,75 +3847,6 @@ textarea:focus {
     box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.2) !important;
 }
 
-/* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --primary: #4caf50;
-        --primary-dark: #388e3c;
-        --primary-light: #81c784;
-        --secondary: #ff9800;
-        --white: #121212;
-        --light-bg: #1e1e1e;
-        --text: #ffffff;
-        --text-light: #b0b0b0;
-        --card-bg: #2d2d2d;
-        --shadow: 0 2px 8px rgba(0,0,0,0.3);
-        --shadow-hover: 0 4px 12px rgba(76,175,80,0.2);
-    }
-    
-    .modal-content {
-        background: #2d2d2d;
-        color: white;
-    }
-    
-    .login-card,
-    .profile-sidebar,
-    .profile-content,
-    .cart-summary,
-    .checkout-content,
-    .address-card,
-    .product-card,
-    .feature-card,
-    .order-card {
-        background: #2d2d2d;
-        color: white;
-    }
-    
-    input, textarea, select {
-        background: #1e1e1e;
-        color: white;
-        border-color: #444;
-    }
-    
-    input:focus, textarea:focus, select:focus {
-        border-color: var(--primary);
-    }
-    
-    .search-form {
-        background: #1e1e1e;
-        border-color: #2d5a2d;
-    }
-    
-    .search-input {
-        background: #2a2a2a;
-        color: #e8f5e9;
-    }
-    
-    .search-input::placeholder {
-        color: #81c784;
-    }
-}
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
 .green-btn {
   color: white;
   background-color: green;
@@ -4003,7 +3860,7 @@ textarea:focus {
 .green-btn:hover {
   background-color: darkgreen;
 }
-/* UPI Options Styling */
+
 .upi-options {
     margin-bottom: 20px;
 }
@@ -4110,7 +3967,6 @@ textarea:focus {
     color: #4CAF50;
 }
 
-/* Selection indicator */
 .upi-app::after {
     content: '';
     position: absolute;
@@ -4136,7 +3992,6 @@ textarea:focus {
     font-weight: bold;
 }
 
-/* App-specific logo styling */
 .gpay-logo {
     background: linear-gradient(135deg, #4285F4, #34A853, #FBBC05, #EA4335);
     color: white;
@@ -4168,7 +4023,6 @@ textarea:focus {
     border: 2px dashed #ddd;
 }
 
-/* Pay Now Button */
 .pay-now-btn {
     width: 100%;
     padding: 16px;
@@ -4197,7 +4051,6 @@ textarea:focus {
     transform: translateY(0);
 }
 
-/* Payment Modal */
 .modal {
     display: none;
     position: fixed;
@@ -4271,7 +4124,6 @@ textarea:focus {
     font-size: 14px;
 }
 
-/* Payment form visibility */
 .payment-form {
     display: none;
     animation: fadeIn 0.3s ease;
@@ -4285,7 +4137,7 @@ textarea:focus {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
-/* ===== LOGIN/SIGNUP LAYOUT FIX ===== */
+
 #login-page, #signup-page {
     display: flex;
     min-height: 100vh;
@@ -4355,7 +4207,7 @@ textarea:focus {
         flex: 1;
     }
 }
-/* Cart Item Styling */
+
 .cart-item {
     display: flex;
     padding: 20px;
@@ -4474,7 +4326,6 @@ textarea:focus {
     background: #ffebee;
 }
 
-/* Empty Cart Styling */
 .empty-cart {
     text-align: center;
     padding: 60px 20px;
@@ -4496,7 +4347,6 @@ textarea:focus {
     margin-bottom: 30px;
 }
 
-/* Cart Summary Styling */
 .cart-summary {
     background: #f9f9f9;
     padding: 25px;
@@ -4606,17 +4456,17 @@ textarea:focus {
     background: #cccccc;
     cursor: not-allowed;
 }
+
 .upi-app-logo img {
     width: 40px;
     height: 40px;
     object-fit: contain;
 }
-/* Reviews Section Styles */
+
 .reviews-container {
     padding: 20px;
 }
 
-/* Reviews Header */
 .reviews-header {
     display: flex;
     justify-content: space-between;
@@ -4708,24 +4558,19 @@ textarea:focus {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-
     padding: 12px 24px;
     background-color: #4CAF50;
     color: white;
-
     border: none;
     border-radius: 8px;
-
     cursor: pointer;
     font-size: 16px;
     font-weight: 600;
-
     margin-top: -50px;
-
-    /* 🔥 LEFT FIX */
-    align-self: flex-start;   /* if parent is flex */
+    align-self: flex-start;
     margin-left: 0;
 }
+
 .fast-delivery-notice {
     background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%);
     color: white;
@@ -4785,7 +4630,6 @@ textarea:focus {
     margin: 0 2px;
 }
 
-/* Animations */
 @keyframes slideIn {
     from {
         opacity: 0;
@@ -4830,14 +4674,12 @@ textarea:focus {
     }
 }
 
-/* Hover effect */
 .fast-delivery-notice:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(255, 126, 95, 0.4);
     transition: all 0.3s ease;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
     .fast-delivery-notice {
         padding: 12px 15px;
@@ -4858,6 +4700,7 @@ textarea:focus {
         font-size: 1.1em;
     }
 }
+
 .fast-delivery-notice::after {
     content: '⏱️';
     position: absolute;
@@ -4880,22 +4723,16 @@ textarea:focus {
     }
 }
 
-/* Remove the after pseudo-element on mobile for better spacing */
 @media (max-width: 768px) {
     .fast-delivery-notice::after {
         display: none;
     }
-}
-.fast-delivery-notice {
-    background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
-    /* ... rest of the CSS remains the same ... */
 }
 
 .write-review-btn:hover {
     background-color: #45a049;
 }
 
-/* Write Review Section */
 .write-review-section {
     background-color: #f9f9f9;
     border-radius: 8px;
@@ -4904,10 +4741,10 @@ textarea:focus {
     border: 1px solid #e0e0e0;
     margin-top: -5px;
 }
+
 .write-review-section {
     transform: translateY(-10px);
 }
-
 
 .write-review-header {
     display: flex;
@@ -4916,7 +4753,6 @@ textarea:focus {
     margin-bottom: 20px;
     padding-bottom: 15px;
     border-bottom: 1px solid #e0e0e0;
-
 }
 
 .write-review-header h3 {
@@ -4926,6 +4762,7 @@ textarea:focus {
     align-items: center;
     gap: 10px;
 }
+
 .write-review-section {
     display: block;
     margin-top: -20px;
@@ -4933,11 +4770,13 @@ textarea:focus {
     overflow: hidden;
     background: #fff;
 }
+
 .write-review-header {
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
-    background: #f5f5f5;   /* lekapothe radius kanipinchadu */
+    background: #f5f5f5;
 }
+
 .write-review-header {
     padding: 12px 16px;
     display: flex;
@@ -4965,7 +4804,6 @@ textarea:focus {
     background-color: #f0f0f0;
 }
 
-/* Review Form */
 .review-form {
     background-color: white;
     padding: 20px;
@@ -5003,7 +4841,6 @@ textarea:focus {
     min-height: 100px;
 }
 
-/* Rating Input */
 .rating-input {
     display: flex;
     flex-direction: column;
@@ -5045,7 +4882,6 @@ textarea:focus {
     font-style: italic;
 }
 
-/* Character Count */
 .char-count {
     text-align: right;
     font-size: 12px;
@@ -5053,7 +4889,6 @@ textarea:focus {
     margin-top: 5px;
 }
 
-/* Checkbox Label */
 .checkbox-label {
     display: flex;
     align-items: center;
@@ -5068,7 +4903,6 @@ textarea:focus {
     cursor: pointer;
 }
 
-/* Form Actions */
 .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -5111,7 +4945,6 @@ textarea:focus {
     background-color: #45a049;
 }
 
-/* Reviews List */
 .reviews-list {
     display: flex;
     flex-direction: column;
@@ -5225,7 +5058,6 @@ textarea:focus {
     font-size: 13px;
 }
 
-/* Empty State */
 .empty-state {
     text-align: center;
     padding: 40px 20px;
@@ -5252,22 +5084,18 @@ textarea:focus {
 #write-first-review {
     display: inline-flex;
     align-items: center;
-    gap: 6px;              /* smaller gap */
-    padding: 10px 18px;    /* ↓ box size */
-    font-size: 14px;       /* ↓ text size */
-    border-radius: 10px;   /* optional: tighter look */
+    gap: 6px;
+    padding: 10px 18px;
+    font-size: 14px;
+    border-radius: 10px;
 }
 
-/* If plus icon is too big */
 #write-first-review i {
-    font-size: 16px;       /* same size */
+    font-size: 16px;
     position: relative;
-    top: 10px;              /* plus kindhiki */
+    top: 10px;
 }
 
-
-
-/* Modal Styles */
 .modal {
     display: none;
     position: fixed;
@@ -5280,17 +5108,16 @@ textarea:focus {
     align-items: center;
     justify-content: center;
 }
-/* Edit Review Modal Container */
+
 #edit-review-modal .modal-content {
     width: 90%;
-    max-width: 700px;   /* 🔥 increase container width */
-    
-    max-height: 90vh;  /* screen lo fit avvadaniki */
+    max-width: 700px;
+    max-height: 90vh;
     overflow-y: auto;
-
-    padding: 24px 26px; /* little spacious feel */
+    padding: 24px 26px;
     border-radius: 14px;
 }
+
 @media (min-width: 768px) {
     #edit-review-modal .modal-content {
         max-width: 820px;
@@ -5395,7 +5222,6 @@ textarea:focus {
     background-color: #d32f2f;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .reviews-header {
         flex-direction: column;
@@ -5430,7 +5256,7 @@ textarea:focus {
         margin: 10px;
     }
 }
-/* Modal Cancel and Action Buttons */
+
 .modal-cancel,
 .cancel-edit-review,
 .cancel-delete {
@@ -5452,7 +5278,6 @@ textarea:focus {
     border-color: #ccc;
 }
 
-/* Dropdown styling for review form */
 .review-form select.form-control {
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
@@ -5460,7 +5285,7 @@ textarea:focus {
     background-position: right 12px center;
     padding-right: 40px;
 }
-/* UPI Payment Styles */
+
 .upi-container {
     background: #fff;
     border-radius: 16px;
@@ -5484,7 +5309,6 @@ textarea:focus {
     font-size: 14px;
 }
 
-/* Timer Styles */
 .timer-container {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 12px;
@@ -5492,13 +5316,16 @@ textarea:focus {
     margin-bottom: 30px;
     color: white;
 }
+
 .timer-container {
-    padding: 8px 12px; /* Reduced from typical 15-20px */
+    padding: 8px 12px;
 }
 
 .timer-display {
-    gap: 10px; /* Reduced from typical 15-20px */
-}.timer-container {
+    gap: 10px;
+}
+
+.timer-container {
     padding: 6px 10px;
 }
 
@@ -5508,15 +5335,16 @@ textarea:focus {
 }
 
 .timer-icon {
-    font-size: 14px; /* Reduced icon size */
-    width: 24px; /* Smaller container */
+    font-size: 14px;
+    width: 24px;
     height: 24px;
 }
 
 .timer-countdown {
-    font-size: 18px; /* Reduced from typical 24px */
+    font-size: 18px;
     line-height: 1.2;
 }
+
 .qr-fallback {
     text-align: center;
 }
@@ -5588,14 +5416,11 @@ textarea:focus {
     font-size: 14px;
 }
 
-.detail-row span:first-child {
-    font-weight: bold;
-    color: #666;
-}
 .timer-label {
-    font-size: 11px; /* Smaller label */
+    font-size: 11px;
     line-height: 1.1;
 }
+
 .timer-display {
     display: flex;
     align-items: center;
@@ -5639,7 +5464,6 @@ textarea:focus {
     border-radius: 3px;
 }
 
-/* QR Main Section */
 .qr-main-section {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -5663,21 +5487,17 @@ textarea:focus {
     height: 10;
 }
 
-
-/* Form */
 .upi-form {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-/* Form Group */
 .form-group {
   display: flex;
   flex-direction: column;
 }
 
-/* Label */
 .form-label {
   font-size: 14px;
   font-weight: 600;
@@ -5685,7 +5505,6 @@ textarea:focus {
   margin-bottom: 6px;
 }
 
-/* Input */
 .form-input {
   padding: 12px 14px;
   font-size: 15px;
@@ -5707,14 +5526,12 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-/* Hint text */
 .input-hint {
   margin-top: 6px;
   font-size: 12px;
   color: #6b7280;
 }
 
-/* Button */
 .submit-btn {
   margin-top: 10px;
   padding: 14px;
@@ -5798,7 +5615,6 @@ textarea:focus {
     font-size: 14px;
 }
 
-/* QR Overlay */
 .qr-overlay {
     position: absolute;
     top: 0;
@@ -5855,7 +5671,6 @@ textarea:focus {
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
-/* Payment Details */
 .payment-details {
     display: flex;
     flex-direction: column;
@@ -5925,7 +5740,6 @@ textarea:focus {
     font-size: 18px;
 }
 
-/* Instructions */
 .instructions {
     background: #f0f9ff;
     border-radius: 12px;
@@ -6000,7 +5814,6 @@ textarea:focus {
     gap: 8px;
 }
 
-/* Action Buttons */
 .action-buttons {
     display: flex;
     gap: 15px;
@@ -6053,7 +5866,6 @@ textarea:focus {
     }
 }
 
-/* Status Overlay */
 .status-overlay {
     position: fixed;
     top: 0;
@@ -6092,7 +5904,6 @@ textarea:focus {
     margin: 0;
 }
 
-/* QR Error */
 .qr-error {
     text-align: center;
     padding: 20px;
@@ -6118,11 +5929,12 @@ textarea:focus {
     border-radius: 6px;
     cursor: pointer;
 }
-#contact-qr
-{
+
+#contact-qr {
  width: 100%;
  height: 100%;
 }
+
 .product-rating-container {
     margin: 10px 0;
 }
@@ -6148,6 +5960,7 @@ textarea:focus {
 .btn-write-review-small i {
     font-size: 12px;
 }
+
 .payment-option-divider {
     display: flex;
     align-items: center;
@@ -6167,9 +5980,7 @@ textarea:focus {
     font-weight: 500;
     text-transform: uppercase;
 }
-/* ===== LOGIN/SIGNUP SPECIFIC STYLES ===== */
 
-/* Page Management */
 .page {
     display: none;
     min-height: 100vh;
@@ -6179,7 +5990,6 @@ textarea:focus {
     display: block;
 }
 
-/* Login/Signup Pages Layout */
 #login-page, #signup-page {
     display: flex;
     min-height: 120vh;
@@ -6189,7 +5999,6 @@ textarea:focus {
     display: flex;
 }
 
-/* Background Section */
 .background-container {
     flex: 1;
     background: url('https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80') no-repeat center center;
@@ -6236,12 +6045,12 @@ textarea:focus {
     opacity: 0.9;
     line-height: 1.6;
 }
+
 .write-review-btn {
     position: relative;
     left: 50px;
 }
 
-/* Login/Signup Form Section */
 .login-wrapper {
     width: 450px;
     background: var(--white);
@@ -6297,7 +6106,6 @@ textarea:focus {
     margin-bottom: 0;
 }
 
-/* Tab Container */
 .tab-container {
     display: flex;
     margin-bottom: 15px;
@@ -6326,7 +6134,6 @@ textarea:focus {
     color: var(--white);
 }
 
-/* Form Styles */
 .login-form {
     display: flex;
     flex-direction: column;
@@ -6400,11 +6207,11 @@ textarea:focus {
     align-items: center;
     justify-content: center;
 }
+
 .password-toggle:hover {
     color: var(--primary);
 }
 
-/* Remove focus / active / click outline completely */
 .password-toggle:focus,
 .password-toggle:focus-visible,
 .password-toggle:active {
@@ -6413,13 +6220,10 @@ textarea:focus {
     border: none;
 }
 
-/* Prevent browser default tap highlight (mobile fix) */
 .password-toggle {
     -webkit-tap-highlight-color: transparent;
 }
 
-
-/* Form Options */
 .form-options {
     display: flex;
     justify-content: space-between;
@@ -6427,8 +6231,6 @@ textarea:focus {
     margin-bottom: 8px;
     padding: 0 2px;
 }
-
-
 
 .forgot-password a {
     color: var(--primary);
@@ -6441,7 +6243,6 @@ textarea:focus {
     text-decoration: underline;
 }
 
-/* Login Button */
 .login-btn {
     background: var(--primary);
     color: var(--white);
@@ -6490,7 +6291,6 @@ textarea:focus {
     100% { transform: rotate(360deg); }
 }
 
-/* Divider */
 .divider {
     display: flex;
     align-items: center;
@@ -6515,7 +6315,6 @@ textarea:focus {
     margin-left: 8px;
 }
 
-/* Social Login - INCREASED SIZES */
 .social-login {
     display: flex;
     gap: 12px;
@@ -6527,33 +6326,33 @@ textarea:focus {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px; /* Increased from 6px */
-    padding: 10px; /* Increased from 8px */
+    gap: 8px;
+    padding: 10px;
     border: 1px solid #ddd;
     border-radius: var(--radius);
     background: var(--white);
-    font-size: 0.95rem; /* Increased from 0.85rem */
-    font-weight: 500; /* Added font-weight */
+    font-size: 0.95rem;
+    font-weight: 500;
     cursor: pointer;
     transition: var(--transition);
-    height: 44px; /* Added fixed height */
-    min-height: 44px; /* Added min-height */
+    height: 44px;
+    min-height: 44px;
 }
 
 .social-btn:hover {
     background: #f9f9f9;
     transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Added shadow on hover */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .social-btn i {
-    font-size: 1.1rem; /* Increased icon size */
+    font-size: 1.1rem;
 }
 
 .google-btn {
     color: #DB4437;
     border-color: #DB4437;
-    background: rgba(219, 68, 55, 0.05); /* Slight background tint */
+    background: rgba(219, 68, 55, 0.05);
 }
 
 .google-btn:hover {
@@ -6564,7 +6363,7 @@ textarea:focus {
 .facebook-btn {
     color: #4267B2;
     border-color: #4267B2;
-    background: rgba(66, 103, 178, 0.05); /* Slight background tint */
+    background: rgba(66, 103, 178, 0.05);
 }
 
 .facebook-btn:hover {
@@ -6572,7 +6371,6 @@ textarea:focus {
     border-color: #3b5998;
 }
 
-/* Signup Link */
 .signup-link {
     text-align: center;
     color: var(--text-light);
@@ -6590,7 +6388,6 @@ textarea:focus {
     text-decoration: underline;
 }
 
-/* Checkbox Group for Terms */
 .checkbox-group {
     flex-direction: row;
     align-items: center;
@@ -6619,7 +6416,6 @@ textarea:focus {
     text-decoration: underline;
 }
 
-/* Error Messages */
 .error-message {
     color: var(--danger);
     font-size: 0.75rem;
@@ -6628,7 +6424,6 @@ textarea:focus {
     display: none;
 }
 
-/* Specific adjustments for signup form */
 #signup-form .form-group {
     margin-bottom: 15px;
 }
@@ -6637,7 +6432,6 @@ textarea:focus {
     margin-bottom: 3px;
 }
 
-/* Forgot Password Modal */
 #forgot-password-modal {
     display: none;
     position: fixed;
@@ -6702,7 +6496,6 @@ textarea:focus {
     padding: 15px 20px;
 }
 
-/* Step Indicator */
 .step-indicator {
     display: flex;
     align-items: center;
@@ -6773,7 +6566,6 @@ textarea:focus {
     font-size: 0.9rem;
 }
 
-/* OTP Input */
 .otp-input-container {
     display: flex;
     gap: 8px;
@@ -6797,7 +6589,6 @@ textarea:focus {
     outline: none;
 }
 
-/* OTP Timer */
 .otp-timer {
     text-align: center;
     margin: 15px 0;
@@ -6835,7 +6626,6 @@ textarea:focus {
     text-decoration: underline;
 }
 
-/* Success Modal */
 #success-modal, #reset-success-modal, #otp-sent-modal {
     display: none;
     position: fixed;
@@ -6874,7 +6664,6 @@ textarea:focus {
     font-size: 0.9rem;
 }
 
-/* Responsive Styles */
 @media (max-width: 992px) {
     #login-page, #signup-page {
         flex-direction: column;
@@ -6908,7 +6697,6 @@ textarea:focus {
         padding: 20px 15px;
     }
     
-    /* Responsive social buttons */
     .social-btn {
         height: 42px;
         min-height: 42px;
@@ -6994,7 +6782,6 @@ textarea:focus {
         font-size: 0.8rem;
     }
     
-    /* Mobile social buttons */
     .social-btn {
         height: 40px;
         min-height: 40px;
@@ -7050,7 +6837,6 @@ textarea:focus {
     }
 }
 
-/* Additional compact styles for signup page specifically */
 #signup-page .login-container {
     padding: 25px 20px;
 }
@@ -7063,150 +6849,6 @@ textarea:focus {
     margin-bottom: 12px;
 }
 
-/* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-    .login-card,
-    .modal-content {
-        background: #2d2d2d;
-        color: white;
-    }
-    
-    .input-with-icon input {
-        background: #1e1e1e;
-        color: white;
-        border-color: #444;
-    }
-    
-    .input-with-icon i {
-        color: #b0b0b0;
-    }
-    
-    .tab-container {
-        background: #1e1e1e;
-    }
-    
-    .tab-btn {
-        color: #b0b0b0;
-    }
-    
-    .tab-btn.active {
-        background: var(--primary);
-        color: white;
-    }
-    
-    .social-btn {
-        background: #2d2d2d;
-        border-color: #666;
-        color: #b0b0b0;
-    }
-    
-    .social-btn:hover {
-        background: #3d3d3d;
-    }
-    
-    .google-btn {
-        color: #DB4437;
-        border-color: #DB4437;
-        background: rgba(219, 68, 55, 0.1);
-    }
-    
-    .google-btn:hover {
-        background: rgba(219, 68, 55, 0.2);
-    }
-    
-    .facebook-btn {
-        color: #4267B2;
-        border-color: #4267B2;
-        background: rgba(66, 103, 178, 0.1);
-    }
-    
-    .facebook-btn:hover {
-        background: rgba(66, 103, 178, 0.2);
-    }
-    
-    .form-group label {
-        color: #e0e0e0;
-    }
-    
-    .remember-me label {
-        color: #e0e0e0;
-    }
-    
-    .forgot-password a {
-        color: var(--primary-light);
-    }
-    
-    .signup-link {
-        color: #b0b0b0;
-    }
-    
-    .signup-link a {
-        color: var(--primary-light);
-    }
-    
-    .checkbox-group label {
-        color: #e0e0e0;
-    }
-    
-    .modal-header {
-        border-bottom-color: #444;
-    }
-    
-    .step-number {
-        background: #444;
-        color: #b0b0b0;
-    }
-    
-    .step.active .step-number {
-        background: var(--primary);
-        color: white;
-    }
-    
-    .step-label {
-        color: #b0b0b0;
-    }
-    
-    .step.active .step-label {
-        color: var(--primary-light);
-    }
-    
-    .step-line {
-        background: #444;
-    }
-    
-    .modal-description {
-        color: #b0b0b0;
-    }
-    
-    .otp-input {
-        background: #1e1e1e;
-        border-color: #444;
-        color: white;
-    }
-    
-    .otp-timer p {
-        color: #b0b0b0;
-    }
-}
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-    .tab-btn,
-    .social-btn,
-    .login-btn,
-    .btn-regenerate,
-    .step-number,
-    .step-label {
-        transition: none;
-    }
-    
-    .loader {
-        animation-duration: 2s;
-    }
-}
-/* ===============================
-   ROOT VARIABLES
-================================ */
 :root {
     --primary: #2e7d32;
     --primary-light: #e8f5e9;
@@ -7219,19 +6861,14 @@ textarea:focus {
     --transition: all 0.25s ease;
 }
 
-/* ===============================
-   OVERLAY (FULL SCREEN)
-================================ */
 .feedback-modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-
     background: rgba(0, 0, 0, 0.55);
     backdrop-filter: blur(4px);
-
     display: none;
     z-index: 99999;
 }
@@ -7240,29 +6877,20 @@ textarea:focus {
     display: block;
 }
 
-/* ===============================
-   FULL PAGE MODAL CONTENT
-================================ */
 .feedback-modal-content {
     width: 100vw;
     height: 100vh;
-
     background: #ffffff;
     padding: 36px 32px;
-
     position: relative;
     overflow-y: auto;
     border-radius: 0;
 }
 
-/* ===============================
-   CLOSE BUTTON
-================================ */
 .feedback-close-btn {
     position: fixed;
     top: 20px;
     right: 24px;
-
     width: 36px;
     height: 36px;
     border-radius: 50%;
@@ -7279,9 +6907,6 @@ textarea:focus {
     background: #e5e7eb;
 }
 
-/* ===============================
-   HEADER
-================================ */
 .feedback-header {
     margin-bottom: 30px;
 }
@@ -7317,9 +6942,6 @@ textarea:focus {
     margin-top: 6px;
 }
 
-/* ===============================
-   FORM
-================================ */
 .form-group {
     margin-bottom: 18px;
 }
@@ -7361,9 +6983,6 @@ textarea:focus {
     margin-top: 4px;
 }
 
-/* ===============================
-   RATING
-================================ */
 .rating-group {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -7398,6 +7017,7 @@ textarea:focus {
     color: #fff;
     border-color: var(--primary);
 }
+
 .rating-btn {
     outline: none;
     box-shadow: none;
@@ -7409,13 +7029,9 @@ textarea:focus {
     box-shadow: none;
 }
 
-
-/* ===============================
-   SUBMIT BUTTON
-================================ */
 .submit-btn {
     width: 40%;
-    margin: 12px auto 0;   /* 🔥 CENTER */
+    margin: 12px auto 0;
     padding: 15px;
     border-radius: 14px;
     border: none;
@@ -7424,12 +7040,10 @@ textarea:focus {
     font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
-
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-
     transition: var(--transition);
 }
 
@@ -7437,51 +7051,40 @@ textarea:focus {
     transform: translateY(-2px);
     box-shadow: 0 10px 30px rgba(46, 125, 50, 0.45);
 }
+
 .form-group {
     margin: 12px 0;
 }
 
-/* Label wrapper */
 .checkbox-label {
     display: flex;
     align-items: center;
     gap: 8px;
     cursor: pointer;
-
-    /* 🔥 remove any outer box feel */
     padding: 0;
     background: transparent;
     border: none;
     box-shadow: none;
 }
 
-/* Checkbox */
 .checkbox-label input[type="checkbox"] {
     width: 16px;
     height: 16px;
     cursor: pointer;
-
-    /* 🔥 remove browser default shadow */
     box-shadow: none;
     outline: none;
 }
 
-/* Text */
 .checkbox-label span {
     font-size: 0.9rem;
     color: #333;
     user-select: none;
 }
 
-/* Optional hover (no box, only cursor feedback) */
 .checkbox-label:hover span {
-    color: #2e7d32; /* optional */
+    color: #2e7d32;
 }
 
-
-/* ===============================
-   SUCCESS MESSAGE
-================================ */
 .success-message {
     display: none;
     text-align: center;
@@ -7497,42 +7100,32 @@ textarea:focus {
     margin-bottom: 12px;
 }
 
-/* ===============================
-   MOBILE
-================================ */
 @media (max-width: 768px) {
     .rating-group {
         grid-template-columns: repeat(3, 1fr);
     }
 }
- /* ===============================
-   SHARE FEEDBACK BUTTON
-================================ */
+
 .marquee-feedback-btn {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-
     padding: 10px 18px;
     background: linear-gradient(135deg, #43a047, #2e7d32);
     color: #ffffff;
-
     border: none;
-    border-radius: 999px;      /* pill shape */
+    border-radius: 999px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-
     box-shadow: 0 6px 18px rgba(0,0,0,0.2);
     transition: all 0.25s ease;
 }
 
-/* Hover */
 .marquee-feedback-btn:hover {
     background: linear-gradient(135deg, #4caf50, #2e7d32);
 }
 
-/* Arrow animation */
 .marquee-feedback-btn svg {
     width: 14px;
     height: 14px;
@@ -7543,13 +7136,94 @@ textarea:focus {
     transform: translateX(4px);
 }
 
-/* Active click */
 .marquee-feedback-btn:active {
     transform: scale(0.97);
 }
 
-/* Focus */
 .marquee-feedback-btn:focus-visible {
     outline: none;
     box-shadow: 0 0 0 3px rgba(46,125,50,0.35);
+}
+/* NEWSLETTER SECTION – FORCE SAME LOOK IN DARK MODE */
+.newsletter {
+    background: #2e7d32; /* original green */
+    color: #ffffff;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.newsletter h3 {
+    font-size: 2rem;
+    margin-bottom: 12px;
+    color: #ffffff;
+}
+
+.newsletter p {
+    max-width: 700px;
+    margin: 0 auto 30px;
+    color: #eaf5ea;
+    font-size: 1rem;
+}
+
+/* FORM LAYOUT */
+.newsletter-form {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* INPUT FIX */
+.newsletter-form input {
+    flex: 1;
+    padding: 14px 16px;
+    font-size: 1rem;
+    border: none;
+    outline: none;
+    background: #ffffff !important;
+    color: #333333 !important;
+    border-radius: 6px 0 0 6px;
+}
+
+/* PLACEHOLDER FIX (IMPORTANT 🔥) */
+.newsletter-form input::placeholder {
+    color: #888888;
+}
+
+/* BUTTON FIX */
+.newsletter-form button {
+    padding: 14px 26px;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    background: #ff9800;
+    color: #ffffff;
+    border-radius: 0 6px 6px 0;
+    white-space: nowrap;
+}
+
+/* STOP BROWSER AUTO DARK MODE */
+.newsletter-form input,
+.newsletter-form button {
+    -webkit-appearance: none;
+    appearance: none;
+}
+/* 🔒 LOCK SITE TO LIGHT MODE LOOK */
+html {
+    color-scheme: light;
+}
+
+/* 🛑 Stop browser auto dark styling */
+body {
+    background: #ffffff;
+}
+
+/* 🛑 Prevent auto darkening of inputs & buttons */
+input,
+select,
+textarea,
+button {
+    background-color: inherit;
+    color: inherit;
 }
