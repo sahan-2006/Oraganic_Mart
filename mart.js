@@ -48,8 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
         products: document.getElementById('products-page'),
         profile: document.getElementById('profile-page'),
         cart: document.getElementById('cart-page'),
-        checkout: document.getElementById('checkout-page'),
-        confirmation: document.getElementById('order-confirmation-page')
+        checkout: document.getElementById('checkout-page')
     };
 
     // User Data
@@ -3199,368 +3198,6 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'signup':
                 initializeSignupPage();
                 break;
-            case 'confirmation':
-                initializeConfirmationPage();
-                break;
-        }
-    }
-
-    // ===== ORDER CONFIRMATION PAGE FUNCTIONS =====
-    function initializeConfirmationPage() {
-        console.log('Initializing confirmation page');
-        loadOrderConfirmation();
-        setupConfirmationEvents();
-    }
-
-    function loadOrderConfirmation() {
-        console.log('Loading order confirmation...');
-        console.log('User orders:', userData.orders);
-        console.log('Current userData:', userData);
-        
-        // Get the most recent order from user data
-        if (userData.orders && userData.orders.length > 0) {
-            const latestOrder = userData.orders[userData.orders.length - 1];
-            console.log('Latest order:', latestOrder);
-            updateOrderConfirmation(latestOrder);
-        } else {
-            console.error('No orders found for confirmation');
-            // Try to get order from session or create a demo order
-            const demoOrder = createDemoOrder();
-            if (demoOrder) {
-                updateOrderConfirmation(demoOrder);
-            } else {
-                showEmptyConfirmation();
-            }
-        }
-    }
-
-    function createDemoOrder() {
-        // Create a demo order if no real orders exist (for testing)
-        if (userData.cart && userData.cart.length > 0) {
-            const totals = calculateCartTotals();
-            const orderId = 'OM' + Date.now().toString().slice(-6);
-            const orderDate = new Date().toLocaleDateString('en-IN', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric'
-            });
-            
-            // Get the selected payment method
-            const paymentMethod = document.querySelector('input[name="payment"]:checked');
-            let paymentType = 'Credit Card';
-            if (paymentMethod) {
-                const paymentValue = paymentMethod.value;
-                if (paymentValue === 'card') paymentType = 'Credit Card';
-                else if (paymentValue === 'upi') paymentType = 'UPI';
-                else if (paymentValue === 'cod') paymentType = 'Cash on Delivery';
-            }
-            
-            // Get the selected address
-            const selectedAddress = document.querySelector('input[name="saved-address"]:checked');
-            let addressData = {
-                name: 'Guest User',
-                phone: '9876543210',
-                address: '123 Green Street',
-                city: 'Mumbai',
-                state: 'Maharashtra',
-                pincode: '400001'
-            };
-            
-            if (selectedAddress && selectedAddress.value !== 'new') {
-                const addressId = parseInt(selectedAddress.value);
-                const savedAddress = userData.addresses.find(addr => addr.id === addressId);
-                if (savedAddress) {
-                    addressData = {
-                        name: savedAddress.fullName || savedAddress.name,
-                        phone: savedAddress.phone,
-                        address: savedAddress.street,
-                        city: savedAddress.city,
-                        state: savedAddress.state,
-                        pincode: savedAddress.pincode
-                    };
-                }
-            } else if (selectedAddress && selectedAddress.value === 'new') {
-                // Get from address form
-                addressData = {
-                    name: document.getElementById('delivery-name')?.value || 'Guest User',
-                    phone: document.getElementById('delivery-phone')?.value || '9876543210',
-                    address: document.getElementById('delivery-address')?.value || '123 Green Street',
-                    city: document.getElementById('delivery-city')?.value || 'Mumbai',
-                    state: document.getElementById('delivery-state')?.value || 'Maharashtra',
-                    pincode: document.getElementById('delivery-pincode')?.value || '400001'
-                };
-            }
-            
-            return {
-                id: orderId,
-                date: orderDate,
-                time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
-                items: userData.cart.map(item => ({
-                    ...item,
-                    name: item.name,
-                    quantity: item.quantity,
-                    price: item.price,
-                    weight: item.weight,
-                    image: item.image,
-                    category: item.category
-                })),
-                total: totals.total,
-                subtotal: totals.subtotal,
-                delivery: totals.delivery,
-                tax: totals.tax,
-                address: addressData,
-                payment: paymentType,
-                status: 'confirmed'
-            };
-        }
-        return null;
-    }
-
-    function updateOrderConfirmation(order) {
-        console.log('Updating order confirmation with:', order);
-        
-        if (!order) {
-            console.error('No order data provided');
-            return;
-        }
-        
-        // Ensure order has all required properties
-        const safeOrder = {
-            id: order.id || 'OM' + Date.now().toString().slice(-6),
-            items: order.items || [],
-            address: order.address || {
-                name: 'Customer',
-                phone: 'N/A',
-                address: 'N/A',
-                city: 'N/A',
-                state: 'N/A',
-                pincode: 'N/A'
-            },
-            payment: order.payment || 'Credit Card',
-            total: order.total || 0,
-            subtotal: order.subtotal || 0,
-            delivery: order.delivery || 0,
-            tax: order.tax || 0,
-            date: order.date || new Date().toLocaleDateString('en-IN'),
-            time: order.time || new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
-        };
-        
-        // Calculate totals if not provided
-        if (safeOrder.total === 0 && safeOrder.items.length > 0) {
-            let subtotal = 0;
-            safeOrder.items.forEach(item => {
-                subtotal += (item.price * item.quantity);
-            });
-            safeOrder.subtotal = subtotal;
-            safeOrder.delivery = subtotal > 499 ? 0 : 40;
-            safeOrder.tax = Math.round(subtotal * 0.05);
-            safeOrder.total = safeOrder.subtotal + safeOrder.delivery + safeOrder.tax;
-        }
-        
-        // Update Order ID
-        const orderIdSpan = document.getElementById('order-id-value');
-        if (orderIdSpan) {
-            orderIdSpan.textContent = safeOrder.id;
-            console.log('Updated order ID:', safeOrder.id);
-        }
-        
-        // Update customer email
-        const customerEmailSpan = document.getElementById('customer-email');
-        if (customerEmailSpan) {
-            customerEmailSpan.textContent = userData.email || 'customer@example.com';
-        }
-        
-        // Update confirmation message
-        const confirmationMsg = document.getElementById('confirmation-message');
-        if (confirmationMsg) {
-            confirmationMsg.innerHTML = `Thank you for your order. We've sent a confirmation email to <strong>${userData.email || 'customer@example.com'}</strong>`;
-        }
-        
-        // Update Shipping Details
-        const shippingDetails = document.getElementById('shipping-details');
-        if (shippingDetails) {
-            const address = safeOrder.address;
-            shippingDetails.innerHTML = `
-                <div class="shipping-card">
-                    <p><strong><i class="fas fa-user"></i> ${address.name || 'Customer'}</strong></p>
-                    <p><i class="fas fa-map-marker-alt"></i> ${address.address || 'N/A'}</p>
-                    <p><i class="fas fa-city"></i> ${address.city || 'N/A'}, ${address.state || 'N/A'} - ${address.pincode || 'N/A'}</p>
-                    <p><i class="fas fa-phone"></i> ${address.phone || 'N/A'}</p>
-                </div>
-            `;
-            console.log('Updated shipping details with:', address);
-        }
-        
-        // Update Payment Details
-        const paymentDetails = document.getElementById('payment-details');
-        if (paymentDetails) {
-            const paymentMethod = safeOrder.payment || 'Credit Card';
-            const paymentIcon = paymentMethod === 'Credit Card' ? 'fa-credit-card' : 
-                              paymentMethod === 'UPI' ? 'fa-mobile-alt' : 'fa-money-bill-wave';
-            
-            paymentDetails.innerHTML = `
-                <div class="payment-card">
-                    <p><strong><i class="fas ${paymentIcon}"></i> ${paymentMethod}</strong></p>
-                    ${paymentMethod === 'Credit Card' ? `
-                        <p><i class="fas fa-credit-card"></i> •••• •••• •••• 4242</p>
-                        <p><i class="fas fa-calendar-alt"></i> Expires: 12/25</p>
-                        <p><i class="fas fa-user"></i> Cardholder: ${safeOrder.address?.name || 'Customer'}</p>
-                    ` : paymentMethod === 'UPI' ? `
-                        <p><i class="fas fa-mobile-alt"></i> UPI ID: organicmart@upi</p>
-                        <p><i class="fas fa-check-circle" style="color: #4CAF50;"></i> Payment successful</p>
-                    ` : `
-                        <p><i class="fas fa-money-bill-wave"></i> Pay with cash on delivery</p>
-                        <p><i class="fas fa-info-circle"></i> Please keep exact change ready</p>
-                    `}
-                </div>
-            `;
-        }
-        
-        // Update Order Items
-        const orderItemsList = document.getElementById('order-items-list');
-        if (orderItemsList) {
-            if (safeOrder.items && safeOrder.items.length > 0) {
-                orderItemsList.innerHTML = safeOrder.items.map(item => {
-                    const itemTotal = (item.price || 0) * (item.quantity || 1);
-                    const weight = item.weight || 'Standard';
-                    const imageUrl = item.image || 'https://via.placeholder.com/80x80/4CAF50/ffffff?text=🍏';
-                    
-                    return `
-                        <div class="confirmation-item">
-                            <div class="item-image">
-                                <img src="${imageUrl}" alt="${item.name || 'Product'}" loading="lazy" 
-                                     onerror="this.src='https://via.placeholder.com/80x80/4CAF50/ffffff?text=🍏'">
-                            </div>
-                            <div class="item-details">
-                                <div class="item-info">
-                                    <span class="item-name">${item.name || 'Product'}</span>
-                                    <span class="item-variant">${weight}</span>
-                                    <small style="color: #666; margin-top: 6px;">${item.category || 'Organic'}</small>
-                                </div>
-                                <div class="item-quantity-price">
-                                    <span class="item-quantity">Qty: ${item.quantity || 1}</span>
-                                    <span class="item-price">₹${itemTotal}</span>
-                                    ${item.discount ? `<small style="color: #e53935; display: block;">Save ₹${Math.round(item.discount * item.price / 100)}</small>` : ''}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-                console.log(`Rendered ${safeOrder.items.length} items in confirmation`);
-            } else {
-                orderItemsList.innerHTML = `
-                    <div class="empty-items">
-                        <p>No items found in this order.</p>
-                    </div>
-                `;
-            }
-        }
-        
-        // Update Order Totals
-        const orderTotals = document.getElementById('order-totals');
-        if (orderTotals) {
-            orderTotals.innerHTML = `
-                <div class="total-row">
-                    <span>Subtotal (${safeOrder.items.length} items)</span>
-                    <span>₹${safeOrder.subtotal}</span>
-                </div>
-                <div class="total-row">
-                    <span>Shipping</span>
-                    <span>${safeOrder.delivery === 0 ? 'FREE' : '₹' + safeOrder.delivery}</span>
-                </div>
-                <div class="total-row">
-                    <span>Tax (GST 5%)</span>
-                    <span>₹${safeOrder.tax}</span>
-                </div>
-                <div class="total-row grand-total">
-                    <span>Total Paid</span>
-                    <span>₹${safeOrder.total}</span>
-                </div>
-            `;
-        }
-        
-        // Update Delivery Information
-        const deliveryInfo = document.getElementById('delivery-info');
-        if (deliveryInfo) {
-            const estimatedDate = new Date();
-            estimatedDate.setDate(estimatedDate.getDate() + 3);
-            const formattedDate = estimatedDate.toLocaleDateString('en-IN', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-            });
-            
-            deliveryInfo.innerHTML = `
-                <i class="fas fa-clock"></i>
-                <span>
-                    Estimated Delivery: <strong>2-3 business days</strong> 
-                    (Expected by ${formattedDate})
-                </span>
-            `;
-        }
-        
-        // Update Fast Delivery Option
-        const fastDelivery = document.getElementById('fast-delivery-option');
-        if (fastDelivery) {
-            fastDelivery.innerHTML = `
-                <i class="fas fa-rocket"></i>
-                <span>Express Delivery Available! Upgrade to <strong>2 hours</strong> delivery for <strong>₹99</strong></span>
-            `;
-        }
-        
-        console.log('Order confirmation updated successfully');
-    }
-
-    function showEmptyConfirmation() {
-        console.log('Showing empty confirmation state');
-        
-        const orderIdSpan = document.getElementById('order-id-value');
-        if (orderIdSpan) orderIdSpan.textContent = 'N/A';
-        
-        const orderItemsList = document.getElementById('order-items-list');
-        if (orderItemsList) {
-            orderItemsList.innerHTML = `
-                <div class="empty-confirmation">
-                    <i class="fas fa-shopping-bag" style="font-size: 48px; color: #ccc; margin-bottom: 20px;"></i>
-                    <h3>No Order Found</h3>
-                    <p>Looks like you haven't placed any orders yet.</p>
-                    <button onclick="showPage('products')" class="btn btn-primary" style="margin-top: 15px;">
-                        <i class="fas fa-shopping-cart"></i> Start Shopping
-                    </button>
-                </div>
-            `;
-        }
-        
-        const shippingDetails = document.getElementById('shipping-details');
-        if (shippingDetails) shippingDetails.innerHTML = '<p>No shipping information available</p>';
-        
-        const paymentDetails = document.getElementById('payment-details');
-        if (paymentDetails) paymentDetails.innerHTML = '<p>No payment information available</p>';
-        
-        const orderTotals = document.getElementById('order-totals');
-        if (orderTotals) orderTotals.innerHTML = '<p>No order totals available</p>';
-    }
-
-    function setupConfirmationEvents() {
-        const showOrdersBtn = document.getElementById('show-orders');
-        if (showOrdersBtn) {
-            showOrdersBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                showPage('profile');
-                // Switch to orders tab
-                setTimeout(() => {
-                    const ordersTab = document.querySelector('.profile-nav-item[data-tab="orders"]');
-                    if (ordersTab) ordersTab.click();
-                }, 100);
-            });
-        }
-        
-        const continueShoppingBtn = document.getElementById('continue-shopping');
-        if (continueShoppingBtn) {
-            continueShoppingBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                showPage('products');
-            });
         }
     }
 
@@ -4116,29 +3753,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setupCheckoutEvents();
         setupUPIPaymentEvents();
         setupFeedbackEvents();
-        
-        // Add Address Modal Events
-        const addAddressBtn = document.getElementById('add-address-btn');
-        if (addAddressBtn) {
-            addAddressBtn.addEventListener('click', function() {
-                showAddAddressModal();
-            });
-        }
-
-        const addAddressForm = document.getElementById('add-address-form');
-        if (addAddressForm) {
-            addAddressForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                saveAddress();
-            });
-        }
-
-        const modalCloseBtns = document.querySelectorAll('.modal-close, .modal-cancel');
-        modalCloseBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                hideAddAddressModal();
-            });
-        });
     }
 
     // ===== LOGIN FUNCTIONALITY =====
@@ -4481,6 +4095,28 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
+        const addAddressBtn = document.getElementById('add-address-btn');
+        if (addAddressBtn) {
+            addAddressBtn.addEventListener('click', function() {
+                showAddAddressModal();
+            });
+        }
+
+        const addAddressForm = document.getElementById('add-address-form');
+        if (addAddressForm) {
+            addAddressForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveAddress();
+            });
+        }
+
+        const modalCloseBtns = document.querySelectorAll('.modal-close, .modal-cancel');
+        modalCloseBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                hideAddAddressModal();
+            });
+        });
+        
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('btn-edit-address')) {
                 e.preventDefault();
@@ -4858,6 +4494,24 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-edit-address-checkout')) {
+                e.preventDefault();
+                const addressId = parseInt(e.target.getAttribute('data-address-id'));
+                
+                const newAddressRadio = document.getElementById('address-new');
+                if (newAddressRadio) {
+                    newAddressRadio.checked = true;
+                    addressForm.style.display = 'block';
+                    
+                    const address = userData.addresses.find(addr => addr.id === addressId);
+                    if (address) {
+                        fillFormWithAddress(address);
+                    }
+                }
+            }
+        });
+        
         renderCheckoutAddresses();
     }
 
@@ -4889,76 +4543,67 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderCheckoutAddresses() {
         const savedAddressesList = document.getElementById('saved-addresses-list');
-        if (!savedAddressesList) return;
+        if (!savedAddressesList || !userData.addresses || userData.addresses.length === 0) return;
         
         savedAddressesList.innerHTML = '';
         
-        if (userData.addresses && userData.addresses.length > 0) {
-            userData.addresses.forEach(address => {
-                const addressItem = document.createElement('div');
-                addressItem.className = 'address-option';
-                addressItem.innerHTML = `
-                    <input type="radio" name="saved-address" id="address-${address.id}" value="${address.id}" ${address.default ? 'checked' : ''}>
-                    <label for="address-${address.id}">
-                        <div class="address-option-content">
-                            <div class="address-option-header">
-                                <strong>${address.name}</strong>
-                                ${address.default ? '<span class="default-badge">Default</span>' : ''}
-                            </div>
-                            <div class="address-option-details">
-                                <p>${address.fullName || address.name}</p>
-                                <p>${address.street}</p>
-                                <p>${address.city}, ${address.state} - ${address.pincode}</p>
-                                <p>Phone: ${address.phone}</p>
-                            </div>
+        userData.addresses.forEach(address => {
+            const addressItem = document.createElement('div');
+            addressItem.className = 'address-option';
+            addressItem.innerHTML = `
+                <input type="radio" name="saved-address" id="address-${address.id}" value="${address.id}" ${address.default ? 'checked' : ''}>
+                <label for="address-${address.id}">
+                    <div class="address-option-content">
+                        <div class="address-option-header">
+                            <strong>${address.name}</strong>
+                            ${address.default ? '<span class="default-badge">Default</span>' : ''}
                         </div>
-                    </label>
-                `;
-                savedAddressesList.appendChild(addressItem);
-            });
-        }
-        
-        // Add "Add New Address" option
-        const addNewItem = document.createElement('div');
-        addNewItem.className = 'address-option add-new';
-        addNewItem.innerHTML = `
-            <input type="radio" name="saved-address" id="address-new" value="new">
-            <label for="address-new">
-                <div class="address-option-content">
-                    <div class="address-option-header">
-                        <strong style="color: #4CAF50;">+ Add New Address</strong>
+                        <div class="address-option-details">
+                            <p>${address.fullName || address.name}</p>
+                            <p>${address.street}</p>
+                            <p>${address.city}, ${address.state} - ${address.pincode}</p>
+                            <p>Phone: ${address.phone}</p>
+                        </div>
+                        <button class="btn-edit-address-checkout" data-address-id="${address.id}">
+                            Edit Address
+                        </button>
                     </div>
-                    <div class="address-option-details">
-                        <p style="color: #666;">Click to add a new delivery address</p>
-                    </div>
-                </div>
-            </label>
-        `;
-        savedAddressesList.appendChild(addNewItem);
+                </label>
+            `;
+            savedAddressesList.appendChild(addressItem);
+        });
         
-        document.querySelectorAll('input[name="saved-address"]').forEach(radio => {
-            radio.addEventListener('change', function() {
-                const addressForm = document.getElementById('address-form');
-                if (addressForm) {
-                    addressForm.style.display = this.value === 'new' ? 'block' : 'none';
-                }
+        document.querySelectorAll('.btn-edit-address-checkout').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const addressId = parseInt(this.getAttribute('data-address-id'));
                 
-                if (this.value !== 'new') {
-                    const addressId = parseInt(this.value);
+                const newAddressRadio = document.getElementById('address-new');
+                if (newAddressRadio) {
+                    newAddressRadio.checked = true;
+                    newAddressRadio.dispatchEvent(new Event('change'));
+                    
                     const address = userData.addresses.find(addr => addr.id === addressId);
                     if (address) {
                         fillFormWithAddress(address);
                     }
+                }
+            });
+        });
+        
+        document.querySelectorAll('input[name="saved-address"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value !== 'new') {
+                    const addressForm = document.getElementById('address-form');
+                    if (addressForm) {
+                        addressForm.style.display = 'none';
+                    }
                 } else {
-                    // Clear form for new address
-                    const formInputs = document.querySelectorAll('#address-form input, #address-form textarea');
-                    formInputs.forEach(input => {
-                        if (input.type !== 'checkbox') {
-                            input.value = '';
-                        }
-                    });
-                    const saveAddressCheckbox = document.getElementById('save-address');
-                    if (saveAddressCheckbox) saveAddressCheckbox.checked = true;
+                    const addressForm = document.getElementById('address-form');
+                    if (addressForm) {
+                        addressForm.style.display = 'block';
+                    }
                 }
             });
         });
@@ -6113,8 +5758,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const subtotal = userData.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         const delivery = subtotal > 499 ? 0 : 50;
-        const tax = Math.round(subtotal * 0.05); // 5% GST
-        const totalDiscount = userData.cart.reduce((sum, item) => sum + ((item.originalPrice - item.price) * item.quantity), 0);
+        const tax = subtotal * 0.05;
         
         let couponDiscount = 0;
         if (activeCoupon) {
@@ -6130,13 +5774,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        const total = Math.max(0, subtotal + delivery + tax - totalDiscount - couponDiscount);
+        const total = Math.max(0, subtotal + delivery + tax - couponDiscount);
         
         return {
             subtotal,
             delivery,
             tax,
-            totalDiscount,
             couponDiscount,
             total
         };
@@ -6312,13 +5955,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('add-address-modal');
         if (modal) {
             modal.style.display = 'flex';
-            
-            // Reset form
-            const form = document.getElementById('add-address-form');
-            if (form) form.reset();
-            
-            // Remove any existing edit data
-            delete modal.dataset.editAddressId;
         }
     }
 
@@ -6328,7 +5964,6 @@ document.addEventListener('DOMContentLoaded', function() {
             modal.style.display = 'none';
             const form = document.getElementById('add-address-form');
             if (form) form.reset();
-            delete modal.dataset.editAddressId;
         }
     }
 
@@ -6342,72 +5977,34 @@ document.addEventListener('DOMContentLoaded', function() {
         const state = document.getElementById('address-state').value;
         const isDefault = document.getElementById('default-address').checked;
         
-        if (!name || !fullName || !phone || !street || !city || !pincode || !state) {
-            alert('Please fill all fields');
-            return;
+        const newAddress = {
+            id: Date.now(),
+            name,
+            fullName,
+            phone,
+            street,
+            city,
+            pincode,
+            state,
+            default: isDefault
+        };
+        
+        if (isDefault) {
+            userData.addresses.forEach(addr => addr.default = false);
         }
         
-        if (!validatePhone(phone.replace(/\D/g, ''))) {
-            alert('Please enter a valid phone number');
-            return;
-        }
-        
-        const modal = document.getElementById('add-address-modal');
-        const editAddressId = modal ? parseInt(modal.dataset.editAddressId) : null;
-        
-        if (editAddressId) {
-            // Update existing address
-            const addressIndex = userData.addresses.findIndex(addr => addr.id === editAddressId);
-            if (addressIndex !== -1) {
-                if (isDefault) {
-                    userData.addresses.forEach(addr => addr.default = false);
-                }
-                
-                userData.addresses[addressIndex] = {
-                    ...userData.addresses[addressIndex],
-                    name,
-                    fullName,
-                    phone,
-                    street,
-                    city,
-                    pincode,
-                    state,
-                    default: isDefault
-                };
-            }
-        } else {
-            // Add new address
-            const newAddress = {
-                id: Date.now(),
-                name,
-                fullName,
-                phone,
-                street,
-                city,
-                pincode,
-                state,
-                default: isDefault
-            };
-            
-            if (isDefault) {
-                userData.addresses.forEach(addr => addr.default = false);
-            }
-            
-            userData.addresses.push(newAddress);
-        }
-        
+        userData.addresses.push(newAddress);
         saveUserData();
         hideAddAddressModal();
         renderAddresses();
         syncAddressesToCheckout();
-        showToastMessage(editAddressId ? 'Address updated successfully!' : 'Address saved successfully!');
+        showToastMessage('Address saved successfully!');
     }
 
     function editAddress(addressId) {
         const address = userData.addresses.find(addr => addr.id === addressId);
         if (!address) return;
         
-        // Fill form with address data
         document.getElementById('address-name').value = address.name;
         document.getElementById('address-fullname').value = address.fullName || address.name;
         document.getElementById('address-phone').value = address.phone;
@@ -6417,18 +6014,39 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('address-state').value = address.state;
         document.getElementById('default-address').checked = address.default;
         
-        // Set edit mode
-        const modal = document.getElementById('add-address-modal');
-        if (modal) {
-            modal.dataset.editAddressId = addressId;
-            modal.style.display = 'flex';
+        showAddAddressModal();
+        
+        const form = document.getElementById('add-address-form');
+        const oldSubmitHandler = form.onsubmit;
+        form.onsubmit = function(e) {
+            e.preventDefault();
             
-            // Update modal title
-            const modalTitle = modal.querySelector('h3');
-            if (modalTitle) {
-                modalTitle.textContent = 'Edit Address';
+            const updatedAddress = {
+                ...address,
+                name: document.getElementById('address-name').value,
+                fullName: document.getElementById('address-fullname').value,
+                phone: document.getElementById('address-phone').value,
+                street: document.getElementById('address-street').value,
+                city: document.getElementById('address-city').value,
+                pincode: document.getElementById('address-pincode').value,
+                state: document.getElementById('address-state').value,
+                default: document.getElementById('default-address').checked
+            };
+            
+            userData.addresses = userData.addresses.filter(addr => addr.id !== addressId);
+            
+            if (updatedAddress.default) {
+                userData.addresses.forEach(addr => addr.default = false);
             }
-        }
+            
+            userData.addresses.push(updatedAddress);
+            saveUserData();
+            hideAddAddressModal();
+            renderAddresses();
+            syncAddressesToCheckout();
+            showToastMessage('Address updated successfully!');
+            form.onsubmit = oldSubmitHandler;
+        };
     }
 
     function deleteAddress(addressId) {
@@ -6461,16 +6079,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     <i class="fas fa-map-marker-alt"></i>
                     <h3>No Saved Addresses</h3>
                     <p>Add your first address to get started</p>
-                    <button class="btn" id="add-address-btn">Add Address</button>
                 </div>
             `;
-            
-            const addAddressBtn = document.getElementById('add-address-btn');
-            if (addAddressBtn) {
-                addAddressBtn.addEventListener('click', function() {
-                    showAddAddressModal();
-                });
-            }
             return;
         }
         
@@ -6527,14 +6137,14 @@ document.addEventListener('DOMContentLoaded', function() {
                             <img src="${item.image}" alt="${item.name}">
                             <div>
                                 <p>${item.name}</p>
-                                <p>${item.weight || '500g'} × ${item.quantity}</p>
+                                <p>${item.weight} × ${item.quantity}</p>
                             </div>
                         </div>
                     `).join('')}
                     ${order.items.length > 2 ? `<p class="more-items">+${order.items.length - 2} more items</p>` : ''}
                 </div>
                 <div class="order-footer">
-                    <div class="order-total">Total: ₹${order.total}</div>
+                    <div class="order-total">Total: ₹${order.total.toFixed(2)}</div>
                     <div class="order-actions">
                         <button class="btn-view-order" data-order-id="${order.id}">View Details</button>
                         <button class="btn-track-order track-order-btn" data-order-id="${order.id}">Track Order</button>
@@ -6590,10 +6200,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const summaryElements = [
             { id: 'checkout-subtotal', value: `₹${totals.subtotal}` },
             { id: 'checkout-delivery', value: totals.delivery === 0 ? 'Free' : `₹${totals.delivery}` },
-            { id: 'checkout-tax', value: `₹${totals.tax}` },
-            { id: 'checkout-coupon', value: activeCoupon ? `-₹${totals.couponDiscount}` : '₹0' },
-            { id: 'checkout-total', value: `₹${totals.total}` },
-            { id: 'confirm-total', value: `₹${totals.total}` }
+            { id: 'checkout-tax', value: `₹${totals.tax.toFixed(2)}` },
+            { id: 'checkout-coupon', value: activeCoupon ? `-₹${totals.couponDiscount.toFixed(2)}` : '₹0' },
+            { id: 'checkout-total', value: `₹${totals.total.toFixed(2)}` },
+            { id: 'confirm-total', value: `₹${totals.total.toFixed(2)}` }
         ];
         
         summaryElements.forEach(item => {
@@ -6767,12 +6377,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedAddress = document.querySelector('input[name="saved-address"]:checked');
         let addressData;
         
-        if (!selectedAddress) {
-            console.error('No address selected');
-            alert('Please select or enter a delivery address');
-            return;
-        }
-        
         if (selectedAddress.value === 'new') {
             const name = document.getElementById('delivery-name').value;
             const phone = document.getElementById('delivery-phone').value;
@@ -6804,18 +6408,28 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        const deliveryOption = document.querySelector('input[name="delivery"]:checked');
+        const deliveryText = {
+            'standard': '2-3 business days',
+            'express': 'Next day delivery'
+        }[deliveryOption.value] || 'Standard Delivery';
+
         const paymentMethod = document.querySelector('input[name="payment"]:checked');
         const paymentText = {
             'card': 'Credit Card',
             'upi': 'UPI',
             'cod': 'Cash on Delivery'
-        }[paymentMethod ? paymentMethod.value : ''] || 'Credit Card';
-        
+        }[paymentMethod.value] || 'Unknown';
+
         const orderId = 'OM' + Date.now().toString().slice(-6);
         const orderDate = new Date().toLocaleDateString('en-IN', {
             day: '2-digit',
             month: 'short',
             year: 'numeric'
+        });
+        const orderTime = new Date().toLocaleTimeString('en-IN', {
+            hour: '2-digit',
+            minute: '2-digit'
         });
         
         const totals = calculateCartTotals();
@@ -6835,30 +6449,62 @@ document.addEventListener('DOMContentLoaded', function() {
         const order = {
             id: orderId,
             date: orderDate,
-            time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
+            time: orderTime,
             items: orderItems,
             total: totals.total,
             subtotal: totals.subtotal,
             delivery: totals.delivery,
             tax: totals.tax,
+            couponDiscount: totals.couponDiscount,
+            status: 'confirmed',
             address: addressData,
             payment: paymentText,
-            status: 'confirmed'
+            deliveryOption: deliveryText,
+            couponUsed: activeCoupon ? activeCoupon.code : null
         };
         
         console.log('Order created:', order);
+        console.log('Order items:', orderItems);
         
         if (!userData.orders) {
             userData.orders = [];
         }
         
         userData.orders.push(order);
+        
         userData.cart = [];
+        activeCoupon = null;
         saveUserData();
         updateCartCount();
         
-        // Show order confirmation page
-        showPage('confirmation');
+        const orderIdElement = document.querySelector('.order-id');
+        if (orderIdElement) {
+            orderIdElement.textContent = `Order #${orderId}`;
+        }
+        
+        const confirmAddress = document.getElementById('confirm-address');
+        if (confirmAddress && addressData) {
+            confirmAddress.textContent = `${addressData.address}, ${addressData.city}, ${addressData.state} - ${addressData.pincode}`;
+        }
+        
+        const confirmDelivery = document.getElementById('confirm-delivery');
+        if (confirmDelivery) {
+            confirmDelivery.textContent = deliveryText;
+        }
+        
+        const confirmPayment = document.getElementById('confirm-payment');
+        if (confirmPayment) {
+            confirmPayment.textContent = paymentText;
+        }
+        
+        const confirmItems = document.getElementById('confirm-items');
+        if (confirmItems) {
+            confirmItems.textContent = `${order.items.length} items`;
+        }
+        
+        showToastMessage('Order placed successfully!');
+        
+        console.log('Order completed successfully');
     }
 
     // ===== QUICK VIEW FUNCTIONALITY =====
@@ -8003,8 +7649,7 @@ window.showPage = function(pageName) {
         products: document.getElementById('products-page'),
         profile: document.getElementById('profile-page'),
         cart: document.getElementById('cart-page'),
-        checkout: document.getElementById('checkout-page'),
-        confirmation: document.getElementById('order-confirmation-page')
+        checkout: document.getElementById('checkout-page')
     };
     
     // Hide all main pages
@@ -8030,7 +7675,7 @@ window.showPage = function(pageName) {
 
 window.showInfoPage = function(pageId) {
     // Hide all main pages
-    document.querySelectorAll('#login-page, #signup-page, #products-page, #profile-page, #cart-page, #checkout-page, #order-confirmation-page').forEach(page => {
+    document.querySelectorAll('#login-page, #signup-page, #products-page, #profile-page, #cart-page, #checkout-page').forEach(page => {
         if (page) {
             page.style.display = 'none';
             page.classList.remove('active');
