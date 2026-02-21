@@ -8127,16 +8127,62 @@ textarea {
     min-width: 1200px !important;
   }
 }
-select{
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background: #fff;
-  border: 2px solid #2f7d32;
-  border-radius: 10px;
-  padding: 8px 36px 8px 12px;
+/* ========== GLOBAL FIX (RIGHT SIDE GAP REMOVE) ========== */
+html, body {
+  width: 100%;
+  overflow-x: hidden !important;
 }
-/* FIX LOGIN PAGE LAYOUT ON MOBILE + DESKTOP MODE */
+
+.container,
+.main-container,
+.products-section {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 12px;
+}
+
+/* ========== FORCE 4 PRODUCTS EVEN IN MOBILE DESKTOP MODE ========== */
+.products-grid,
+.products-container {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 16px !important;
+}
+
+/* Card width fix */
+.product-card {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* ========== MOBILE NORMAL MODE (REAL MOBILE VIEW) ========== */
+@media (max-width: 768px) {
+  .products-grid,
+  .products-container {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* ========== HEADER FIXED ONLY IN LAPTOP ========== */
+@media (min-width: 1024px) {
+  header,
+  .main-header,
+  .navbar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 9999;
+    background: #fff;
+  }
+
+  body {
+    padding-top: 80px; /* header height adjust */
+  }
+}
+
+/* ========== LOGIN PAGE FIX (NO CHANGE NEEDED) ========== */
 .login-page,
 .auth-container {
   width: 100% !important;
@@ -8162,10 +8208,4 @@ select{
   .auth-left {
     display: none !important;
   }
-}
-
-/* REMOVE WHITE GAP */
-html, body {
-  width: 100%;
-  overflow-x: hidden;
 }
