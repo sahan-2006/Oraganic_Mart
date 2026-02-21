@@ -8127,3 +8127,12 @@ textarea {
     min-width: 1200px !important;
   }
 }
+select{
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: #fff;
+  border: 2px solid #2f7d32;
+  border-radius: 10px;
+  padding: 8px 36px 8px 12px;
+}
