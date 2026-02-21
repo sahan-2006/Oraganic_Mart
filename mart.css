@@ -8164,3 +8164,41 @@ textarea {
   .categories { grid-template-columns: 1fr !important; }
   .hero h1 { font-size: 18px; }
 }
+/* ===== FIX: Mobile full-width layout ===== */
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.container, .wrapper, .main, .content, .page {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  padding: 0 12px !important;
+}
+
+/* Fix hero + sections not spanning full width */
+.hero, .features, .categories, .products, .newsletter, .footer {
+  width: 100% !important;
+}
+
+/* Grid fix for products */
+.products-grid {
+  display: grid !important;
+  grid-template-columns: 1fr !important;   /* 1 per row on mobile */
+  gap: 12px;
+}
+
+/* Categories 1 per row on mobile */
+.categories {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 10px;
+}
+
+/* Navbar wrap properly */
+@media (max-width: 768px) {
+  .navbar { flex-direction: column; }
+  .nav-links { justify-content: center; flex-wrap: wrap; }
+  .search-bar { width: 100% !important; }
+}
