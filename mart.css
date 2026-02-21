@@ -8136,3 +8136,36 @@ select{
   border-radius: 10px;
   padding: 8px 36px 8px 12px;
 }
+/* FIX LOGIN PAGE LAYOUT ON MOBILE + DESKTOP MODE */
+.login-page,
+.auth-container {
+  width: 100% !important;
+  min-height: 100vh !important;
+  display: grid !important;
+  grid-template-columns: 1fr 420px !important;
+}
+
+@media (max-width: 1024px) {
+  .login-page,
+  .auth-container {
+    grid-template-columns: 1fr !important;
+  }
+
+  .auth-right,
+  .login-form-container {
+    width: 100% !important;
+    max-width: 420px !important;
+    margin: 0 auto !important;
+    padding: 24px !important;
+  }
+
+  .auth-left {
+    display: none !important;
+  }
+}
+
+/* REMOVE WHITE GAP */
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
