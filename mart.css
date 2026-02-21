@@ -8116,34 +8116,757 @@ textarea {
   -webkit-appearance: auto !important;
   appearance: auto !important;
 }
-/* ===== HARD FIX: Home page right gap on mobile ===== */
-html, body {
-  max-width: 100%;
-  overflow-x: hidden !important;
+/* ===== MOBILE RESPONSIVE STYLES ===== */
+/* Add these at the end of your CSS file */
+
+/* Base mobile adjustments */
+@media screen and (max-width: 768px) {
+    /* Typography adjustments */
+    body {
+        font-size: 14px;
+    }
+
+    h1 {
+        font-size: 1.8rem !important;
+    }
+
+    h2 {
+        font-size: 1.5rem !important;
+    }
+
+    /* Container padding */
+    .container {
+        padding: 0 15px;
+    }
+
+    /* Header mobile styles */
+    .header-container {
+        flex-wrap: wrap;
+        gap: 15px;
+        padding: 10px 0;
+    }
+
+    .logo img {
+        height: 40px;
+    }
+
+    .logo-text {
+        font-size: 1.2rem;
+    }
+
+    /* Navigation - Mobile Menu */
+    nav {
+        order: 3;
+        width: 100%;
+        display: none; /* Hidden by default on mobile */
+    }
+
+    nav.active {
+        display: block;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px 0;
+    }
+
+    nav a {
+        display: block;
+        padding: 12px 15px;
+        text-align: center;
+    }
+
+    /* Mobile menu toggle button */
+    .mobile-menu-toggle {
+        display: block;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--primary);
+        cursor: pointer;
+    }
+
+    /* Search container mobile */
+    .search-form {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .search-input {
+        padding: 12px 15px;
+    }
+
+    /* Hero section mobile */
+    .hero {
+        height: 400px;
+        margin-bottom: 40px;
+    }
+
+    .hero h1 {
+        font-size: 2rem !important;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .hero-buttons .btn {
+        width: 100%;
+    }
+
+    /* Features section mobile */
+    .features {
+        gap: 15px;
+    }
+
+    .feature-card {
+        width: calc(50% - 15px);
+        padding: 20px;
+    }
+
+    /* Products grid mobile */
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 15px;
+    }
+
+    .product-image {
+        height: 150px;
+    }
+
+    .product-info {
+        padding: 15px;
+    }
+
+    .product-title {
+        font-size: 1rem;
+    }
+
+    /* Categories grid mobile */
+    .categories-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
+    .category-card {
+        height: 120px;
+    }
+
+    /* About section mobile */
+    .about-container {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .about-image,
+    .about-content {
+        width: 100%;
+    }
+
+    /* Newsletter mobile */
+    .newsletter-form {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .newsletter-form input,
+    .newsletter-form button {
+        width: 100%;
+        border-radius: var(--radius) !important;
+    }
+
+    /* Footer mobile */
+    .footer-container {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .footer-col {
+        text-align: center;
+    }
+
+    .footer-col h4:after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .social-links {
+        justify-content: center;
+    }
+
+    .contact-info li {
+        justify-content: center;
+    }
+
+    /* Cart page mobile */
+    .cart-content {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .cart-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 15px;
+    }
+
+    .cart-item-image {
+        width: 150px;
+        height: 150px;
+    }
+
+    .cart-item-header {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .cart-item-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .quantity-controls {
+        justify-content: center;
+    }
+
+    .cart-summary {
+        position: static;
+    }
+
+    /* Checkout page mobile */
+    .checkout-steps {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .checkout-steps .step {
+        width: 100%;
+    }
+
+    .checkout-steps::before,
+    .checkout-steps .step::after {
+        display: none;
+    }
+
+    .checkout-content {
+        padding: 20px;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .delivery-options {
+        flex-direction: column !important;
+    }
+
+    .delivery-option {
+        width: 100% !important;
+    }
+
+    .payment-options {
+        grid-template-columns: 1fr;
+    }
+
+    .checkout-actions {
+        flex-direction: column-reverse;
+        gap: 15px;
+    }
+
+    .btn-prev,
+    .btn-next {
+        width: 100%;
+    }
+
+    /* Profile page mobile */
+    .profile-container {
+        flex-direction: column;
+    }
+
+    .profile-sidebar {
+        width: 100%;
+    }
+
+    .addresses-list {
+        grid-template-columns: 1fr;
+    }
+
+    .address-card {
+        width: 100%;
+    }
+
+    .address-actions {
+        flex-wrap: wrap;
+    }
+
+    /* Login/Signup mobile */
+    #login-page,
+    #signup-page {
+        flex-direction: column;
+    }
+
+    .background-container {
+        display: none; /* Hide background on mobile for better UX */
+    }
+
+    .login-wrapper {
+        width: 100%;
+        min-height: 100vh;
+    }
+
+    .login-container {
+        padding: 20px;
+    }
+
+    .login-card {
+        max-width: 100%;
+    }
+
+    .social-login {
+        flex-direction: column;
+    }
+
+    .social-btn {
+        width: 100%;
+    }
+
+    /* Modal mobile */
+    .modal-content {
+        width: 95%;
+        padding: 20px;
+        margin: 10px;
+    }
+
+    /* Info pages mobile */
+    .info-container {
+        padding: 20px;
+    }
+
+    .info-header {
+        padding-top: 80px;
+    }
+
+    .btn-back {
+        top: 10px;
+        left: 10px;
+    }
+
+    .info-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .options-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .process-steps.horizontal {
+        flex-direction: column;
+    }
+
+    /* FAQ mobile */
+    .faq-categories {
+        flex-wrap: wrap;
+    }
+
+    .category-btn {
+        width: calc(50% - 6px);
+        text-align: center;
+    }
+
+    .faq-question {
+        padding: 15px;
+    }
+
+    .question-content {
+        flex: 1;
+    }
+
+    .question-content h3 {
+        font-size: 1rem;
+    }
+
+    /* Payment methods mobile */
+    .upi-apps {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .qr-main-section {
+        grid-template-columns: 1fr;
+    }
+
+    .qr-code {
+        width: 100%;
+        height: auto;
+    }
+
+    .steps {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    /* Reviews mobile */
+    .reviews-header {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .reviews-summary {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .write-review-btn {
+        margin-top: 0;
+        left: 0;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .review-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .review-product {
+        width: 100%;
+    }
+
+    .review-rating {
+        align-items: flex-start;
+    }
+
+    .rating-input {
+        align-items: center;
+    }
+
+    .rating-stars-input label {
+        font-size: 24px;
+    }
+
+    /* Form actions mobile */
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions button {
+        width: 100%;
+    }
+
+    /* OTP input mobile */
+    .otp-input-container {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .otp-input {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* Table responsiveness */
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    /* Touch-friendly buttons */
+    button,
+    .btn,
+    .nav a,
+    .feature-card,
+    .product-card,
+    .category-card {
+        min-height: 44px; /* Apple's recommended touch target size */
+    }
+
+    /* Improve spacing for touch */
+    .quantity-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .cart-item-actions button {
+        padding: 12px 20px;
+    }
+
+    /* Hide desktop-only elements */
+    .desktop-only {
+        display: none;
+    }
+
+    /* Show mobile-only elements */
+    .mobile-only {
+        display: block;
+    }
 }
 
-/* Kill any 100vw / min-width on home hero/banner */
-@media (max-width: 768px) {
-  .home *, .hero *, .home-section *, .banner * {
-    max-width: 100% !important;
-  }
+/* Extra small devices (phones, 480px and below) */
+@media screen and (max-width: 480px) {
+    .feature-card {
+        width: 100%;
+    }
 
-  .home, .home-page, .hero, .hero-section, .banner, .home-wrapper {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin-right: 0 !important;
-  }
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
 
-  /* If any element is pushing width */
-  [style*="100vw"], 
-  [style*="min-width"], 
-  [style*="width: 100vw"] {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
+    .categories-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero {
+        height: 350px;
+    }
+
+    .hero h1 {
+        font-size: 1.5rem !important;
+    }
+
+    .section-title h2 {
+        font-size: 1.5rem;
+    }
+
+    .product-image {
+        height: 200px;
+    }
+
+    .cart-item-image {
+        width: 120px;
+        height: 120px;
+    }
+
+    .order-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .upi-apps {
+        grid-template-columns: 1fr;
+    }
+
+    .rating-group {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .support-buttons {
+        flex-direction: column;
+    }
+
+    .support-buttons .btn {
+        width: 100%;
+    }
+
+    .confirmation-actions {
+        flex-direction: column;
+    }
+
+    .confirmation-actions .btn {
+        width: 100%;
+    }
 }
 
-/* Safety net */
-* {
-  box-sizing: border-box;
+/* Small devices (landscape phones) */
+@media screen and (min-width: 481px) and (max-width: 768px) and (orientation: landscape) {
+    .hero {
+        height: 300px;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .features {
+        justify-content: space-between;
+    }
+
+    .feature-card {
+        width: calc(33.333% - 15px);
+    }
+}
+
+/* Tablet devices */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    .container {
+        padding: 0 25px;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .feature-card {
+        width: calc(33.333% - 20px);
+    }
+
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+
+    .cart-content {
+        gap: 30px;
+    }
+
+    .cart-summary {
+        min-width: 300px;
+    }
+
+    .profile-sidebar {
+        width: 250px;
+    }
+
+    .upi-apps {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Large desktop screens */
+@media screen and (min-width: 1400px) {
+    .container {
+        max-width: 1400px;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    .hero {
+        height: 600px;
+    }
+
+    .hero h1 {
+        font-size: 3.2rem;
+    }
+}
+
+/* Print styles */
+@media print {
+    header,
+    footer,
+    .hero,
+    .newsletter,
+    .features,
+    .cart-actions,
+    .checkout-actions,
+    .btn,
+    .social-login,
+    .newsletter-form {
+        display: none !important;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+
+    .container {
+        max-width: 100%;
+        padding: 0;
+    }
+
+    a {
+        text-decoration: none;
+        color: black;
+    }
+
+    .product-card,
+    .cart-item,
+    .order-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
+
+/* Accessibility - Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --primary: #006400;
+        --primary-dark: #004d00;
+        --text: #000000;
+        --text-light: #333333;
+    }
+
+    .btn,
+    .product-card,
+    .category-card {
+        border: 2px solid currentColor;
+    }
+}
+
+/* Dark mode support (if needed) */
+@media (prefers-color-scheme: dark) {
+    /* Add dark mode styles if your design supports it */
+    /* Currently your design is light-only based on the force light mode at the end */
+}
+
+/* Add mobile menu toggle button HTML structure */
+.mobile-menu-toggle {
+    display: none;
+}
+
+@media screen and (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: block;
+        order: 2;
+    }
+
+    .header-icons {
+        order: 1;
+    }
+}
+
+/* Fix for iOS input zoom */
+@media screen and (max-width: 768px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    select,
+    textarea {
+        font-size: 16px !important; /* Prevents zoom on focus in iOS */
+    }
+}
+
+/* Fix for sticky hover on mobile */
+@media (hover: none) {
+    .product-card:hover,
+    .category-card:hover,
+    .btn:hover {
+        transform: none;
+    }
+}
+
+/* Smooth scrolling for anchor links */
+html {
+    scroll-padding-top: 80px; /* Account for fixed header */
+}
+
+@media screen and (max-width: 768px) {
+    html {
+        scroll-padding-top: 120px; /* Larger for mobile header */
+    }
 }
