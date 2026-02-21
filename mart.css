@@ -8181,4 +8181,38 @@ html, body {
     padding-top: 80px; /* header height adjust */
   }
 }
+/* FORCE 4 PRODUCTS PER ROW EVERYWHERE */
+.products-grid,
+.products-container {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 16px !important;
+}
+
+/* FULL WIDTH FIX */
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.container,
+.main-container,
+.products-section {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 12px;
+}
+
+/* DESKTOP MODE WIDTH FORCE (phone desktop mode) */
+@media (max-width: 1024px) {
+  body {
+    min-width: 1200px !important;
+    overflow-x: auto;
+  }
+
+  .container, .wrapper, .main-container {
+    min-width: 1200px !important;
+  }
+}
 
