@@ -8116,3 +8116,14 @@ textarea {
   -webkit-appearance: auto !important;
   appearance: auto !important;
 }
+/* FORCE DESKTOP LAYOUT EVEN ON MOBILE DESKTOP MODE */
+@media (max-width: 1024px) {
+  body {
+    min-width: 1200px !important;
+    overflow-x: auto;
+  }
+
+  .container, .wrapper, .main-container {
+    min-width: 1200px !important;
+  }
+}
