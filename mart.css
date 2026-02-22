@@ -876,49 +876,6 @@ footer {
     margin-bottom: 20px;
 }
 
-/* Address form container */
-.address-form-container {
-    margin-top: 20px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-}
-
-.address-form {
-    margin-top: 15px;
-}
-
-/* Form styling */
-.form-row {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
-.form-row .form-group {
-    flex: 1;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
-}
-
-.form-group input,
-.form-group textarea {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
 #add-new-address-btn {
     padding: 10px 16px;
     font-size: 14px;
@@ -930,7 +887,34 @@ footer {
     justify-content: center;
     gap: 8px;
 }
+/* Green heading */
+.address-form-container h3 {
+  color: #2e7d32;
+}
 
+/* Stylish inputs */
+.address-form input,
+.address-form textarea {
+  background: #f9fff9;
+  border: 1px solid #c8e6c9;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+}
+
+/* REMOVE OUTER FOCUS BOX */
+.address-form input,
+.address-form textarea {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.address-form input:focus,
+.address-form textarea:focus {
+  outline: none !important;
+  box-shadow: none !important;   /* outer ring remove */
+  border-color: #2e7d32;         /* inner green border only */
+}
 #add-new-address-btn i.fas.fa-plus {
     font-size: 14px;
     line-height: 1;
@@ -8234,5 +8218,19 @@ html, body {
 
   .container, .wrapper, .main-container {
     min-width: 1200px !important;
+  }
+}
+/* FORCE 4 PRODUCTS PER ROW EVEN IN MOBILE NORMAL MODE */
+@media (max-width: 1024px) {
+  .products-grid,
+  .products-container {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  .product-card {
+    width: 100% !important;
+    min-width: 0 !important;
   }
 }
