@@ -8164,7 +8164,7 @@ html, body {
   }
 }
 
-/* ========== HEADER FIXED ONLY IN LAPTOP ========== */
+/* ========== HEADER FIXED ONLY IN LAPTOP (NO BODY, NO DISTURB) ========== */
 @media (min-width: 1024px) {
   header,
   .main-header,
@@ -8177,8 +8177,29 @@ html, body {
     background: #fff;
   }
 
-  body {
-    padding-top: 80px; /* header height adjust */
+  /* Push ONLY the element immediately after header */
+  header + * {
+    margin-top: 80px;
+  }
+}
+/* ========== HEADER FIXED ONLY IN LAPTOP (SAFE ALTERNATE) ========== */
+@media (min-width: 1024px) {
+  header,
+  .main-header,
+  .navbar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 9999;
+    background: #fff;
+  }
+@media (min-width: 1024px) {
+  header + .container,
+  header + main,
+  header + .main-content,
+  header + .page-content {
+    margin-top: 100px;  /* 96px → 100px (just light adjust) */
   }
 }
 /* FORCE 4 PRODUCTS PER ROW EVERYWHERE */
@@ -8215,4 +8236,3 @@ html, body {
     min-width: 1200px !important;
   }
 }
-
