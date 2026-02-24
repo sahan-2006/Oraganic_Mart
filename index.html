@@ -2878,7 +2878,7 @@
 
         <!-- Back Button at Bottom -->
         <div class="info-footer">
-            <button class="btn btn-secondary" onclick="goBack()">
+            <button class="btn btn-primary" onclick="goBack()">
                 <i class="fas fa-arrow-left"></i> Back to Shopping
             </button>
             <button class="btn btn-primary" onclick="showPage('products')">
@@ -3018,7 +3018,7 @@
 
         <!-- Back Button at Bottom -->
         <div class="info-footer">
-            <button class="btn btn-secondary" onclick="goBack()">
+            <button class="btn btn-primary" onclick="goBack()">
                 <i class="fas fa-arrow-left"></i> Back to Shopping
             </button>
             <button class="btn btn-primary" onclick="showPage('products')">
@@ -3253,7 +3253,7 @@
                 <h3>Still have questions?</h3>
                 <p>Can't find the answer you're looking for? Please chat with our friendly team.</p>
                 <div class="contact-options">
-                    <button class="btn btn-primary" onclick="contactSupport()">
+                    <button class="btn btn-secondary" onclick="contactSupport()">
                         <i class="fas fa-headset"></i> Contact Support
                     </button>
                     <button class="btn btn-secondary" onclick="openLiveChat()">
@@ -3269,7 +3269,7 @@
 
         <!-- Back Button at Bottom -->
         <div class="info-footer">
-            <button class="btn btn-secondary" onclick="goBack()">
+            <button class="btn btn-primary" onclick="goBack()">
                 <i class="fas fa-arrow-left"></i> Back to Shopping
             </button>
             <button class="btn btn-primary" onclick="showPage('products')">
@@ -3379,53 +3379,74 @@
                             </button>
                         </div>
                     </div>
-                    <!-- Address Form Section (Initially Hidden) -->
-                    <div id="address-form-container" class="address-form-container" style="display: none;">
-                        <h3>Add New Address</h3> 
-                        <div id="address-form" class="address-form">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="delivery-name">Full Name</label>
-                                    <input type="text" id="delivery-name" name="name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="delivery-phone">Phone Number</label>
-                                    <input type="tel" id="delivery-phone" name="phone" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="delivery-address">Address</label>
-                                <textarea id="delivery-address" name="address" rows="3" required></textarea>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="delivery-city">City</label>
-                                    <input type="text" id="delivery-city" name="city" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="delivery-pincode">Pincode</label>
-                                    <input type="text" id="delivery-pincode" name="pincode" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="delivery-state">State</label>
-                                <input type="text" id="delivery-state" name="state" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="save-address" name="save_address" checked>
-                                    <span>Save this address for future orders</span>
-                                </label>
-                            </div>
-                            
-                            <div class="form-actions">
-                                <button type="button" id="cancel-address-btn" class="btn btn-secondary">Cancel</button>
-                                <button type="button" id="save-address-btn" class="btn btn-primary">Save Address</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    
+                   <!-- Address Form Section (Initially Hidden) -->
+<div id="address-form-container" class="address-form-container" style="display: none;">
+  <h3>Add New Address</h3> 
+  <div id="address-form" class="address-form">
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="delivery-name">Full Name</label>
+        <input type="text" id="delivery-name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label for="delivery-phone">Phone Number</label>
+        <input type="tel" id="delivery-phone" name="phone" required>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="delivery-address">Address</label>
+      <textarea id="delivery-address" name="address" rows="3" required></textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="delivery-city">City</label>
+        <input type="text" id="delivery-city" name="city" required>
+      </div>
+      <div class="form-group">
+        <label for="delivery-pincode">Pincode</label>
+        <input type="text" id="delivery-pincode" name="pincode" required>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="delivery-state">State</label>
+      <input type="text" id="delivery-state" name="state" required>
+    </div>
+
+    <!-- ✅ Address Type (Home / Office) -->
+    <div class="form-group address-type-group">
+      <label>Address Type</label>
+      <div class="address-type-options">
+        <label class="address-type-box">
+          <input type="radio" name="address_type" value="Home" checked>
+          <span>🏠 Home</span>
+        </label>
+        <label class="address-type-box">
+          <input type="radio" name="address_type" value="Office">
+          <span>🏢 Office</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="checkbox-label">
+        <input type="checkbox" id="save-address" name="save_address" checked>
+        <span>Save this as default address</span>
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" id="cancel-address-btn" class="btn btn-secondary">Cancel</button>
+      <button type="button" id="save-address-btn" class="btn btn-primary">Save Address</button>
+    </div>
+
+  </div>
+</div>
+</div>
                 <!-- Reviews Tab -->
                 <div id="reviews" class="profile-tab">
                     <div class="reviews-container">
@@ -4177,29 +4198,16 @@
                         </div>
                     </div>
                 </div>
-
-             <!-- Confirmation Step -->
+<!-- Confirmation Step -->
 <div class="checkout-step" id="confirmation-step">
     <h2>Order Confirmation</h2>
     
     <div class="confirmation-details">
         <div class="order-header">
-          <div class="order-info">
-    <span class="order-label">Order ID:</span>
-    <span class="order-value" id="order-id">
-        <script>
-            // Direct inline script to set the order ID
-            (function() {
-                try {
-                    const order = JSON.parse(localStorage.getItem('currentOrder') || '{}');
-                    document.write(order.id || 'Loading...');
-                } catch(e) {
-                    document.write('Loading...');
-                }
-            })();
-        </script>
-    </span>
-</div>
+            <div class="order-info">
+                <span class="order-label">Order ID:</span>
+                <span class="order-value" id="order-id">Loading...</span>
+            </div>
             <div class="order-info">
                 <span class="order-label">Order Date:</span>
                 <span class="order-value" id="order-date">Loading...</span>
@@ -4223,48 +4231,31 @@
         <div class="confirmation-section">
             <h3>Order Items</h3>
             <div class="confirmation-items">
-                <div class="confirmation-item">
-                    <img src="/api/placeholder/60/60" alt="Organic Shimla Apples" class="item-image">
-                    <div class="item-info">
-                        <span class="item-name">Organic Shimla Apples (1kg) × 2</span>
-                        <span class="item-price">₹398</span>
-                    </div>
-                </div>
-                <div class="confirmation-item">
-                    <img src="/api/placeholder/60/60" alt="Organic Bananas" class="item-image">
-                    <div class="item-info">
-                        <span class="item-name">Organic Bananas (12pcs) × 1</span>
-                        <span class="item-price">₹59</span>
-                    </div>
-                </div>
-                <div class="confirmation-item">
-                    <img src="/api/placeholder/60/60" alt="Organic Carrots" class="item-image">
-                    <div class="item-info">
-                        <span class="item-name">Organic Carrots (500g) × 3</span>
-                        <span class="item-price">₹147</span>
-                    </div>
-                </div>
+                <!-- Items will be dynamically populated -->
             </div>
         </div>
- <div class="checkout-summary">
-                        <h3>Order Summary</h3>
-                        <div class="summary-item">
-                            <span>Items Total</span>
-                            <span id="checkout-subtotal">₹0</span>
-                        </div>
-                        <div class="summary-item">
-                            <span>Delivery</span>
-                            <span id="checkout-delivery">₹0</span>
-                        </div>
-                        <div class="summary-item">
-                            <span>Tax</span>
-                            <span id="checkout-tax">₹0</span>
-                        </div>
-                        <div class="summary-item total">
-                            <span>Total Amount</span>
-                            <span id="checkout-total">₹0</span>
-                        </div>
-                    </div>
+        
+        <div class="checkout-summary">
+            <h3>Order Summary</h3>
+            <div class="summary-item">
+                <span>Items Total</span>
+                <span id="checkout-subtotal">₹0</span>
+            </div>
+            <div class="summary-item">
+                <span>Delivery</span>
+                <span id="checkout-delivery">₹0</span>
+            </div>
+            <div class="summary-item">
+                <span>Tax</span>
+                <span id="checkout-tax">₹0</span>
+            </div>
+            <div class="summary-item total">
+                <span>Total Amount</span>
+                <span id="checkout-total">₹0</span>
+            </div>
+        </div>
+    </div>
+    
     <div class="step-actions">
         <button class="btn" id="back-to-payment">Show Your Orders</button>
         <button class="btn" id="place-order">Continue Shopping</button>
