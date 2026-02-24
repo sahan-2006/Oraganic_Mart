@@ -2218,7 +2218,16 @@ footer {
     color: white;
     border-color: #4CAF50;
 }
+.category-btn {
+  outline: none !important;
+  box-shadow: none !important;
+}
 
+.category-btn:focus,
+.category-btn:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
 .faq-accordion {
     display: flex;
     flex-direction: column;
@@ -4887,12 +4896,64 @@ textarea:focus {
 .green-btn:hover {
     background-color: darkgreen;
 }
+.address-type-options {
+  display: flex;
+  gap: 12px;
+}
 
+.address-type-box {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: #444;
+  transition: 0.2s ease;
+  background: #fff;
+}
+
+.address-type-box input {
+  display: none;
+}
+
+.address-type-box:hover {
+  border-color: #4CAF50;
+  background: #f1f8f4;
+}
+
+.address-type-box input:checked + span {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.address-type-box input:checked + span::before {
+  content: "✔ ";
+  color: #4CAF50;
+}
 /* UPI Options Styling */
 .upi-options {
     margin-bottom: 20px;
 }
+.btn-outline.btn-edit-review{
+  color: #2e7d32 !important;
+  background: transparent !important;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
 
+.btn-outline.btn-edit-review:hover{
+  background: #3dcd44 !important;
+  color: #fff !important;
+}
+
+.btn-outline.btn-edit-review i{
+  margin-right: 6px;
+}
 .upi-options h4 {
     margin-bottom: 10px;
     color: #333;
@@ -8233,4 +8294,46 @@ html, body {
     width: 100% !important;
     min-width: 0 !important;
   }
+}
+.write-review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #f9fff9;
+  border-radius: 12px 12px 0 0;
+}
+
+.write-review-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2e7d32; /* green */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.write-review-header h3 i {
+  color: #43a047;
+  font-size: 16px;
+}
+
+/* Close Button */
+.btn-close-review {
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #777;
+  padding: 4px 8px;
+  border-radius: 50%;
+  transition: 0.2s ease;
+}
+
+.btn-close-review:hover {
+  background: #ffecec;
+  color: #e53935; /* red on hover */
 }
