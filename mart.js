@@ -6780,113 +6780,339 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ===== NEW FUNCTION TO UPDATE CONFIRMATION DETAILS =====
-    function updateConfirmationDetails(order) {
-        if (!order) return;
-        
-        console.log('Updating confirmation details with order:', order);
-        
-        // Update Order ID and Date
-        const orderIdElement = document.getElementById('order-id');
-        const orderDateElement = document.getElementById('order-date');
-        
-        if (orderIdElement) {
-            orderIdElement.textContent = order.id;
-        }
-        
-        if (orderDateElement) {
-            orderDateElement.textContent = `${order.date} at ${order.time || ''}`;
-        }
-        
-        // Update Shipping Details
-        const shippingDetails = document.getElementById('shipping-details');
-        if (shippingDetails && order.address) {
-            shippingDetails.innerHTML = `
-                <div class="shipping-info">
-                    <p><strong>${order.address.name}</strong></p>
-                    <p>${order.address.address}</p>
-                    <p>${order.address.city}, ${order.address.state} - ${order.address.pincode}</p>
-                    <p>Phone: ${order.address.phone}</p>
-                    <p class="delivery-method">Delivery: ${order.deliveryOption || 'Standard Delivery'}</p>
-                </div>
-            `;
-        }
-        
-        // Update Payment Details
-        const paymentDetails = document.getElementById('payment-details');
-        if (paymentDetails) {
-            const paymentDate = new Date().toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-            
-            paymentDetails.innerHTML = `
-                <div class="payment-info">
-                    <p><strong>Payment Method:</strong> ${order.payment}</p>
-                    <p><strong>Payment Date:</strong> ${paymentDate}</p>
-                    <p><strong>Payment Status:</strong> <span class="status-success">✓ Completed</span></p>
-                </div>
-            `;
-        }
-        
-        // Update Order Items
-        const confirmationItems = document.querySelector('.confirmation-items');
-        if (confirmationItems && order.items && order.items.length > 0) {
-            confirmationItems.innerHTML = '';
-            
-            order.items.forEach(item => {
-                const totalPrice = item.price * item.quantity;
-                const displayName = `${item.name} (${item.weight || 'Standard'}) × ${item.quantity}`;
-                
-                const itemElement = document.createElement('div');
-                itemElement.className = 'confirmation-item';
-                itemElement.innerHTML = `
-                    <img src="${item.image}" alt="${item.name}" class="item-image" 
-                         onerror="this.src='https://via.placeholder.com/60x60/cccccc/666666?text=📦'">
-                    <div class="item-info">
-                        <span class="item-name">${displayName}</span>
-                        <span class="item-price">₹${totalPrice}</span>
-                    </div>
-                `;
-                confirmationItems.appendChild(itemElement);
-            });
-        }
-        
-        // Update Order Totals
-        const confirmationTotals = document.querySelector('.confirmation-totals');
-        if (confirmationTotals) {
-            confirmationTotals.innerHTML = `
-                <div class="total-row">
-                    <span>Subtotal</span>
-                    <span>₹${order.subtotal.toFixed(2)}</span>
-                </div>
-                <div class="total-row">
-                    <span>Shipping</span>
-                    <span>₹${order.delivery.toFixed(2)}</span>
-                </div>
-                <div class="total-row">
-                    <span>Tax</span>
-                    <span>₹${order.tax.toFixed(2)}</span>
-                </div>
-                ${order.couponDiscount > 0 ? `
-                <div class="total-row discount">
-                    <span>Discount</span>
-                    <span>-₹${order.couponDiscount.toFixed(2)}</span>
-                </div>
-                ` : ''}
-                <div class="total-row grand-total">
-                    <span>Total</span>
-                    <span>₹${order.total.toFixed(2)}</span>
-                </div>
-            `;
-        }
-        
-        // Set up the action buttons for confirmation page
-        setupConfirmationButtons();
+   // ===== COMPLETE ORDER FUNCTION =====
+function processOrder() {
+    console.log('Processing order...');
+    
+    const selectedAddress = document.querySelector('input[name="saved-address"]:checked');
+    let addressData;
+    
+    if (!selectedAddress) {
+        console.error('No address selected');
+        alert('Please select or enter a delivery address');
+        return;
     }
+    
+    if (selectedAddress.value === 'new') {
+        const name = document.getElementById('delivery-name').value;
+        const phone = document.getElementById('delivery-phone').value;
+        const address = document.getElementById('delivery-address').value;
+        const city = document.getElementById('delivery-city').value;
+        const pincode = document.getElementById('delivery-pincode').value;
+        const state = document.getElementById('delivery-state').value;
+        
+        if (!name || !phone || !address || !city || !pincode || !state) {
+            console.error('Incomplete address form');
+            alert('Please fill all address fields');
+            return;
+        }
+        
+        addressData = {
+            name: name,
+            phone: phone,
+            address: address,
+            city: city,
+            pincode: pincode,
+            state: state
+        };
+        
+        if (document.getElementById('save-address').checked) {
+            const newAddress = {
+                id: Date.now(),
+                name: addressData.name,
+                fullName: addressData.name,
+                phone: addressData.phone,
+                street: addressData.address,
+                city: addressData.city,
+                pincode: addressData.pincode,
+                state: addressData.state,
+                default: false
+            };
+            
+            userData.addresses.push(newAddress);
+            saveUserData();
+            syncAddressesToCheckout();
+        }
+    } else {
+        const addressId = parseInt(selectedAddress.value);
+        const address = userData.addresses.find(addr => addr.id === addressId);
+        if (address) {
+            addressData = {
+                name: address.fullName || address.name,
+                phone: address.phone,
+                address: address.street,
+                city: address.city,
+                pincode: address.pincode,
+                state: address.state
+            };
+        }
+    }
+
+    const deliveryOption = document.querySelector('input[name="delivery"]:checked');
+    if (!deliveryOption) {
+        console.error('No delivery option selected');
+        alert('Please select a delivery option');
+        return;
+    }
+    
+    const deliveryText = {
+        'standard': 'Standard Delivery (2-3 business days)',
+        'express': 'Express Delivery (Next day)'
+    }[deliveryOption.value] || 'Standard Delivery';
+
+    const paymentMethod = document.querySelector('input[name="payment"]:checked');
+    if (!paymentMethod) {
+        console.error('No payment method selected');
+        alert('Please select a payment method');
+        return;
+    }
+    
+    const paymentText = {
+        'card': 'Credit/Debit Card',
+        'upi': 'UPI Payment',
+        'cod': 'Cash on Delivery'
+    }[paymentMethod.value] || 'Unknown';
+
+    // Generate random order ID (6-digit random number with OM prefix)
+    const randomNum = Math.floor(100000 + Math.random() * 900000); // Generates 100000-999999
+    const orderId = 'OM' + randomNum; // e.g., OM857234
+    
+    const orderDate = new Date().toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    });
+    const orderTime = new Date().toLocaleTimeString('en-IN', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    const totals = calculateCartTotals();
+    
+    const orderItems = userData.cart.map(cartItem => ({
+        id: cartItem.id,
+        name: cartItem.name,
+        quantity: cartItem.quantity,
+        price: cartItem.price,
+        weight: cartItem.weight,
+        image: cartItem.image,
+        originalPrice: cartItem.originalPrice,
+        discount: cartItem.discount,
+        category: cartItem.category
+    }));
+    
+    const order = {
+        id: orderId,
+        date: orderDate,
+        time: orderTime,
+        items: orderItems,
+        total: totals.total,
+        subtotal: totals.subtotal,
+        delivery: totals.delivery,
+        tax: totals.tax,
+        couponDiscount: totals.couponDiscount,
+        status: 'confirmed',
+        address: addressData,
+        payment: paymentText,
+        deliveryOption: deliveryText,
+        couponUsed: activeCoupon ? activeCoupon.code : null
+    };
+    
+    console.log('Order created with ID:', orderId, order);
+    
+    // Save order to user data
+    if (!userData.orders) {
+        userData.orders = [];
+    }
+    userData.orders.push(order);
+    
+    // Save the current order for confirmation page
+    localStorage.setItem('currentOrder', JSON.stringify(order));
+    
+    // Clear cart and coupon
+    userData.cart = [];
+    activeCoupon = null;
+    saveUserData();
+    updateCartCount();
+    
+    // Show the confirmation step within checkout page
+    showOrderConfirmation(order);
+    
+    showToastMessage('Order placed successfully!');
+    console.log('Order completed successfully');
+}
+
+// ===== NEW FUNCTION TO SHOW ORDER CONFIRMATION =====
+function showOrderConfirmation(order) {
+    console.log('Showing order confirmation with order:', order);
+    
+    // Hide all checkout steps
+    document.querySelectorAll('.checkout-step').forEach(step => {
+        step.classList.remove('active');
+    });
+    
+    // Show the confirmation step
+    const confirmationStep = document.getElementById('confirmation-step');
+    if (confirmationStep) {
+        confirmationStep.classList.add('active');
+        
+        // Update confirmation page with order details
+        updateConfirmationDetails(order);
+        
+        // Update step indicators
+        updateStepIndicators('confirmation');
+        
+        // Scroll to top
+        window.scrollTo(0, 0);
+    } else {
+        console.error('Confirmation step element not found');
+    }
+}
+// ===== UPDATED FUNCTION TO UPDATE CONFIRMATION DETAILS =====
+function updateConfirmationDetails(order) {
+    if (!order) return;
+    
+    console.log('Updating confirmation details with order:', order);
+    
+    // Find all possible order ID elements
+    const orderIdElement = document.getElementById('order-id');
+    const orderIdElements = document.querySelectorAll('[id*="order-id"], [class*="order-id"]');
+    
+    // Generate random order ID if not present (OM + 6 random digits)
+    const randomOrderId = order.id || 'OM' + Math.floor(100000 + Math.random() * 900000).toString();
+    
+    console.log('Setting order ID to:', randomOrderId);
+    
+    // Update specific element by ID
+    if (orderIdElement) {
+        orderIdElement.textContent = randomOrderId;
+        console.log('Updated #order-id element');
+    }
+    
+    // Update any element containing order-id in class or id
+    orderIdElements.forEach(el => {
+        if (el !== orderIdElement) {
+            el.textContent = randomOrderId;
+        }
+    });
+    
+    // Also look for spans that might contain the placeholder
+    document.querySelectorAll('.order-info span, .confirmation-details span, .order-summary span').forEach(el => {
+        if (el.textContent.includes('OM123456') || el.textContent.includes('Order #') || el.textContent.match(/OM\d{6}/)) {
+            el.textContent = randomOrderId;
+            console.log('Updated element with placeholder:', el);
+        }
+    });
+    
+    // Update Order Date
+    const orderDateElement = document.getElementById('order-date');
+    if (orderDateElement) {
+        orderDateElement.textContent = `${order.date || new Date().toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        })} ${order.time ? 'at ' + order.time : ''}`;
+    }
+    
+    // Rest of the function remains the same...
+    // Update Shipping Details
+    const shippingDetails = document.getElementById('shipping-details');
+    if (shippingDetails && order.address) {
+        shippingDetails.innerHTML = `
+            <div class="shipping-info">
+                <p><strong>${order.address.name || 'Customer'}</strong></p>
+                <p>${order.address.address || order.address.street || ''}</p>
+                <p>${order.address.city || ''}, ${order.address.state || ''} - ${order.address.pincode || ''}</p>
+                <p>Phone: ${order.address.phone || ''}</p>
+                <p class="delivery-method">Delivery: ${order.deliveryOption || 'Standard Delivery'}</p>
+            </div>
+        `;
+    }
+    
+    // Update Payment Details
+    const paymentDetails = document.getElementById('payment-details');
+    if (paymentDetails) {
+        const paymentDate = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        paymentDetails.innerHTML = `
+            <div class="payment-info">
+                <p><strong>Payment Method:</strong> ${order.payment || 'Not specified'}</p>
+                <p><strong>Payment Date:</strong> ${paymentDate}</p>
+                <p><strong>Payment Status:</strong> <span class="status-success">✓ Completed</span></p>
+            </div>
+        `;
+    }
+    
+    // Update Order Items
+    const confirmationItems = document.querySelector('.confirmation-items');
+    if (confirmationItems && order.items && order.items.length > 0) {
+        confirmationItems.innerHTML = '';
+        
+        order.items.forEach(item => {
+            const totalPrice = item.price * item.quantity;
+            const displayName = `${item.name} ${item.weight ? '(' + item.weight + ')' : ''} × ${item.quantity}`;
+            
+            const itemElement = document.createElement('div');
+            itemElement.className = 'confirmation-item';
+            itemElement.innerHTML = `
+                <img src="${item.image || 'https://via.placeholder.com/60x60/cccccc/666666?text=📦'}" alt="${item.name}" class="item-image" 
+                     onerror="this.src='https://via.placeholder.com/60x60/cccccc/666666?text=📦'">
+                <div class="item-info">
+                    <span class="item-name">${displayName}</span>
+                    <span class="item-price">₹${totalPrice.toFixed(2)}</span>
+                </div>
+            `;
+            confirmationItems.appendChild(itemElement);
+        });
+    }
+    
+    // Update Order Totals
+    const confirmationTotals = document.querySelector('.confirmation-totals');
+    if (confirmationTotals) {
+        confirmationTotals.innerHTML = `
+            <div class="total-row">
+                <span>Subtotal</span>
+                <span>₹${(order.subtotal || 0).toFixed(2)}</span>
+            </div>
+            <div class="total-row">
+                <span>Shipping</span>
+                <span>₹${(order.delivery || 0).toFixed(2)}</span>
+            </div>
+            <div class="total-row">
+                <span>Tax</span>
+                <span>₹${(order.tax || 0).toFixed(2)}</span>
+            </div>
+            ${(order.couponDiscount || 0) > 0 ? `
+            <div class="total-row discount">
+                <span>Discount</span>
+                <span>-₹${(order.couponDiscount || 0).toFixed(2)}</span>
+            </div>
+            ` : ''}
+            <div class="total-row grand-total">
+                <span>Total</span>
+                <span>₹${(order.total || 0).toFixed(2)}</span>
+            </div>
+        `;
+    }
+    
+    // Force a re-check after a short delay (in case DOM updates async)
+    setTimeout(() => {
+        const orderIdSpan = document.getElementById('order-id');
+        if (orderIdSpan && orderIdSpan.textContent === 'OM123456') {
+            orderIdSpan.textContent = randomOrderId;
+            console.log('Force updated order ID after delay');
+        }
+    }, 100);
+    
+    // Set up the action buttons for confirmation page
+    setupConfirmationButtons();
+}
 
     // ===== SETUP CONFIRMATION PAGE BUTTONS =====
     function setupConfirmationButtons() {
