@@ -33,6 +33,34 @@ let otpTimeLeft = 120;
 let generatedOTP = '';
 let resetIdentifier = '';
 
+// track order id across payment flow so QR and confirmation match
+let currentOrderId = null;
+
+// helper for creating/returning a consistent order id during one checkout session
+function ensureOrderId() {
+    if (!currentOrderId) {
+        currentOrderId = 'OM' + Date.now().toString().slice(-6);
+    }
+    return currentOrderId;
+}
+
+// set the order id text in all known places (UPI panel, confirmation, summaries)
+function displayOrderId(id) {
+    if (!id) return;
+    // target common selectors used in the markup
+    const selectors = [
+        '#order-id',
+        '.order-id',
+        '.order-value',
+        'span.order-value'
+    ];
+    selectors.forEach(sel => {
+        document.querySelectorAll(sel).forEach(el => {
+            el.textContent = id;
+        });
+    });
+}
+
 // ====== INITIALIZATION ======
 document.addEventListener('DOMContentLoaded', function() {
     initializeTabs();
@@ -4816,21 +4844,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             savedAddressesList.appendChild(addressItem);
         });
-        
-        const newAddressItem = document.createElement('div');
-        newAddressItem.className = 'address-option';
-        newAddressItem.innerHTML = `
-            <input type="radio" name="saved-address" id="address-new" value="new">
-            <label for="address-new">
-                <div class="address-option-content">
-                    <strong style="color: #4CAF50;">+ Add New Address</strong>
-                    <p style="color: #666; margin-top: 5px;">Click to enter a new delivery address</p>
-                </div>
-            </label>
-        `;
-        savedAddressesList.appendChild(newAddressItem);
-        
-        document.querySelectorAll('.btn-edit-address-checkout').forEach(btn => {
+          document.querySelectorAll('.btn-edit-address-checkout').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -4847,8 +4861,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             });
-        });
-        
+        });    
         document.querySelectorAll('input[name="saved-address"]').forEach(radio => {
             radio.addEventListener('change', function() {
                 const addressForm = document.getElementById('address-form');
@@ -5037,7 +5050,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function generateQRCode() {
         const amount = updateOrderAmounts();
         const merchantUPI = 'organicmart@upi';
-        const upiLink = `upi://pay?pa=${merchantUPI}&pn=OrganicMart&am=${amount}&cu=INR&tn=Order Payment`;
+        // ensure a consistent id is available
+        ensureOrderId();
+        console.log('generateQRCode - currentOrderId =', currentOrderId);
+        // update all order-id displays
+        displayOrderId(currentOrderId);
+        // include order id in transaction note of upi link
+        const upiLink = `upi://pay?pa=${merchantUPI}&pn=OrganicMart&am=${amount}&cu=INR&tn=Order%20${currentOrderId}`;
         
         const qrContainer = document.getElementById('qr-code');
         if (!qrContainer) return;
@@ -6539,6 +6558,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 showError('address-error', 'Please select or enter a valid address');
                 return;
             }
+            // make sure an order id exists as soon as payment step is reached
+            ensureOrderId();
+            const upiOrderSpan = document.querySelector('.payment-details #order-id');
+            if (upiOrderSpan) {
+                upiOrderSpan.textContent = currentOrderId;
+            }
         }
         
         if (step === 'confirmation') {
@@ -6686,8 +6711,19 @@ document.addEventListener('DOMContentLoaded', function() {
             'cod': 'Cash on Delivery'
         }[paymentMethod.value] || 'Unknown';
 
-        // Generate order details with proper order ID
-        const orderId = 'OM' + Date.now().toString().slice(-6);
+        // generate or reuse order id so it matches any earlier QR display
+        const orderId = currentOrderId || ('OM' + Date.now().toString().slice(-6));
+        currentOrderId = orderId;
+
+        // debug log: show id used for order creation
+        console.log('processOrder - currentOrderId (before) =', currentOrderId);
+
+        // update all order-id displays and regenerate QR so link text matches
+        displayOrderId(orderId);
+        if (typeof generateQRCode === 'function') {
+            generateQRCode();
+        }
+
         const orderDate = new Date().toLocaleDateString('en-IN', {
             day: '2-digit',
             month: 'short',
@@ -6751,6 +6787,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         showToastMessage('Order placed successfully!');
         console.log('Order completed successfully');
+        
+        // reset the temporary order id so a new one is generated for next order
+        currentOrderId = null;
     }
 
     // ===== NEW FUNCTION TO SHOW ORDER CONFIRMATION =====
@@ -6781,8 +6820,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
    // ===== COMPLETE ORDER FUNCTION =====
+// Replace your existing processOrder function with this updated version
 function processOrder() {
     console.log('Processing order...');
+    console.log('processOrder - currentOrderId (before) =', currentOrderId);
     
     const selectedAddress = document.querySelector('input[name="saved-address"]:checked');
     let addressData;
@@ -6873,10 +6914,15 @@ function processOrder() {
         'cod': 'Cash on Delivery'
     }[paymentMethod.value] || 'Unknown';
 
-    // Generate random order ID (6-digit random number with OM prefix)
-    const randomNum = Math.floor(100000 + Math.random() * 900000); // Generates 100000-999999
-    const orderId = 'OM' + randomNum; // e.g., OM857234
+    // IMPORTANT FIX: Use the existing order ID if it exists, otherwise generate a new one
+    // This ensures the order ID matches what was shown in the QR code
+    if (!currentOrderId) {
+        currentOrderId = 'OM' + Date.now().toString().slice(-6);
+    }
     
+    const orderId = currentOrderId;
+    console.log('Using order ID for order creation:', orderId);
+
     const orderDate = new Date().toLocaleDateString('en-IN', {
         day: '2-digit',
         month: 'short',
@@ -6902,7 +6948,7 @@ function processOrder() {
     }));
     
     const order = {
-        id: orderId,
+        id: orderId,  // Use the same order ID that was shown in QR
         date: orderDate,
         time: orderTime,
         items: orderItems,
@@ -6940,8 +6986,128 @@ function processOrder() {
     
     showToastMessage('Order placed successfully!');
     console.log('Order completed successfully');
+    
+    // Don't reset currentOrderId immediately - keep it for the confirmation page
+    // It will be reset when starting a new checkout session
 }
 
+// Also update the navigateToStep function to ensure order ID consistency
+function navigateToStep(step) {
+    console.log('Navigating to step:', step);
+    
+    if (step === 'payment') {
+        if (!validateCurrentAddress()) {
+            showError('address-error', 'Please select or enter a valid address');
+            return;
+        }
+        // IMPORTANT FIX: Generate order ID when entering payment step
+        // This ensures the QR code and payment use the same ID
+        ensureOrderId();
+        
+        // Update all order ID displays
+        displayOrderId(currentOrderId);
+        
+        // If UPI is selected, regenerate QR with the correct order ID
+        const upiPaymentRadio = document.getElementById('upi-payment');
+        if (upiPaymentRadio && upiPaymentRadio.checked) {
+            // Small delay to ensure DOM is ready
+            setTimeout(() => {
+                if (!isQRGenerated) {
+                    initializeUPIPayment();
+                } else {
+                    // Regenerate QR with correct order ID
+                    generateQRCode();
+                }
+            }, 100);
+        }
+    }
+    
+    if (step === 'confirmation') {
+        // Process order before showing confirmation
+        processOrder();
+        return;
+    }
+    
+    const checkoutSteps = document.querySelectorAll('.checkout-step');
+    checkoutSteps.forEach(stepElement => {
+        stepElement.classList.remove('active');
+    });
+    
+    const currentStepElement = document.getElementById(`${step}-step`);
+    if (currentStepElement) {
+        currentStepElement.classList.add('active');
+        updateStepIndicators(step);
+        currentStepElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+// Update initializeUPIPayment to ensure order ID is set
+function initializeUPIPayment() {
+    updateOrderAmounts();
+    
+    // Ensure order ID exists before generating QR
+    ensureOrderId();
+    
+    generateQRCode();
+    startTimer();
+    updateGenerationTime();
+    
+    isQRGenerated = true;
+    qrExpired = false;
+    
+    const qrOverlay = document.getElementById('qr-overlay');
+    if (qrOverlay) {
+        qrOverlay.style.display = 'none';
+    }
+    
+    const qrCodeElement = document.querySelector('.qr-code');
+    if (qrCodeElement) {
+        qrCodeElement.style.opacity = '1';
+        qrCodeElement.style.pointerEvents = 'auto';
+    }
+}
+
+// Add this function to reset order ID when starting a new checkout
+function resetOrderId() {
+    currentOrderId = null;
+}
+
+// Call resetOrderId when leaving checkout page
+function showPage(pageName) {
+    console.log('Showing page:', pageName);
+    
+    // Hide all main pages
+    Object.keys(pages).forEach(key => {
+        if (pages[key]) {
+            pages[key].style.display = 'none';
+            pages[key].classList.remove('active');
+        }
+    });
+    
+    // Hide all info pages
+    document.querySelectorAll('.info-page').forEach(page => {
+        page.style.display = 'none';
+    });
+    
+    // Show selected page
+    if (pages[pageName]) {
+        pages[pageName].style.display = pageName === 'login' || pageName === 'signup' ? 'flex' : 'block';
+        pages[pageName].classList.add('active');
+        
+        // Reset order ID when leaving checkout page (except when going to confirmation)
+        if (pageName !== 'checkout' && pageName !== 'confirmation') {
+            resetOrderId();
+        }
+        
+        window.scrollTo(0, 0);
+        
+        initializePageContent(pageName);
+        
+        console.log(`Page ${pageName} shown successfully`);
+    } else {
+        console.error(`Page ${pageName} not found`);
+    }
+}
 // ===== NEW FUNCTION TO SHOW ORDER CONFIRMATION =====
 function showOrderConfirmation(order) {
     console.log('Showing order confirmation with order:', order);
@@ -6973,15 +7139,22 @@ function updateConfirmationDetails(order) {
     if (!order) return;
     
     console.log('Updating confirmation details with order:', order);
+
+    // debug: confirm order id values
+    console.log('updateConfirmationDetails - order.id =', order.id, ' currentOrderId =', currentOrderId);
     
     // Find all possible order ID elements
     const orderIdElement = document.getElementById('order-id');
     const orderIdElements = document.querySelectorAll('[id*="order-id"], [class*="order-id"]');
     
-    // Generate random order ID if not present (OM + 6 random digits)
-    const randomOrderId = order.id || 'OM' + Math.floor(100000 + Math.random() * 900000).toString();
-    
+    // Determine definitive order ID: prefer order.id, then any currentOrderId, then generate
+    const randomOrderId = order.id || currentOrderId || ('OM' + Math.floor(100000 + Math.random() * 900000).toString());
+    // sync shared id
+    currentOrderId = randomOrderId;
     console.log('Setting order ID to:', randomOrderId);
+
+    // update all order id displays
+    displayOrderId(randomOrderId);
     
     // Update specific element by ID
     if (orderIdElement) {
@@ -7160,285 +7333,6 @@ function updateConfirmationDetails(order) {
         } else {
             console.warn('Place order button not found');
         }
-    }
-
-    // ===== ADD CONFIRMATION PAGE STYLES =====
-    function addConfirmationPageStyles() {
-        const style = document.createElement('style');
-        style.textContent = `
-            .status-success {
-                color: #4CAF50;
-                font-weight: 600;
-                background-color: #E8F5E9;
-                padding: 4px 12px;
-                border-radius: 20px;
-                display: inline-block;
-            }
-            
-            .shipping-info, .payment-info {
-                line-height: 1.8;
-                color: #555;
-                background: #f9f9f9;
-                padding: 15px;
-                border-radius: 8px;
-                border-left: 4px solid #4CAF50;
-            }
-            
-            .shipping-info p, .payment-info p {
-                margin: 8px 0;
-            }
-            
-            .delivery-method {
-                color: #4CAF50;
-                font-weight: 500;
-                margin-top: 10px;
-                padding-top: 10px;
-                border-top: 1px dashed #ddd;
-            }
-            
-            .confirmation-item {
-                display: flex;
-                align-items: center;
-                padding: 15px;
-                border-bottom: 1px solid #eee;
-                transition: background-color 0.3s ease;
-            }
-            
-            .confirmation-item:hover {
-                background-color: #f5f5f5;
-            }
-            
-            .confirmation-item .item-image {
-                width: 60px;
-                height: 60px;
-                object-fit: cover;
-                border-radius: 8px;
-                margin-right: 15px;
-                border: 1px solid #eee;
-            }
-            
-            .confirmation-item .item-info {
-                flex: 1;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-            
-            .confirmation-item .item-name {
-                font-weight: 500;
-                color: #333;
-            }
-            
-            .confirmation-item .item-price {
-                font-weight: 600;
-                color: #4CAF50;
-                font-size: 16px;
-            }
-            
-            .confirmation-totals {
-                padding: 20px;
-                background: #f9f9f9;
-                border-radius: 8px;
-                margin-top: 20px;
-            }
-            
-            .total-row {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 12px;
-                padding: 5px 0;
-                color: #666;
-            }
-            
-            .total-row.discount {
-                color: #f44336;
-                border-bottom: 1px dashed #ddd;
-                padding-bottom: 12px;
-            }
-            
-            .grand-total {
-                font-size: 20px;
-                font-weight: 700;
-                margin-top: 15px;
-                padding-top: 15px;
-                border-top: 2px solid #4CAF50;
-                color: #333;
-            }
-            
-            .grand-total span:last-child {
-                color: #4CAF50;
-                font-size: 22px;
-            }
-            
-            .order-header {
-                background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
-                padding: 20px;
-                border-radius: 8px;
-                margin-bottom: 20px;
-                border: 1px solid #e0e0e0;
-            }
-            
-            .order-info {
-                display: flex;
-                margin: 10px 0;
-                font-size: 16px;
-            }
-            
-            .order-label {
-                width: 100px;
-                color: #666;
-                font-weight: 500;
-            }
-            
-            .order-value {
-                color: #333;
-                font-weight: 600;
-            }
-            
-            #order-id {
-                color: #4CAF50;
-                font-size: 18px;
-            }
-            
-            .confirmation-section h3 {
-                color: #2e7d32;
-                margin: 20px 0 15px 0;
-                padding-bottom: 8px;
-                border-bottom: 2px solid #4CAF50;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            
-            .confirmation-section h3 i {
-                color: #4CAF50;
-                font-size: 20px;
-            }
-            
-            .step-actions {
-                display: flex;
-                gap: 15px;
-                margin-top: 30px;
-                padding-top: 20px;
-                border-top: 1px solid #eee;
-            }
-            
-            .step-actions .btn {
-                flex: 1;
-                padding: 12px;
-                font-size: 16px;
-            }
-            
-            #back-to-payment {
-                background: #f5f5f5;
-                color: #666;
-                border: 1px solid #ddd;
-            }
-            
-            #back-to-payment:hover {
-                background: #e0e0e0;
-            }
-            
-            #place-order {
-                background: #4CAF50;
-                color: white;
-            }
-            
-            #place-order:hover {
-                background: #45a049;
-            }
-            
-            /* Address form styles */
-            #address-form-container {
-                background: #f9f9f9;
-                padding: 20px;
-                border-radius: 8px;
-                margin-top: 20px;
-                border: 1px solid #e0e0e0;
-            }
-            
-            .address-card {
-                background: white;
-                border: 1px solid #e0e0e0;
-                border-radius: 8px;
-                padding: 15px;
-                margin-bottom: 15px;
-                position: relative;
-            }
-            
-            .address-card.default-address {
-                border-left: 4px solid #4CAF50;
-                background: #f5fff5;
-            }
-            
-            .address-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 10px;
-            }
-            
-            .address-header h4 {
-                margin: 0;
-                font-size: 16px;
-                color: #333;
-            }
-            
-            .default-badge {
-                background: #4CAF50;
-                color: white;
-                font-size: 12px;
-                padding: 2px 8px;
-                border-radius: 12px;
-                margin-left: 8px;
-            }
-            
-            .address-actions {
-                display: flex;
-                gap: 8px;
-            }
-            
-            .address-actions button {
-                background: none;
-                border: 1px solid #ddd;
-                padding: 4px 8px;
-                border-radius: 4px;
-                cursor: pointer;
-                font-size: 12px;
-            }
-            
-            .address-actions button:hover {
-                background: #f0f0f0;
-            }
-            
-            .address-details p {
-                margin: 4px 0;
-                color: #666;
-            }
-            
-            .add-address-card {
-                text-align: center;
-                padding: 20px;
-                border: 2px dashed #ccc;
-                border-radius: 8px;
-                margin-top: 15px;
-            }
-            
-            .btn-primary {
-                background: #4CAF50;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 4px;
-                cursor: pointer;
-                font-weight: 500;
-            }
-            
-            .btn-primary:hover {
-                background: #45a049;
-            }
-        `;
-        document.head.appendChild(style);
     }
 
     // ===== QUICK VIEW FUNCTIONALITY =====
