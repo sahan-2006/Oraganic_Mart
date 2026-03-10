@@ -3740,9 +3740,7 @@
                                     </div>
                                     <h3>No Reviews Yet</h3>
                                     <p>You haven't reviewed any products yet.</p>
-                                    <button class="btn" id="write-first-review">
-                                        <i class="fas fa-plus"></i> Write Your First Review
-                                    </button>
+                                   
                                 </div>
                             </div>
                         </div>
@@ -3751,6 +3749,81 @@
             </div>
         </div>
     </div>
+    <!-- Edit Review Modal -->
+<div id="edit-review-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Edit Review</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <form id="edit-review-form" class="review-form">
+            <div class="form-group">
+                <label>Your Rating</label>
+                <div class="rating-input">
+                    <div class="rating-stars-input">
+                        <input type="radio" id="edit-star5" name="edit-rating" value="5">
+                        <label for="edit-star5" title="5 stars"><i class="fas fa-star"></i></label>
+                        <input type="radio" id="edit-star4" name="edit-rating" value="4">
+                        <label for="edit-star4" title="4 stars"><i class="fas fa-star"></i></label>
+                        <input type="radio" id="edit-star3" name="edit-rating" value="3">
+                        <label for="edit-star3" title="3 stars"><i class="fas fa-star"></i></label>
+                        <input type="radio" id="edit-star2" name="edit-rating" value="2">
+                        <label for="edit-star2" title="2 stars"><i class="fas fa-star"></i></label>
+                        <input type="radio" id="edit-star1" name="edit-rating" value="1">
+                        <label for="edit-star1" title="1 star"><i class="fas fa-star"></i></label>
+                    </div>
+                    <span class="rating-text">Click to rate</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="edit-review-title">Review Title</label>
+                <input type="text" id="edit-review-title" class="form-control" placeholder="Summarize your experience" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="edit-review-content">Your Review</label>
+                <textarea id="edit-review-content" class="form-control" rows="5" placeholder="Share your experience with this product..." minlength="50" required></textarea>
+                <div class="char-count">
+                    <span id="edit-char-count">0</span> / 500 characters
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="edit-recommend-product">
+                    <span>I recommend this product</span>
+                </label>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline cancel-edit-review">Cancel</button>
+                <button type="submit" class="btn btn-primary">Update Review</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Review Modal -->
+<div id="delete-review-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Delete Review</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="delete-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Are you sure you want to delete this review?</p>
+                <p style="color: #666; font-size: 14px;">This action cannot be undone.</p>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-outline cancel-delete">Cancel</button>
+            <button type="button" class="btn btn-danger confirm-delete">Delete Review</button>
+        </div>
+    </div>
+</div>
     <!-- Cart Page -->
     <div id="cart-page" class="page">
         <header>
@@ -4248,81 +4321,7 @@
         <button class="btn btn-primary" id="continue-shopping-btn">Continue Shopping</button>
     </div>
 </div>
-    <!-- Edit Review Modal -->
-    <div id="edit-review-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Edit Review</h3>
-                <button class="modal-close">&times;</button>
-            </div>
-            <form id="edit-review-form" class="review-form">
-                <div class="form-group">
-                    <label>Your Rating</label>
-                    <div class="rating-input">
-                        <div class="rating-stars-input">
-                            <input type="radio" id="edit-star5" name="edit-rating" value="5">
-                            <label for="edit-star5" title="5 stars"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="edit-star4" name="edit-rating" value="4">
-                            <label for="edit-star4" title="4 stars"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="edit-star3" name="edit-rating" value="3">
-                            <label for="edit-star3" title="3 stars"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="edit-star2" name="edit-rating" value="2">
-                            <label for="edit-star2" title="2 stars"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="edit-star1" name="edit-rating" value="1">
-                            <label for="edit-star1" title="1 star"><i class="fas fa-star"></i></label>
-                        </div>
-                        <span class="rating-text">Click to rate</span>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="edit-review-title">Review Title</label>
-                    <input type="text" id="edit-review-title" class="form-control" placeholder="Summarize your experience" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="edit-review-content">Your Review</label>
-                    <textarea id="edit-review-content" class="form-control" rows="5" placeholder="Share your experience with this product..." minlength="50" required></textarea>
-                    <div class="char-count">
-                        <span id="edit-char-count">0</span> / 500 characters
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="edit-recommend-product">
-                        <span>I recommend this product</span>
-                    </label>
-                </div>
-                
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-outline cancel-edit-review">Cancel</button>
-                    <button type="submit" class="btn">Update Review</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Delete Review Modal -->
-    <div id="delete-review-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Delete Review</h3>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="delete-warning">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <p>Are you sure you want to delete this review? This action cannot be undone.</p>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button type="button" class="btn btn-outline cancel-delete">Cancel</button>
-                <button type="button" class="btn btn-danger confirm-delete">Delete Review</button>
-            </div>
-        </div>
-    </div>
-
+   
     <!-- QR library -->
     <script src="https://unpkg.com/qrcode@1.5.1/build/qrcode.min.js"></script>
     <!-- main js -->
