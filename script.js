@@ -9097,544 +9097,700 @@ function setupConfirmationButtons() {
             }
         });
     }
+  // ===== REVIEWS SECTION FUNCTIONALITY - INLINE EDIT/DELETE VERSION =====
 
-    // ===== REVIEWS SECTION FUNCTIONALITY =====
-    function initReviewsSection() {
-        console.log('Initializing reviews section...');
-        
-        const writeReviewBtn = document.getElementById('write-review-btn');
-        const writeFirstReviewBtn = document.getElementById('write-first-review');
-        const writeReviewSection = document.querySelector('.write-review-section');
-        const reviewsListSection = document.querySelector('.reviews-list-section');
-        const closeReviewBtn = document.querySelector('.btn-close-review');
-        const cancelReviewBtn = document.querySelector('.cancel-review');
-        const reviewForm = document.getElementById('review-form');
-        const editReviewForm = document.getElementById('edit-review-form');
-        const reviewContent = document.getElementById('review-content');
-        const charCount = document.getElementById('char-count');
-        const editReviewContent = document.getElementById('edit-review-content');
-        const editCharCount = document.getElementById('edit-char-count');
-        
-        if (writeReviewBtn) {
-            writeReviewBtn.addEventListener('click', showWriteReviewForm);
-        }
-        
-        if (writeFirstReviewBtn) {
-            writeFirstReviewBtn.addEventListener('click', showWriteReviewForm);
-        }
-        
-        if (closeReviewBtn) {
-            closeReviewBtn.addEventListener('click', hideWriteReviewForm);
-        }
-        
-        if (cancelReviewBtn) {
-            cancelReviewBtn.addEventListener('click', hideWriteReviewForm);
-        }
-        
-        if (reviewForm) {
-            reviewForm.addEventListener('submit', handleReviewSubmit);
-        }
-        
-        if (reviewContent) {
-            reviewContent.addEventListener('input', updateCharCount);
-        }
-        
-        if (editReviewContent) {
-            editReviewContent.addEventListener('input', updateEditCharCount);
-        }
-        
-        if (editReviewForm) {
-            editReviewForm.addEventListener('submit', handleEditReviewSubmit);
-        }
-        
-        // Setup edit review modal close buttons
-        const editReviewModal = document.getElementById('edit-review-modal');
-        if (editReviewModal) {
-            const editCloseBtns = editReviewModal.querySelectorAll('.modal-close, .cancel-edit-review');
-            editCloseBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    editReviewModal.style.display = 'none';
-                    currentEditReviewId = null;
-                });
-            });
-            
-            editReviewModal.addEventListener('click', function(e) {
-                if (e.target === editReviewModal) {
-                    editReviewModal.style.display = 'none';
-                    currentEditReviewId = null;
-                }
-            });
-        }
-        
-        // Setup delete review modal close buttons
-        const deleteReviewModal = document.getElementById('delete-review-modal');
-        if (deleteReviewModal) {
-            const deleteCloseBtns = deleteReviewModal.querySelectorAll('.modal-close, .cancel-delete');
-            deleteCloseBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    deleteReviewModal.style.display = 'none';
-                });
-            });
-            
-            const confirmDeleteBtn = deleteReviewModal.querySelector('.confirm-delete');
-            if (confirmDeleteBtn) {
-                confirmDeleteBtn.addEventListener('click', function() {
-                    const reviewId = parseInt(deleteReviewModal.dataset.reviewId);
-                    if (reviewId) {
-                        userReviews = userReviews.filter(review => review.id !== reviewId);
-                        renderReviews();
-                        updateReviewStats();
-                        showNotification('Review deleted successfully!', 'success');
-                    }
-                    deleteReviewModal.style.display = 'none';
-                });
-            }
-            
-            deleteReviewModal.addEventListener('click', function(e) {
-                if (e.target === deleteReviewModal) {
-                    deleteReviewModal.style.display = 'none';
-                }
-            });
-        }
-        
-        updateCharCount();
-        updateEditCharCount();
-        
-        setupReviewActionListeners();
-        
-        renderReviews();
-        updateReviewStats();
-    }
+// Use a flag to prevent multiple initializations
+let reviewsInitialized = false;
+let currentlyEditingId = null;
+let currentlyDeletingId = null;
 
-    function showWriteReviewForm() {
-        const writeReviewSection = document.querySelector('.write-review-section');
-        const reviewsListSection = document.querySelector('.reviews-list-section');
-        
-        if (!writeReviewSection || !reviewsListSection) return;
-        
-        writeReviewSection.style.display = 'block';
-        reviewsListSection.style.display = 'none';
-        
-        const reviewForm = document.getElementById('review-form');
-        if (reviewForm) reviewForm.reset();
-        updateCharCount();
-        
-        document.querySelectorAll('.rating-stars-input input[type="radio"]').forEach(radio => {
-            radio.checked = false;
-        });
-        
-        writeReviewSection.scrollIntoView({ behavior: 'smooth' });
+function initReviewsSection() {
+    // Prevent multiple initializations
+    if (reviewsInitialized) {
+        console.log('Reviews already initialized, skipping...');
+        return;
     }
     
-    function hideWriteReviewForm() {
-        const writeReviewSection = document.querySelector('.write-review-section');
-        const reviewsListSection = document.querySelector('.reviews-list-section');
-        
-        if (!writeReviewSection || !reviewsListSection) return;
-        
-        writeReviewSection.style.display = 'none';
-        reviewsListSection.style.display = 'block';
+    console.log('Initializing reviews section...');
+    
+    // Set up event delegation once
+    setupReviewEventDelegation();
+    
+    // Initialize form elements - use debounced events
+    initializeReviewForms();
+    
+    // Initial render
+    renderReviews();
+    updateReviewStats();
+    
+    reviewsInitialized = true;
+    console.log('Reviews initialized successfully');
+}
+
+// Separate form initialization
+function initializeReviewForms() {
+    // Write review form
+    const writeReviewBtn = document.getElementById('write-review-btn');
+    const writeFirstReviewBtn = document.getElementById('write-first-review');
+    const closeReviewBtn = document.querySelector('.btn-close-review');
+    const cancelReviewBtn = document.querySelector('.cancel-review');
+    const reviewForm = document.getElementById('review-form');
+    const reviewContent = document.getElementById('review-content');
+    
+    if (writeReviewBtn) {
+        writeReviewBtn.addEventListener('click', showWriteReviewForm);
     }
     
-    function updateCharCount() {
-        const reviewContent = document.getElementById('review-content');
-        const charCount = document.getElementById('char-count');
-        
-        if (!reviewContent || !charCount) return;
-        
-        const count = reviewContent.value.length;
-        charCount.textContent = count;
-        
-        if (count < 50) {
-            charCount.style.color = '#f44336';
-        } else if (count >= 50 && count <= 500) {
-            charCount.style.color = '#4CAF50';
-        } else {
-            charCount.style.color = '#f44336';
-        }
+    if (writeFirstReviewBtn) {
+        writeFirstReviewBtn.addEventListener('click', showWriteReviewForm);
     }
     
-    function updateEditCharCount() {
-        const editReviewContent = document.getElementById('edit-review-content');
-        const editCharCount = document.getElementById('edit-char-count');
-        
-        if (!editReviewContent || !editCharCount) return;
-        
-        const count = editReviewContent.value.length;
-        editCharCount.textContent = count;
-        
-        if (count < 50) {
-            editCharCount.style.color = '#f44336';
-        } else if (count >= 50 && count <= 500) {
-            editCharCount.style.color = '#4CAF50';
-        } else {
-            editCharCount.style.color = '#f44336';
-        }
+    if (closeReviewBtn) {
+        closeReviewBtn.addEventListener('click', hideWriteReviewForm);
     }
     
-    function handleReviewSubmit(event) {
+    if (cancelReviewBtn) {
+        cancelReviewBtn.addEventListener('click', hideWriteReviewForm);
+    }
+    
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', handleReviewSubmit);
+    }
+    
+    // Use debounced input handlers for better performance
+    if (reviewContent) {
+        reviewContent.addEventListener('input', debounce(updateCharCount, 100));
+    }
+    
+    // Initial updates
+    updateCharCount();
+}
+
+// Set up event delegation for dynamic review buttons
+function setupReviewEventDelegation() {
+    const reviewsList = document.querySelector('.reviews-list');
+    if (!reviewsList) return;
+    
+    // Use a single event listener for all review actions
+    reviewsList.addEventListener('click', handleReviewActions);
+}
+
+// Handle all review actions via event delegation
+function handleReviewActions(event) {
+    const target = event.target;
+    
+    // Handle Edit button click
+    if (target.classList.contains('btn-edit-review') || target.closest('.btn-edit-review')) {
         event.preventDefault();
+        event.stopPropagation();
         
-        const productId = document.getElementById('review-product').value;
-        const productSelect = document.getElementById('review-product');
-        const productName = productSelect.options[productSelect.selectedIndex].text.split(' - ')[0];
-        const rating = document.querySelector('input[name="rating"]:checked')?.value;
-        const title = document.getElementById('review-title').value;
-        const content = document.getElementById('review-content').value;
-        const recommend = document.getElementById('recommend-product').checked;
+        const editBtn = target.classList.contains('btn-edit-review') ? target : target.closest('.btn-edit-review');
+        const reviewItem = editBtn.closest('.review-item');
         
-        if (!productId) {
-            alert('Please select a product to review');
-            return;
+        if (reviewItem) {
+            const reviewId = parseInt(reviewItem.dataset.reviewId);
+            openInlineEditForm(reviewId);
         }
+    }
+    
+    // Handle Delete button click
+    if (target.classList.contains('btn-delete-review') || target.closest('.btn-delete-review')) {
+        event.preventDefault();
+        event.stopPropagation();
         
-        if (!rating) {
-            alert('Please provide a rating');
-            return;
+        const deleteBtn = target.classList.contains('btn-delete-review') ? target : target.closest('.btn-delete-review');
+        const reviewItem = deleteBtn.closest('.review-item');
+        
+        if (reviewItem) {
+            const reviewId = parseInt(reviewItem.dataset.reviewId);
+            openInlineDeleteConfirm(reviewId);
         }
-        
-        if (content.length < 50) {
-            alert('Please write at least 50 characters for your review');
-            return;
-        }
-        
-        if (content.length > 500) {
-            alert('Review content cannot exceed 500 characters');
-            return;
-        }
-        
-        const newReview = {
-            id: Date.now(),
-            productId: parseInt(productId),
-            productName: productName,
-            productImage: productDatabase[productId]?.image || 'https://via.placeholder.com/60x60/cccccc/666666?text=📦',
+    }
+    
+    // Handle Cancel Edit button
+    if (target.classList.contains('cancel-edit') || target.closest('.cancel-edit')) {
+        event.preventDefault();
+        cancelInlineEdit();
+    }
+    
+    // Handle Save Edit button
+    if (target.classList.contains('save-edit') || target.closest('.save-edit')) {
+        event.preventDefault();
+        saveInlineEdit();
+    }
+    
+    // Handle Cancel Delete button
+    if (target.classList.contains('cancel-delete') || target.closest('.cancel-delete')) {
+        event.preventDefault();
+        cancelInlineDelete();
+    }
+    
+    // Handle Confirm Delete button
+    if (target.classList.contains('confirm-delete') || target.closest('.confirm-delete')) {
+        event.preventDefault();
+        confirmInlineDelete();
+    }
+}
+
+// Open inline edit form
+function openInlineEditForm(reviewId) {
+    const review = userReviews.find(r => r.id === reviewId);
+    if (!review) return;
+    
+    // Cancel any ongoing edit/delete
+    cancelInlineEdit();
+    cancelInlineDelete();
+    
+    currentlyEditingId = reviewId;
+    
+    const reviewItem = document.querySelector(`.review-item[data-review-id="${reviewId}"]`);
+    if (!reviewItem) return;
+    
+    // Hide the original content and show edit form
+    const reviewContent = reviewItem.querySelector('.review-content');
+    const reviewActions = reviewItem.querySelector('.review-actions');
+    
+    // Create edit form if it doesn't exist
+    let editForm = reviewItem.querySelector('.inline-edit-form');
+    if (!editForm) {
+        editForm = createInlineEditForm(review);
+        reviewItem.appendChild(editForm);
+    }
+    
+    // Toggle visibility
+    if (reviewContent) reviewContent.style.display = 'none';
+    if (reviewActions) reviewActions.style.display = 'none';
+    editForm.style.display = 'block';
+}
+
+// Create inline edit form
+function createInlineEditForm(review) {
+    const editForm = document.createElement('div');
+    editForm.className = 'inline-edit-form';
+    editForm.innerHTML = `
+        <div class="edit-form-content">
+            <h4>Edit Review</h4>
+            
+            <div class="rating-input">
+                <label>Rating:</label>
+                <div class="star-rating">
+                    ${[5,4,3,2,1].map(num => `
+                        <input type="radio" name="edit-rating-${review.id}" id="edit-star${num}-${review.id}" value="${num}" ${review.rating === num ? 'checked' : ''}>
+                        <label for="edit-star${num}-${review.id}" class="star-label"><i class="fas fa-star"></i></label>
+                    `).join('')}
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="edit-title-${review.id}">Review Title (Optional)</label>
+                <input type="text" id="edit-title-${review.id}" class="edit-review-title" placeholder="Summarize your review" value="${escapeHtml(review.title || '')}">
+            </div>
+            
+            <div class="form-group">
+                <label for="edit-content-${review.id}">Review Details</label>
+                <textarea id="edit-content-${review.id}" class="edit-review-content" placeholder="Share your experience with this product..." minlength="50" maxlength="500" required>${escapeHtml(review.content || '')}</textarea>
+                <div class="char-counter">
+                    <span class="edit-char-count-${review.id}">${(review.content || '').length}</span>/500
+                </div>
+            </div>
+            
+            <div class="form-group checkbox">
+                <input type="checkbox" id="edit-recommend-${review.id}" class="edit-recommend-product" ${review.recommend ? 'checked' : ''}>
+                <label for="edit-recommend-${review.id}">I recommend this product</label>
+            </div>
+            
+            <div class="edit-form-actions">
+                <button type="button" class="btn-primary save-edit">Save Changes</button>
+                <button type="button" class="btn-outline cancel-edit">Cancel</button>
+            </div>
+        </div>
+    `;
+    
+    // Add input event listener for char count
+    const textarea = editForm.querySelector(`#edit-content-${review.id}`);
+    const charCountSpan = editForm.querySelector(`.edit-char-count-${review.id}`);
+    
+    if (textarea && charCountSpan) {
+        textarea.addEventListener('input', function() {
+            const count = this.value.length;
+            charCountSpan.textContent = count;
+            charCountSpan.style.color = count < 50 || count > 500 ? '#f44336' : '#4CAF50';
+        });
+    }
+    
+    return editForm;
+}
+
+// Save inline edit
+function saveInlineEdit() {
+    if (!currentlyEditingId) return;
+    
+    const reviewItem = document.querySelector(`.review-item[data-review-id="${currentlyEditingId}"]`);
+    if (!reviewItem) return;
+    
+    const editForm = reviewItem.querySelector('.inline-edit-form');
+    const rating = editForm.querySelector(`input[name="edit-rating-${currentlyEditingId}"]:checked`)?.value;
+    const title = editForm.querySelector(`#edit-title-${currentlyEditingId}`).value;
+    const content = editForm.querySelector(`#edit-content-${currentlyEditingId}`).value;
+    const recommend = editForm.querySelector(`#edit-recommend-${currentlyEditingId}`).checked;
+    
+    if (!rating) {
+        alert('Please provide a rating');
+        return;
+    }
+    
+    if (content.length < 50 || content.length > 500) {
+        alert(content.length < 50 ? 'Minimum 50 characters required' : 'Maximum 500 characters allowed');
+        return;
+    }
+    
+    const reviewIndex = userReviews.findIndex(r => r.id === currentlyEditingId);
+    if (reviewIndex !== -1) {
+        userReviews[reviewIndex] = {
+            ...userReviews[reviewIndex],
             rating: parseInt(rating),
             title: title,
             content: content,
             recommend: recommend,
-            purchaseDate: 'Just now',
-            reviewDate: 'Just now'
+            reviewDate: 'Just now (edited)'
         };
         
-        userReviews.unshift(newReview);
-        
-        renderReviews();
-        updateReviewStats();
-        
-        showNotification('Review submitted successfully!', 'success');
-        
-        hideWriteReviewForm();
-        
-        const reviewForm = document.getElementById('review-form');
-        if (reviewForm) reviewForm.reset();
-        updateCharCount();
-    }
-    
-    function getProductImage(productId) {
-        const productImages = {
-            'organic-apples': 'https://via.placeholder.com/60x60/e8f5e9/2e7d32?text=🍎',
-            'organic-honey': 'https://via.placeholder.com/60x60/fff3e0/f57c00?text=🍯',
-            'fresh-broccoli': 'https://via.placeholder.com/60x60/e8f5e9/2e7d32?text=🥦',
-            'organic-milk': 'https://via.placeholder.com/60x60/e3f2fd/2196f3?text=🥛',
-            'olive-oil': 'https://via.placeholder.com/60x60/e8f5e9/2e7d32?text=🫒'
-        };
-        
-        return productImages[productId] || 'https://via.placeholder.com/60x60/cccccc/666666?text=📦';
-    }
-    
-    function renderReviews() {
-        const reviewsList = document.querySelector('.reviews-list');
-        if (!reviewsList) return;
-        
-        const noReviewsState = document.getElementById('no-reviews-state');
-        
-        // Clear existing reviews
-        document.querySelectorAll('.review-item').forEach(item => item.remove());
-        
-        if (userReviews.length === 0) {
-            if (noReviewsState) noReviewsState.style.display = 'block';
-            return;
-        } else {
-            if (noReviewsState) noReviewsState.style.display = 'none';
-        }
-        
-        userReviews.forEach(review => {
-            const reviewItem = createReviewElement(review);
-            reviewsList.insertBefore(reviewItem, noReviewsState);
+        // Batch render updates
+        requestAnimationFrame(() => {
+            // Instead of re-rendering everything, update just this review item
+            updateReviewItem(reviewItem, userReviews[reviewIndex]);
+            updateReviewStats();
         });
         
-        // Re-attach event listeners after rendering
-        setupReviewActionListeners();
+        showNotification('Review updated successfully!', 'success');
+        cancelInlineEdit();
+    }
+}
+
+// Cancel inline edit
+function cancelInlineEdit() {
+    if (!currentlyEditingId) return;
+    
+    const reviewItem = document.querySelector(`.review-item[data-review-id="${currentlyEditingId}"]`);
+    if (reviewItem) {
+        const reviewContent = reviewItem.querySelector('.review-content');
+        const reviewActions = reviewItem.querySelector('.review-actions');
+        const editForm = reviewItem.querySelector('.inline-edit-form');
+        
+        if (reviewContent) reviewContent.style.display = 'block';
+        if (reviewActions) reviewActions.style.display = 'flex';
+        if (editForm) editForm.style.display = 'none';
     }
     
-    function createReviewElement(review) {
-        const reviewItem = document.createElement('div');
-        reviewItem.className = 'review-item';
-        reviewItem.dataset.reviewId = review.id;
-        
-        const starsHtml = generateStarsHtml(review.rating);
-        
-        reviewItem.innerHTML = `
-            <div class="review-header">
-                <div class="review-product">
-                    <img src="${review.productImage}" alt="${review.productName}">
-                    <div class="product-info">
-                        <h4>${review.productName}</h4>
-                        <p>Purchased on: ${review.purchaseDate}</p>
-                    </div>
-                </div>
-                <div class="review-rating">
-                    <div class="stars">
-                        ${starsHtml}
-                    </div>
-                    <span class="review-date">${review.reviewDate}</span>
-                </div>
+    currentlyEditingId = null;
+}
+
+// Open inline delete confirmation
+function openInlineDeleteConfirm(reviewId) {
+    const review = userReviews.find(r => r.id === reviewId);
+    if (!review) return;
+    
+    // Cancel any ongoing edit/delete
+    cancelInlineEdit();
+    cancelInlineDelete();
+    
+    currentlyDeletingId = reviewId;
+    
+    const reviewItem = document.querySelector(`.review-item[data-review-id="${reviewId}"]`);
+    if (!reviewItem) return;
+    
+    // Hide the original content and show delete confirmation
+    const reviewContent = reviewItem.querySelector('.review-content');
+    const reviewActions = reviewItem.querySelector('.review-actions');
+    
+    // Create delete confirmation if it doesn't exist
+    let deleteConfirm = reviewItem.querySelector('.inline-delete-confirm');
+    if (!deleteConfirm) {
+        deleteConfirm = createInlineDeleteConfirm(review);
+        reviewItem.appendChild(deleteConfirm);
+    }
+    
+    // Toggle visibility
+    if (reviewContent) reviewContent.style.display = 'none';
+    if (reviewActions) reviewActions.style.display = 'none';
+    deleteConfirm.style.display = 'block';
+}
+
+// Create inline delete confirmation
+function createInlineDeleteConfirm(review) {
+    const deleteConfirm = document.createElement('div');
+    deleteConfirm.className = 'inline-delete-confirm';
+    deleteConfirm.innerHTML = `
+        <div class="delete-confirm-content">
+            <i class="fas fa-exclamation-triangle" style="color: #f44336; font-size: 2rem; margin-bottom: 1rem;"></i>
+            <h4>Delete Review?</h4>
+            <p>Are you sure you want to delete your review for "${escapeHtml(review.productName)}"?</p>
+            <p class="warning-text">This action cannot be undone.</p>
+            <div class="delete-confirm-actions">
+                <button type="button" class="btn-primary confirm-delete">Yes, Delete</button>
+                <button type="button" class="btn-outline cancel-delete">Cancel</button>
             </div>
-            <div class="review-content">
-                <h5>${review.title}</h5>
-                <p>${review.content}</p>
-                <div class="review-recommend">
-                    <i class="fas fa-${review.recommend ? 'check' : 'times'}-circle"></i>
-                    <span>${review.recommend ? 'Recommends' : 'Doesn\'t recommend'} this product</span>
-                </div>
-            </div>
-            <div class="review-actions">
-                <button class="btn-outline btn-edit-review">
-                    <i class="fas fa-edit"></i> Edit
-                </button>
-                <button class="btn-outline btn-delete-review">
-                    <i class="fas fa-trash"></i> Delete
-                </button>
-            </div>
-        `;
-        
-        return reviewItem;
-    }
+        </div>
+    `;
     
-    function generateStarsHtml(rating) {
-        let starsHtml = '';
-        const fullStars = Math.floor(rating);
-        const hasHalfStar = rating % 1 !== 0;
-        
-        for (let i = 1; i <= 5; i++) {
-            if (i <= fullStars) {
-                starsHtml += '<i class="fas fa-star"></i>';
-            } else if (hasHalfStar && i === fullStars + 1) {
-                starsHtml += '<i class="fas fa-star-half-alt"></i>';
-            } else {
-                starsHtml += '<i class="far fa-star"></i>';
-            }
-        }
-        
-        return starsHtml;
-    }
+    return deleteConfirm;
+}
+
+// Confirm inline delete
+function confirmInlineDelete() {
+    if (!currentlyDeletingId) return;
     
-    function setupReviewActionListeners() {
-        // Remove any existing listeners by cloning and replacing buttons
-        document.querySelectorAll('.btn-edit-review').forEach(button => {
-            const newButton = button.cloneNode(true);
-            button.parentNode.replaceChild(newButton, button);
-            
-            newButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                handleEditReview(e);
-            });
-        });
+    const index = userReviews.findIndex(r => r.id === currentlyDeletingId);
+    if (index !== -1) {
+        userReviews.splice(index, 1);
         
-        document.querySelectorAll('.btn-delete-review').forEach(button => {
-            const newButton = button.cloneNode(true);
-            button.parentNode.replaceChild(newButton, button);
-            
-            newButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                handleDeleteReview(e);
-            });
-        });
-    }
-    
-    function handleEditReview(event) {
-        const reviewItem = event.target.closest('.review-item');
-        const reviewId = parseInt(reviewItem.dataset.reviewId);
-        
-        const review = userReviews.find(r => r.id === reviewId);
-        if (!review) return;
-        
-        currentEditReviewId = reviewId;
-        
-        const starInput = document.getElementById(`edit-star${review.rating}`);
-        if (starInput) starInput.checked = true;
-        
-        const editTitle = document.getElementById('edit-review-title');
-        const editContent = document.getElementById('edit-review-content');
-        const editRecommend = document.getElementById('edit-recommend-product');
-        
-        if (editTitle) editTitle.value = review.title;
-        if (editContent) editContent.value = review.content;
-        if (editRecommend) editRecommend.checked = review.recommend;
-        
-        updateEditCharCount();
-        
-        showModal('edit-review-modal');
-    }
-    
-    function handleEditReviewSubmit(event) {
-        event.preventDefault();
-        
-        if (!currentEditReviewId) return;
-        
-        const rating = document.querySelector('input[name="edit-rating"]:checked')?.value;
-        const title = document.getElementById('edit-review-title').value;
-        const content = document.getElementById('edit-review-content').value;
-        const recommend = document.getElementById('edit-recommend-product').checked;
-        
-        if (!rating) {
-            alert('Please provide a rating');
-            return;
-        }
-        
-        if (content.length < 50) {
-            alert('Please write at least 50 characters for your review');
-            return;
-        }
-        
-        if (content.length > 500) {
-            alert('Review content cannot exceed 500 characters');
-            return;
-        }
-        
-        const reviewIndex = userReviews.findIndex(r => r.id === currentEditReviewId);
-        if (reviewIndex !== -1) {
-            userReviews[reviewIndex] = {
-                ...userReviews[reviewIndex],
-                rating: parseInt(rating),
-                title: title,
-                content: content,
-                recommend: recommend,
-                reviewDate: 'Just now'
-            };
-            
+        // Batch render updates
+        requestAnimationFrame(() => {
             renderReviews();
             updateReviewStats();
-            
-            showNotification('Review updated successfully!', 'success');
-            
-            closeModal('edit-review-modal');
-            currentEditReviewId = null;
-        }
-    }
-    
-    function handleDeleteReview(event) {
-        const reviewItem = event.target.closest('.review-item');
-        const reviewId = parseInt(reviewItem.dataset.reviewId);
-        
-        const deleteReviewModal = document.getElementById('delete-review-modal');
-        if (deleteReviewModal) {
-            deleteReviewModal.dataset.reviewId = reviewId;
-            
-            showModal('delete-review-modal');
-            
-            const cancelBtn = deleteReviewModal.querySelector('.cancel-delete');
-            const confirmBtn = deleteReviewModal.querySelector('.confirm-delete');
-            
-            const newCancelBtn = cancelBtn.cloneNode(true);
-            const newConfirmBtn = confirmBtn.cloneNode(true);
-            
-            cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
-            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
-            
-            newCancelBtn.addEventListener('click', () => closeModal('delete-review-modal'));
-            newConfirmBtn.addEventListener('click', confirmDeleteReview);
-        }
-    }
-    
-    function confirmDeleteReview() {
-        const deleteReviewModal = document.getElementById('delete-review-modal');
-        if (!deleteReviewModal) return;
-        
-        const reviewId = parseInt(deleteReviewModal.dataset.reviewId);
-        
-        userReviews = userReviews.filter(review => review.id !== reviewId);
-        
-        renderReviews();
-        updateReviewStats();
+        });
         
         showNotification('Review deleted successfully!', 'success');
-        
-        closeModal('delete-review-modal');
     }
     
-    function updateReviewStats() {
-        if (userReviews.length === 0) return;
-        
-        const totalRating = userReviews.reduce((sum, review) => sum + review.rating, 0);
-        const averageRating = totalRating / userReviews.length;
-        
-        const ratingValue = document.querySelector('.rating-value');
-        if (ratingValue) ratingValue.textContent = averageRating.toFixed(1);
-        
-        const starIcons = document.querySelectorAll('.rating-stars.large i');
-        const fullStars = Math.floor(averageRating);
-        const hasHalfStar = averageRating % 1 >= 0.5;
-        
-        starIcons.forEach((star, index) => {
-            star.className = index < fullStars ? 'fas fa-star' :
-                            hasHalfStar && index === fullStars ? 'fas fa-star-half-alt' :
-                            'far fa-star';
-        });
-        
-        const ratingCount = document.querySelector('.rating-count');
-        if (ratingCount) ratingCount.textContent = `Based on ${userReviews.length} reviews`;
-        
-        const starCounts = {5: 0, 4: 0, 3: 0, 2: 0, 1: 0};
-        
-        userReviews.forEach(review => {
-            const roundedRating = Math.round(review.rating);
-            starCounts[roundedRating]++;
-        });
-        
-        Object.keys(starCounts).forEach(stars => {
-            const count = starCounts[stars];
-            const percentage = userReviews.length > 0 ? (count / userReviews.length) * 100 : 0;
-            
-            const statItem = document.querySelector(`.stat-item:nth-child(${6 - stars})`);
-            if (statItem) {
-                statItem.querySelector('.stat-fill').style.width = `${percentage}%`;
-                statItem.querySelector('.stat-count').textContent = count;
-            }
-        });
-    }
-    
-    function showModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (!modal) return;
-        
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        
-        modal.addEventListener('click', function outsideClickHandler(e) {
-            if (e.target === modal) {
-                closeModal(modalId);
-                modal.removeEventListener('click', outsideClickHandler);
-            }
-        });
-        
-        const escapeHandler = (e) => {
-            if (e.key === 'Escape') {
-                closeModal(modalId);
-                document.removeEventListener('keydown', escapeHandler);
-            }
-        };
-        document.addEventListener('keydown', escapeHandler);
-    }
-    
-    function closeModal(modalId) {
-        const modal = document.getElementById(modalId);
-        if (!modal) return;
-        
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
+    currentlyDeletingId = null;
+}
 
+// Cancel inline delete
+function cancelInlineDelete() {
+    if (!currentlyDeletingId) return;
+    
+    const reviewItem = document.querySelector(`.review-item[data-review-id="${currentlyDeletingId}"]`);
+    if (reviewItem) {
+        const reviewContent = reviewItem.querySelector('.review-content');
+        const reviewActions = reviewItem.querySelector('.review-actions');
+        const deleteConfirm = reviewItem.querySelector('.inline-delete-confirm');
+        
+        if (reviewContent) reviewContent.style.display = 'block';
+        if (reviewActions) reviewActions.style.display = 'flex';
+        if (deleteConfirm) deleteConfirm.style.display = 'none';
+    }
+    
+    currentlyDeletingId = null;
+}
+
+// Update a single review item instead of re-rendering all
+function updateReviewItem(reviewItem, review) {
+    const starsHtml = generateStarsHtml(review.rating);
+    const recommendIcon = review.recommend ? 'check' : 'times';
+    const recommendText = review.recommend ? 'Recommends' : 'Doesn\'t recommend';
+    
+    const reviewContent = reviewItem.querySelector('.review-content');
+    if (reviewContent) {
+        reviewContent.innerHTML = `
+            <h5>${escapeHtml(review.title)}</h5>
+            <p>${escapeHtml(review.content)}</p>
+            <div class="review-recommend">
+                <i class="fas fa-${recommendIcon}-circle"></i>
+                <span>${recommendText} this product</span>
+            </div>
+        `;
+    }
+    
+    const reviewHeader = reviewItem.querySelector('.review-header .review-rating');
+    if (reviewHeader) {
+        reviewHeader.innerHTML = `
+            <div class="stars">${starsHtml}</div>
+            <span class="review-date">${escapeHtml(review.reviewDate)}</span>
+        `;
+    }
+    
+    // Hide any open forms
+    const editForm = reviewItem.querySelector('.inline-edit-form');
+    const deleteConfirm = reviewItem.querySelector('.inline-delete-confirm');
+    if (editForm) editForm.style.display = 'none';
+    if (deleteConfirm) deleteConfirm.style.display = 'none';
+}
+
+// Optimized render function
+function renderReviews() {
+    const reviewsList = document.querySelector('.reviews-list');
+    if (!reviewsList) return;
+    
+    const noReviewsState = document.getElementById('no-reviews-state');
+    
+    // Use document fragment for better performance
+    const fragment = document.createDocumentFragment();
+    
+    // Clear existing reviews (but keep the container)
+    while (reviewsList.firstChild) {
+        reviewsList.removeChild(reviewsList.firstChild);
+    }
+    
+    if (!userReviews || userReviews.length === 0) {
+        if (noReviewsState) {
+            noReviewsState.style.display = 'block';
+            reviewsList.appendChild(noReviewsState);
+        }
+        return;
+    }
+    
+    if (noReviewsState) noReviewsState.style.display = 'none';
+    
+    // Create all review elements
+    userReviews.forEach(review => {
+        fragment.appendChild(createReviewElement(review));
+    });
+    
+    // Add all at once
+    reviewsList.appendChild(fragment);
+}
+
+function createReviewElement(review) {
+    const reviewItem = document.createElement('div');
+    reviewItem.className = 'review-item';
+    reviewItem.dataset.reviewId = review.id;
+    
+    const starsHtml = generateStarsHtml(review.rating);
+    const recommendIcon = review.recommend ? 'check' : 'times';
+    const recommendText = review.recommend ? 'Recommends' : 'Doesn\'t recommend';
+    
+    reviewItem.innerHTML = `
+        <div class="review-header">
+            <div class="review-product">
+                <img src="${review.productImage || 'https://via.placeholder.com/60x60'}" alt="${review.productName}" loading="lazy">
+                <div class="product-info">
+                    <h4>${escapeHtml(review.productName)}</h4>
+                    <p>Purchased on: ${escapeHtml(review.purchaseDate)}</p>
+                </div>
+            </div>
+            <div class="review-rating">
+                <div class="stars">${starsHtml}</div>
+                <span class="review-date">${escapeHtml(review.reviewDate)}</span>
+            </div>
+        </div>
+        <div class="review-content">
+            <h5>${escapeHtml(review.title)}</h5>
+            <p>${escapeHtml(review.content)}</p>
+            <div class="review-recommend">
+                <i class="fas fa-${recommendIcon}-circle"></i>
+                <span>${recommendText} this product</span>
+            </div>
+        </div>
+        <div class="review-actions">
+            <button class="btn-outline btn-edit-review"><i class="fas fa-edit"></i> Edit</button>
+            <button class="btn-outline btn-delete-review"><i class="fas fa-trash"></i> Delete</button>
+        </div>
+    `;
+    
+    return reviewItem;
+}
+
+// Helper function to prevent XSS
+function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function updateReviewStats() {
+    if (!userReviews || userReviews.length === 0) {
+        updateElementText('.rating-average', '0.0');
+        updateElementText('.total-reviews', '0 reviews');
+        updateElementHTML('.rating-progress', '');
+        return;
+    }
+    
+    const totalReviews = userReviews.length;
+    const averageRating = (userReviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews).toFixed(1);
+    
+    updateElementText('.rating-average', averageRating);
+    updateElementText('.total-reviews', `${totalReviews} ${totalReviews === 1 ? 'review' : 'reviews'}`);
+    
+    // Update rating distribution
+    const ratingCounts = {5:0, 4:0, 3:0, 2:0, 1:0};
+    userReviews.forEach(review => {
+        const rating = Math.floor(review.rating);
+        if (ratingCounts.hasOwnProperty(rating)) ratingCounts[rating]++;
+    });
+    
+    let progressHtml = '';
+    for (let i = 5; i >= 1; i--) {
+        const count = ratingCounts[i];
+        const percentage = (count / totalReviews * 100).toFixed(1);
+        progressHtml += `
+            <div class="rating-bar">
+                <span class="rating-label">${i} star</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${percentage}%"></div>
+                </div>
+                <span class="rating-count">${count}</span>
+            </div>
+        `;
+    }
+    
+    updateElementHTML('.rating-progress', progressHtml);
+}
+
+// Helper functions for DOM updates
+function updateElementText(selector, text) {
+    const element = document.querySelector(selector);
+    if (element) element.textContent = text;
+}
+
+function updateElementHTML(selector, html) {
+    const element = document.querySelector(selector);
+    if (element) element.innerHTML = html;
+}
+
+function showWriteReviewForm() {
+    toggleReviewForms(true);
+}
+
+function hideWriteReviewForm() {
+    toggleReviewForms(false);
+    document.getElementById('review-form')?.reset();
+    updateCharCount();
+}
+
+function toggleReviewForms(showWriteForm) {
+    const writeSection = document.querySelector('.write-review-section');
+    const listSection = document.querySelector('.reviews-list-section');
+    
+    if (writeSection) writeSection.style.display = showWriteForm ? 'block' : 'none';
+    if (listSection) listSection.style.display = showWriteForm ? 'none' : 'block';
+}
+
+function handleReviewSubmit(e) {
+    e.preventDefault();
+    
+    const rating = document.querySelector('input[name="rating"]:checked')?.value;
+    const title = document.getElementById('review-title').value;
+    const content = document.getElementById('review-content').value;
+    const recommend = document.getElementById('recommend-product').checked;
+    
+    if (!rating) {
+        alert('Please provide a rating');
+        return;
+    }
+    
+    if (content.length < 50 || content.length > 500) {
+        alert(content.length < 50 ? 'Minimum 50 characters required' : 'Maximum 500 characters allowed');
+        return;
+    }
+    
+    const newReview = {
+        id: Date.now(),
+        productId: 1,
+        productName: 'Organic Shimla Apples',
+        productImage: 'https://w0.peakpx.com/wallpaper/182/615/HD-wallpaper-fruits-apple-fruit.jpg',
+        rating: parseInt(rating),
+        title: title,
+        content: content,
+        recommend: recommend,
+        purchaseDate: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+        reviewDate: 'Just now'
+    };
+    
+    userReviews.unshift(newReview);
+    
+    // Batch updates
+    requestAnimationFrame(() => {
+        renderReviews();
+        updateReviewStats();
+    });
+    
+    hideWriteReviewForm();
+    showNotification('Review posted successfully!', 'success');
+}
+
+// Debounced input handlers
+function updateCharCount() {
+    const reviewContent = document.getElementById('review-content');
+    const charCount = document.getElementById('char-count');
+    if (!reviewContent || !charCount) return;
+    
+    const count = reviewContent.value.length;
+    charCount.textContent = count;
+    charCount.style.color = count < 50 || count > 500 ? '#f44336' : '#4CAF50';
+}
+
+function generateStarsHtml(rating) {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+    let starsHtml = '';
+    
+    for (let i = 1; i <= 5; i++) {
+        if (i <= fullStars) {
+            starsHtml += '<i class="fas fa-star"></i>';
+        } else if (hasHalfStar && i === fullStars + 1) {
+            starsHtml += '<i class="fas fa-star-half-alt"></i>';
+        } else {
+            starsHtml += '<i class="far fa-star"></i>';
+        }
+    }
+    
+    return starsHtml;
+}
+
+// Debounce function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 3000);
+}
+
+// Optimized page activation detection
+document.addEventListener('DOMContentLoaded', function() {
+    let profilePage = document.getElementById('profile-page');
+    
+    if (!profilePage) return;
+    
+    // Check if already active
+    if (profilePage.classList.contains('active')) {
+        setTimeout(initReviewsSection, 100);
+    }
+    
+    // Use a single observer with throttled callback
+    let timeout;
+    const observer = new MutationObserver(function() {
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            if (profilePage.classList.contains('active')) {
+                console.log('Profile page activated');
+                initReviewsSection();
+            }
+        }, 200);
+    });
+    
+    observer.observe(profilePage, { 
+        attributes: true, 
+        attributeFilter: ['class'],
+        attributeOldValue: false
+    });
+});
     // ===== FEEDBACK SYSTEM FUNCTIONALITY =====
     function setupFeedbackEvents() {
         if (marqueeBtn) {
