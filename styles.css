@@ -8906,3 +8906,117 @@ html, body {
   background: #ffecec;
   color: #e53935; /* red on hover */
 }
+/*Check out page order summary page css*/
+.confirmation-totals{
+    background:#f5f5f5 !important;
+    padding:30px !important;
+    border-radius:12px !important;
+    margin-top:15px !important;
+    font-family:Arial,sans-serif !important;
+}
+
+.order-summary-heading{
+    font-size:24px !important;
+    font-weight:700 !important;
+    color:#333 !important;
+    margin-bottom:20px !important;
+}
+
+.total-row{
+    display:flex !important;
+    justify-content:space-between !important;
+    align-items:center !important;
+    padding:14px 0 !important;
+    border-bottom:1px solid #e0e0e0 !important;
+    font-size:16px !important;
+    color:#444 !important;
+}
+
+.total-row span:last-child{
+    font-weight:500 !important;
+}
+
+.total-row.discount span:last-child{
+    color:#e53935 !important;
+    font-weight:600 !important;
+}
+
+.grand-total{
+    border-bottom:none !important;
+    margin-top:8px !important;
+    font-size:20px !important;
+    font-weight:700 !important;
+}
+
+.grand-total span:first-child{
+    color:#2e7d32 !important;
+}
+
+.grand-total span:last-child{
+    color:#2e7d32 !important;
+    font-size:22px !important;
+    font-weight:800 !important;
+}
+.order-details-content {
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+}
+
+.order-items-full {
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+}
+
+.details-section {
+    overflow: visible !important;
+}
+.order-items-scrollable {
+    max-height: calc(2 * 100px); /* Adjust based on your item height */
+    overflow-y: auto;
+    padding-right: 5px; /* Space for scrollbar */
+}
+
+/* Optional: Style the scrollbar for better appearance */
+.order-items-scrollable::-webkit-scrollbar {
+    width: 4px;
+}
+
+.order-items-scrollable::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.order-items-scrollable::-webkit-scrollbar-thumb {
+    background: #4CAF50;
+    border-radius: 4px;
+}
+
+.order-items-scrollable::-webkit-scrollbar-thumb:hover {
+    background: #45a049;
+}
+
+/* Scroll bar styling for check out page */
+.cart-items{
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.cart-items::-webkit-scrollbar{
+    width: 6px;
+}
+
+.cart-items::-webkit-scrollbar-track{
+    background: #f1f1f1;
+}
+
+.cart-items::-webkit-scrollbar-thumb{
+    background: #4CAF50;
+    border-radius: 10px;
+}
+
+.cart-items::-webkit-scrollbar-thumb:hover{
+    background: #45a049;
+}
