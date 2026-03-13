@@ -9020,3 +9020,9 @@ html, body {
 .cart-items::-webkit-scrollbar-thumb:hover{
     background: #45a049;
 }
+.order-details-container{
+    width:100%;
+    max-width:785px;   /* fixed layout width */
+    margin:0 auto;
+    box-sizing:border-box;
+}
