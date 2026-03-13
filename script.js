@@ -3611,104 +3611,117 @@ const sampleAddresses = {
         }
     }
 
-    function setupFooterLinks() {
-        const footerLinks = document.querySelectorAll('.footer-col ul li a');
-        footerLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const linkText = this.textContent.trim();
-                
-                switch(linkText) {
-                    case 'Home':
-                        showPage('products');
-                        break;
-                    case 'Shop':
-                        showPage('products');
-                        setTimeout(() => {
-                            const productsGrid = document.querySelector('.products-grid');
-                            if (productsGrid) {
-                                const headerHeight = document.querySelector('header')?.offsetHeight || 80;
-                                const elementPosition = productsGrid.getBoundingClientRect().top;
-                                const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
-                                window.scrollTo({
-                                    top: offsetPosition,
-                                    behavior: 'smooth'
-                                });
-                            }
-                        }, 100);
-                        break;
-                    case 'About Us':
-                        showPage('products');
-                        setTimeout(() => {
-                            const about = document.querySelector('.about');
-                            if (about) {
-                                const headerHeight = document.querySelector('header')?.offsetHeight || 80;
-                                const elementPosition = about.getBoundingClientRect().top;
-                                const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
-                                window.scrollTo({
-                                    top: offsetPosition,
-                                    behavior: 'smooth'
-                                });
-                            }
-                        }, 100);
-                        break;
-                    case 'Blog':
-                        showToastMessage('Blog section coming soon!');
-                        break;
-                    case 'Contact':
-                        showPage('products');
-                        setTimeout(() => {
-                            const footer = document.querySelector('footer');
-                            if (footer) {
-                                const headerHeight = document.querySelector('header')?.offsetHeight || 80;
-                                const elementPosition = footer.getBoundingClientRect().top;
-                                const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
-                                window.scrollTo({
-                                    top: offsetPosition,
-                                    behavior: 'smooth'
-                                });
-                            }
-                        }, 100);
-                        break;
-                    case 'My Account':
-                        if (userData.isLoggedIn) {
-                            showPage('profile');
-                        } else {
-                            showPage('login');
+function setupFooterLinks() {
+    const footerLinks = document.querySelectorAll('.footer-col ul li a');
+    footerLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const linkText = this.textContent.trim();
+            
+            switch(linkText) {
+                case 'Home':
+                    showPage('products');
+                    break;
+                case 'Shop':
+                    showPage('products');
+                    setTimeout(() => {
+                        const productsGrid = document.querySelector('.products-grid');
+                        if (productsGrid) {
+                            const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                            const elementPosition = productsGrid.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
                         }
-                        break;
-                    case 'Order Tracking':
-                        if (userData.orders && userData.orders.length > 0) {
-                            showOrderTracking();
-                        } else {
-                            alert('No orders found! Please place an order first.');
+                    }, 100);
+                    break;
+                case 'About Us':
+                    showPage('products');
+                    setTimeout(() => {
+                        const about = document.querySelector('.about');
+                        if (about) {
+                            const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                            const elementPosition = about.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
                         }
-                        break;
-                    case 'Delivery Information':
-                        showInfoPage('delivery-info-page');
-                        break;
-                    case 'Returns Policy':
-                        showInfoPage('returns-policy-page');
-                        break;
-                    case 'FAQs':
-                        showInfoPage('faqs-page');
-                        break;
-                }
-            });
+                    }, 100);
+                    break;
+                case 'Blog':
+                    showToastMessage('Blog section coming soon!');
+                    break;
+                case 'Contact':
+                    showPage('products');
+                    setTimeout(() => {
+                        const footer = document.querySelector('footer');
+                        if (footer) {
+                            const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+                            const elementPosition = footer.getBoundingClientRect().top;
+                            const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20;
+                            window.scrollTo({
+                                top: offsetPosition,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }, 100);
+                    break;
+                case 'My Account':
+                    if (userData.isLoggedIn) {
+                        showPage('profile');
+                    } else {
+                        showPage('login');
+                    }
+                    break;
+                case 'My Orders': // Changed from 'Order Tracking' to 'My Orders'
+                    if (userData.isLoggedIn) {
+                        showPage('profile');
+                        setTimeout(() => {
+                            // Switch to orders tab
+                            const ordersTab = document.querySelector('.profile-nav-item[data-tab="orders"]');
+                            if (ordersTab) {
+                                ordersTab.click();
+                                
+                                // Scroll to orders section
+                                const ordersSection = document.getElementById('orders');
+                                if (ordersSection) {
+                                    ordersSection.scrollIntoView({ behavior: 'smooth' });
+                                }
+                            }
+                        }, 100);
+                    } else {
+                        alert('Please login to view your orders.');
+                        showPage('login');
+                    }
+                    break;
+                case 'Delivery Information':
+                    showInfoPage('delivery-info-page');
+                    break;
+                case 'Returns Policy':
+                    showInfoPage('returns-policy-page');
+                    break;
+                case 'FAQs':
+                    showInfoPage('faqs-page');
+                    break;
+            }
         });
-        
-        const socialLinks = document.querySelectorAll('.social-links a');
-        socialLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const platform = this.querySelector('i').className.includes('facebook') ? 'Facebook' :
-                               this.querySelector('i').className.includes('instagram') ? 'Instagram' :
-                               this.querySelector('i').className.includes('twitter') ? 'Twitter' : 'YouTube';
-                showToastMessage(`Opening ${platform} page in a new window. (Demo)`);
-            });
+    });
+    
+    const socialLinks = document.querySelectorAll('.social-links a');
+    socialLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const platform = this.querySelector('i').className.includes('facebook') ? 'Facebook' :
+                           this.querySelector('i').className.includes('instagram') ? 'Instagram' :
+                           this.querySelector('i').className.includes('twitter') ? 'Twitter' : 'YouTube';
+            showToastMessage(`Opening ${platform} page in a new window. (Demo)`);
         });
-    }
-
+    });
+}
     function initializeProductQuantitySelectors() {
         const quantitySelects = document.querySelectorAll('.quantity-select');
         console.log(`Found ${quantitySelects.length} quantity selects to initialize`);
@@ -8771,166 +8784,192 @@ function processOrder() {
         }
     }
 
-    // ===== UPDATED FUNCTION TO UPDATE CONFIRMATION DETAILS =====
-    function updateConfirmationDetails(order) {
-        if (!order) return;
-        
-        console.log('Updating confirmation details with order:', order);
+// ===== UPDATED FUNCTION TO UPDATE CONFIRMATION DETAILS =====
+function updateConfirmationDetails(order) {
+    if (!order) return;
+    
+    console.log('Updating confirmation details with order:', order);
 
-        // debug: confirm order id values
-        console.log('updateConfirmationDetails - order.id =', order.id, ' currentOrderId =', currentOrderId);
-        
-        // Find all possible order ID elements
-        const orderIdElement = document.getElementById('order-id');
-        const orderIdElements = document.querySelectorAll('[id*="order-id"], [class*="order-id"]');
-        
-        // Determine definitive order ID: prefer order.id, then any currentOrderId, then generate
-        const randomOrderId = order.id || currentOrderId || ('OM' + Math.floor(100000 + Math.random() * 900000).toString());
-        // sync shared id
-        currentOrderId = randomOrderId;
-        console.log('Setting order ID to:', randomOrderId);
+    // debug: confirm order id values
+    console.log('updateConfirmationDetails - order.id =', order.id, ' currentOrderId =', currentOrderId);
+    
+    // Find all possible order ID elements
+    const orderIdElement = document.getElementById('order-id');
+    const orderIdElements = document.querySelectorAll('[id*="order-id"], [class*="order-id"]');
+    
+    // Determine definitive order ID: prefer order.id, then any currentOrderId, then generate
+    const randomOrderId = order.id || currentOrderId || ('OM' + Math.floor(100000 + Math.random() * 900000).toString());
+    // sync shared id
+    currentOrderId = randomOrderId;
+    console.log('Setting order ID to:', randomOrderId);
 
-        // update all order id displays
+    // update all order id displays
+    if (typeof displayOrderId === 'function') {
         displayOrderId(randomOrderId);
+    }
+    
+    // Update specific element by ID
+    if (orderIdElement) {
+        orderIdElement.textContent = randomOrderId;
+        console.log('Updated #order-id element');
+    }
+    
+    // Update any element containing order-id in class or id
+    orderIdElements.forEach(el => {
+        if (el !== orderIdElement) {
+            el.textContent = randomOrderId;
+        }
+    });
+    
+    // Also look for spans that might contain the placeholder
+    document.querySelectorAll('.order-info span, .confirmation-details span, .order-summary span').forEach(el => {
+        if (el.textContent.includes('OM123456') || el.textContent.includes('Order #') || el.textContent.match(/OM\d{6}/)) {
+            el.textContent = randomOrderId;
+            console.log('Updated element with placeholder:', el);
+        }
+    });
+    
+    // ===== FIXED: Update Order Date - Using correct ID =====
+    const orderDateElement = document.getElementById('order-date-display'); // Changed from 'order-date' to 'order-date-display'
+    if (orderDateElement) {
+        // Get current date/time as fallback
+        const now = new Date();
+        const formattedDateTime = now.toLocaleDateString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        }) + ' at ' + now.toLocaleTimeString('en-IN', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
         
-        // Update specific element by ID
-        if (orderIdElement) {
-            orderIdElement.textContent = randomOrderId;
-            console.log('Updated #order-id element');
+        // Set the date
+        orderDateElement.textContent = formattedDateTime;
+        console.log('Updated order date to:', formattedDateTime);
+    } else {
+        console.log('Order date element not found with ID: order-date-display');
+    }
+    
+    // Update Shipping Details
+    const shippingDetails = document.getElementById('shipping-details');
+    if (shippingDetails && order.address) {
+        shippingDetails.innerHTML = `
+            <div class="shipping-info">
+                <p><strong>${order.address.name || 'Customer'}</strong></p>
+                <p>${order.address.address || order.address.street || ''}</p>
+                <p>${order.address.city || ''}, ${order.address.state || ''} - ${order.address.pincode || ''}</p>
+                <p>Phone: ${order.address.phone || ''}</p>
+                <p class="delivery-method">
+                    Delivery: <span>${order.deliveryOption || 'Standard Delivery'}</span>
+                </p>
+            </div>
+        `;
+    }
+    
+    // Update Payment Details
+    const paymentDetails = document.getElementById('payment-details');
+    if (paymentDetails) {
+        const paymentDate = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        paymentDetails.innerHTML = `
+            <div class="payment-info">
+                <p><strong>Payment Method:</strong> ${order.payment || 'Not specified'}</p>
+                <p><strong>Payment Date:</strong> ${paymentDate}</p>
+                <p><strong>Payment Status:</strong> <span class="status-success">✓ Completed</span></p>
+            </div>
+        `;
+    }
+    
+    // Update Order Items
+    const confirmationItems = document.querySelector('.confirmation-items');
+    if (confirmationItems && order.items && order.items.length > 0) {
+        confirmationItems.innerHTML = '';
+        
+        order.items.forEach(item => {
+            const totalPrice = item.price * item.quantity;
+            const displayName = `${item.name} ${item.weight ? '(' + item.weight + ')' : ''} × ${item.quantity}`;
+            
+            const itemElement = document.createElement('div');
+            itemElement.className = 'confirmation-item';
+            itemElement.innerHTML = `
+                <img src="${item.image || 'https://via.placeholder.com/60x60/cccccc/666666?text=📦'}" alt="${item.name}" class="item-image" 
+                     onerror="this.src='https://via.placeholder.com/60x60/cccccc/666666?text=📦'">
+                <div class="item-info">
+                    <span class="item-name">${displayName}</span>
+                    <span class="item-price">₹${totalPrice.toFixed(2)}</span>
+                </div>
+            `;
+            confirmationItems.appendChild(itemElement);
+        });
+    }
+    
+    // Update Order Totals
+    const confirmationTotals = document.querySelector('.confirmation-totals');
+    if (confirmationTotals) {
+        confirmationTotals.innerHTML = `
+            <h2 class="order-summary-heading">🛒 Order Summary</h2>
+            <div class="total-row">
+                <span>Subtotal</span>
+                <span>₹${(order.subtotal || 0).toFixed(2)}</span>
+            </div>
+            <div class="total-row">
+                <span>Shipping</span>
+                <span>₹${(order.delivery || 0).toFixed(2)}</span>
+            </div>
+            <div class="total-row">
+                <span>Tax</span>
+                <span>₹${(order.tax || 0).toFixed(2)}</span>
+            </div>
+            ${(order.couponDiscount || 0) > 0 ? `
+            <div class="total-row discount">
+                <span>Discount</span>
+                <span>-₹${(order.couponDiscount || 0).toFixed(2)}</span>
+            </div>
+            ` : ''}
+            <div class="total-row grand-total">
+                <span>Total</span>
+                <span>₹${(order.total || 0).toFixed(2)}</span>
+            </div>
+        `;
+    }
+    
+    // Force a re-check after a short delay
+    setTimeout(() => {
+        const orderIdSpan = document.getElementById('order-id');
+        if (orderIdSpan && orderIdSpan.textContent === 'OM123456') {
+            orderIdSpan.textContent = randomOrderId;
+            console.log('Force updated order ID after delay');
         }
         
-        // Update any element containing order-id in class or id
-        orderIdElements.forEach(el => {
-            if (el !== orderIdElement) {
-                el.textContent = randomOrderId;
-            }
-        });
-        
-        // Also look for spans that might contain the placeholder
-        document.querySelectorAll('.order-info span, .confirmation-details span, .order-summary span').forEach(el => {
-            if (el.textContent.includes('OM123456') || el.textContent.includes('Order #') || el.textContent.match(/OM\d{6}/)) {
-                el.textContent = randomOrderId;
-                console.log('Updated element with placeholder:', el);
-            }
-        });
-        
-        // Update Order Date
-        const orderDateElement = document.getElementById('order-date');
-        if (orderDateElement) {
-            orderDateElement.textContent = `${order.date || new Date().toLocaleDateString('en-IN', {
+        // Double-check order date
+        const dateSpan = document.getElementById('order-date-display');
+        if (dateSpan && !dateSpan.textContent) {
+            const now = new Date();
+            dateSpan.textContent = now.toLocaleDateString('en-IN', {
                 day: '2-digit',
                 month: 'short',
                 year: 'numeric'
-            })} ${order.time ? 'at ' + order.time : ''}`;
-        }
-        
-        // Update Shipping Details
-        const shippingDetails = document.getElementById('shipping-details');
-        if (shippingDetails && order.address) {
-            shippingDetails.innerHTML = `
-                <div class="shipping-info">
-                    <p><strong>${order.address.name || 'Customer'}</strong></p>
-                    <p>${order.address.address || order.address.street || ''}</p>
-                    <p>${order.address.city || ''}, ${order.address.state || ''} - ${order.address.pincode || ''}</p>
-                    <p>Phone: ${order.address.phone || ''}</p>
-                    <p class="delivery-method">
-Delivery: <span>${order.deliveryOption || 'Standard Delivery'}</span>
-</p>
-                </div>
-            `;
-        }
-        
-        // Update Payment Details
-        const paymentDetails = document.getElementById('payment-details');
-        if (paymentDetails) {
-            const paymentDate = new Date().toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
+            }) + ' at ' + now.toLocaleTimeString('en-IN', {
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
+                hour12: true
             });
-            
-            paymentDetails.innerHTML = `
-                <div class="payment-info">
-                    <p><strong>Payment Method:</strong> ${order.payment || 'Not specified'}</p>
-                    <p><strong>Payment Date:</strong> ${paymentDate}</p>
-                    <p><strong>Payment Status:</strong> <span class="status-success">✓ Completed</span></p>
-                </div>
-            `;
+            console.log('Force updated order date after delay');
         }
-        
-        // Update Order Items
-        const confirmationItems = document.querySelector('.confirmation-items');
-        if (confirmationItems && order.items && order.items.length > 0) {
-            confirmationItems.innerHTML = '';
-            
-            order.items.forEach(item => {
-                const totalPrice = item.price * item.quantity;
-                const displayName = `${item.name} ${item.weight ? '(' + item.weight + ')' : ''} × ${item.quantity}`;
-                
-                const itemElement = document.createElement('div');
-                itemElement.className = 'confirmation-item';
-                itemElement.innerHTML = `
-                    <img src="${item.image || 'https://via.placeholder.com/60x60/cccccc/666666?text=📦'}" alt="${item.name}" class="item-image" 
-                         onerror="this.src='https://via.placeholder.com/60x60/cccccc/666666?text=📦'">
-                    <div class="item-info">
-                        <span class="item-name">${displayName}</span>
-                        <span class="item-price">₹${totalPrice.toFixed(2)}</span>
-                    </div>
-                `;
-                confirmationItems.appendChild(itemElement);
-            });
-        }
-        
-     // Update Order Totals
-const confirmationTotals = document.querySelector('.confirmation-totals');
-if (confirmationTotals) {
-    confirmationTotals.innerHTML = `
-
-        <h2 class="order-summary-heading">🛒 Order Summary</h2>
-
-        <div class="total-row">
-            <span>Subtotal</span>
-            <span>₹${(order.subtotal || 0).toFixed(2)}</span>
-        </div>
-
-        <div class="total-row">
-            <span>Shipping</span>
-            <span>₹${(order.delivery || 0).toFixed(2)}</span>
-        </div>
-
-        <div class="total-row">
-            <span>Tax</span>
-            <span>₹${(order.tax || 0).toFixed(2)}</span>
-        </div>
-
-        ${(order.couponDiscount || 0) > 0 ? `
-        <div class="total-row discount">
-            <span>Discount</span>
-            <span>-₹${(order.couponDiscount || 0).toFixed(2)}</span>
-        </div>
-        ` : ''}
-
-        <div class="total-row grand-total">
-            <span>Total</span>
-            <span>₹${(order.total || 0).toFixed(2)}</span>
-        </div>
-    `;
-}
-        // Force a re-check after a short delay (in case DOM updates async)
-        setTimeout(() => {
-            const orderIdSpan = document.getElementById('order-id');
-            if (orderIdSpan && orderIdSpan.textContent === 'OM123456') {
-                orderIdSpan.textContent = randomOrderId;
-                console.log('Force updated order ID after delay');
-            }
-        }, 100);
-        
-        // Set up the action buttons for confirmation page
+    }, 100);
+    
+    // Set up the action buttons for confirmation page
+    if (typeof setupConfirmationButtons === 'function') {
         setupConfirmationButtons();
     }
-
+}
 // ===== SETUP CONFIRMATION PAGE BUTTONS =====
 function setupConfirmationButtons() {
     // Look for the actual button IDs in your HTML
