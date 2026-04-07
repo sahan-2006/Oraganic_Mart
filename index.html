@@ -2808,36 +2808,7 @@
             </div>
         </div>
 
-        <!-- Delivery Options -->
-        <div class="info-section">
-            <h2><i class="fas fa-clock"></i> Delivery Options</h2>
-            <div class="options-grid">
-                <div class="option-card">
-                    <div class="option-header">
-                        <i class="fas fa-box"></i>
-                        <h3>Standard Delivery</h3>
-                    </div>
-                    <div class="option-details">
-                        <p class="time">2-3 business days</p>
-                        <p class="price">₹50</p>
-                        <span class="free-tag">FREE on orders ₹499+</span>
-                    </div>
-                </div>
-                
-                <div class="option-card express">
-                    <div class="option-header">
-                        <i class="fas fa-bolt"></i>
-                        <h3>Express Delivery</h3>
-                        <span class="premium-tag">Premium</span>
-                    </div>
-                    <div class="option-details">
-                        <p class="time">Next day delivery</p>
-                        <p class="price">₹99</p>
-                        <span class="note">Order before 6 PM</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+       
 
         <!-- Delivery Schedule -->
         <div class="info-section">
@@ -3377,7 +3348,7 @@
                             <i class="fas fa-map-marker-alt"></i>
                             <h3>No Addresses Saved</h3>
                             <p>You haven't saved any addresses yet.</p>
-                            <button id="add-new-address-btn" class="btn-primary">
+                            <button id="add-new-address-btn" class="btn-secondary">
                                 <i class="fas fa-plus"></i> Add New Address
                             </button>
                         </div>
@@ -3935,27 +3906,12 @@
                                 <!-- Addresses will be dynamically loaded here from profile -->
                             </div>
                         </div>
-                        <div class="delivery-options-container">
-                            <h3>Delivery Options</h3>
-                            <div class="delivery-options"> 
-                                <div class="delivery-option">
-                                    <input id="standard-delivery" type="radio" name="delivery" checked>
-                                    <label for="standard-delivery">
-                                        <span class="option-title">Standard Delivery</span>
-                                        <span class="option-desc">2-3 business days</span>
-                                        <span class="option-price">Free</span>
-                                    </label>
-                                </div>
-                                <div class="delivery-option">
-                                    <input id="express-delivery" type="radio" name="delivery">
-                                    <label for="express-delivery">
-                                        <span class="option-title">Express Delivery</span>
-                                        <span class="option-desc">Next day delivery</span>
-                                        <span class="option-price">₹99</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
+                    
+
+    <div class="delivery-note">
+        <p><strong>Note:</strong> Delivery charges will be calculated based on the distance from the store to your delivery address. Final charges will be shown at checkout.</p>
+    </div>
+
                     </form>
                     <div class="checkout-actions">
                         <nav>
@@ -4319,7 +4275,7 @@
     </div>
     
     <div class="step-actions">
-        <button class="btn btn-secondary" id="show-orders-btn">Show Your Orders</button>
+        <button class="btn" id="show-orders-btn">Show Your Orders</button>
         <button class="btn btn-primary" id="continue-shopping-btn">Continue Shopping</button>
     </div>
 </div>
